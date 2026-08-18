@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kawasaki Ninja H2R</title>
+    <style>
+        /* Сброс и базовые настройки */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Тёмный градиент от черного к насыщенному серо-синему */
+            background: radial-gradient(circle at 50% 50%, #1a1a2e, #0a0a12);
+            font-family: 'Segoe UI', 'Arial Black', system-ui, sans-serif;
+            padding: 1rem;
+            /* плавный фон на случай, если градиент не поддерживается */
+            background-color: #0b0b16;
+        }
+
+        /* Карточка с текстом — дополнительная выразительность */
+        .center-card {
+            text-align: center;
+            padding: 2.5rem 3.5rem;
+            border-radius: 3rem;
+            background: rgba(10, 10, 20, 0.35);
+            backdrop-filter: blur(2px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 0 2px rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: transform 0.2s ease;
+            max-width: 95vw;
+        }
+
+        .center-card:hover {
+            transform: scale(1.02);
+        }
+
+        /* Главный заголовок */
+        h1 {
+            font-size: clamp(3rem, 12vw, 6.5rem);
+            font-weight: 900;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #ffffff;
+            text-shadow: 
+                0 0 20px rgba(0, 200, 255, 0.3),
+                0 0 60px rgba(0, 150, 255, 0.2),
+                0 8px 20px rgba(0, 0, 0, 0.8);
+            background: linear-gradient(145deg, #f0f9ff, #b0d4ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            /* дополнительная резкость для читаемости */
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
+            line-height: 1.1;
+            word-break: break-word;
+        }
+
+        /* Эффект "зеленого" оттенка как у Kawasaki (лёгкий акцент) */
+        .center-card::after {
+            content: '';
+            display: block;
+            width: 40%;
+            height: 4px;
+            margin: 1.2rem auto 0;
+            background: linear-gradient(90deg, transparent, #7fff7f, #3cb371, transparent);
+            border-radius: 4px;
+            opacity: 0.4;
+            filter: blur(1px);
+        }
+
+        /* для очень маленьких экранов убираем лишние отступы */
+        @media (max-width: 480px) {
+            .center-card {
+                padding: 1.8rem 1.2rem;
+                border-radius: 2rem;
+            }
+            .center-card::after {
+                width: 60%;
+                margin-top: 0.8rem;
+            }
+        }
+
+        /* дополнительный свечение для любителей глитча — но аккуратно */
+        @supports (text-shadow: 0 0 30px currentColor) {
+            h1 {
+                text-shadow: 
+                    0 0 30px rgba(0, 180, 255, 0.25),
+                    0 0 80px rgba(0, 100, 255, 0.15),
+                    0 10px 30px rgba(0, 0, 0, 0.7);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="center-card">
+        <h1>Kawasaki Ninja H2R</h1>
+    </div>
+</body>
+</html>
