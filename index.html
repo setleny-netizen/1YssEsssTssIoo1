@@ -20,7 +20,8 @@
             background: radial-gradient(circle at 50% 50%, #1a1a2e, #0a0a12);
             font-family: 'Segoe UI', 'Arial Black', system-ui, sans-serif;
             padding: 1rem;
-            transition: background 0.5s ease;
+            transition: background 0.8s ease;
+            overflow: hidden;
         }
 
         /* ─── Основной контейнер ─── */
@@ -34,7 +35,9 @@
             text-align: center;
             max-width: 550px;
             width: 100%;
-            transition: all 0.4s ease;
+            transition: all 0.6s ease;
+            position: relative;
+            z-index: 10;
         }
 
         /* ─── Заголовок ─── */
@@ -98,7 +101,6 @@
             font-weight: 300;
         }
 
-        /* убираем стрелки в input[type=number] */
         .digit-input::-webkit-inner-spin-button,
         .digit-input::-webkit-outer-spin-button {
             -webkit-appearance: none;
@@ -137,14 +139,24 @@
             transform: scale(0.96);
         }
 
-        /* ─── Сообщение об ошибке ─── */
+        .btn-check:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* ─── Сообщение ─── */
         .message {
-            min-height: 2.2rem;
+            min-height: 3.5rem;
             margin-top: 1rem;
-            font-size: 1rem;
-            font-weight: 500;
+            font-size: 1.1rem;
+            font-weight: 600;
             letter-spacing: 0.02em;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
         .message.error {
@@ -155,6 +167,39 @@
         .message.success {
             color: #7fff7f;
             text-shadow: 0 0 30px rgba(127, 255, 127, 0.4);
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        /* ─── ЛОХМАТЫЙ (анимация появления) ─── */
+        .lochmatiy {
+            font-size: 5rem;
+            display: inline-block;
+            animation: lochmatiyAppear 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            transform-origin: center;
+            filter: drop-shadow(0 0 30px rgba(255, 200, 100, 0.3));
+            line-height: 1.2;
+        }
+
+        @keyframes lochmatiyAppear {
+            0% {
+                transform: scale(0) rotate(-30deg) translateY(50px);
+                opacity: 0;
+                filter: drop-shadow(0 0 0px rgba(255, 200, 100, 0));
+            }
+            50% {
+                transform: scale(1.3) rotate(5deg) translateY(-10px);
+                opacity: 1;
+                filter: drop-shadow(0 0 60px rgba(255, 200, 100, 0.5));
+            }
+            70% {
+                transform: scale(0.9) rotate(-3deg) translateY(5px);
+            }
+            100% {
+                transform: scale(1) rotate(0deg) translateY(0);
+                opacity: 1;
+                filter: drop-shadow(0 0 30px rgba(255, 200, 100, 0.3));
+            }
         }
 
         /* ─── ПОБЕДНАЯ АНИМАЦИЯ ─── */
@@ -169,12 +214,21 @@
             100% { box-shadow: 0 0 90px rgba(127, 255, 127, 0.30), 0 0 150px rgba(127, 255, 127, 0.08), 0 30px 60px rgba(0,0,0,0.8); }
         }
 
-        /* фон при победе */
         body.victory-bg {
             background: radial-gradient(circle at 50% 50%, #1a3a1a, #0a120a);
         }
 
-        /* ─── Фейерверк (звёздочки) ─── */
+        body.error-bg {
+            background: radial-gradient(circle at 50% 50%, #3a1a1a, #120a0a);
+            animation: errorFlash 0.5s ease 3;
+        }
+
+        @keyframes errorFlash {
+            0%, 100% { background: radial-gradient(circle at 50% 50%, #3a1a1a, #120a0a); }
+            50% { background: radial-gradient(circle at 50% 50%, #5a2a2a, #1a0a0a); }
+        }
+
+        /* ─── Фейерверк ─── */
         .confetti-container {
             position: fixed;
             top: 0;
@@ -200,12 +254,8 @@
                 transform: translateY(-20px) rotate(0deg) scale(0.5);
                 opacity: 0;
             }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
             100% {
                 transform: translateY(105vh) rotate(720deg) scale(1.2);
                 opacity: 0;
@@ -227,6 +277,9 @@
                 padding: 0.7rem 2rem;
                 font-size: 0.95rem;
             }
+            .lochmatiy {
+                font-size: 3.5rem;
+            }
         }
     </style>
 </head>
@@ -234,8 +287,8 @@
 
     <div class="container" id="container">
         <h1>Секретный код</h1>
+        <p class="subtitle">Найди Лохматого! 🐻‍❄️</p>
 
-        <!-- 4 поля для цифр -->
         <div class="input-group" id="inputGroup">
             <input type="number" class="digit-input" id="d1" maxlength="1" placeholder="•" inputmode="numeric" autofocus />
             <input type="number" class="digit-input" id="d2" maxlength="1" placeholder="•" inputmode="numeric" />
@@ -247,13 +300,20 @@
         <div class="message" id="message"></div>
     </div>
 
-    <!-- Контейнер для фейерверка -->
     <div class="confetti-container" id="confettiContainer"></div>
+
+    <!-- Звуки -->
+    <audio id="winSound" preload="auto">
+        <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="errorSound" preload="auto">
+        <source src="https://www.soundjay.com/misc/sounds/error-03.mp3" type="audio/mpeg">
+    </audio>
 
     <script>
         (function() {
-            // ─── ПРАВИЛЬНЫЙ КОД (можно поменять) ───
-            const SECRET_CODE = '8848';  // ← сюда впиши свой код
+            // ─── ⚡ ЗДЕСЬ УКАЖИ СВОЙ КОД ⚡ ───
+            const SECRET_CODE = '8848';  // ← поменяй на свой код
 
             const inputs = [
                 document.getElementById('d1'),
@@ -266,36 +326,33 @@
             const container = document.getElementById('container');
             const body = document.body;
             const confettiContainer = document.getElementById('confettiContainer');
+            const winSound = document.getElementById('winSound');
+            const errorSound = document.getElementById('errorSound');
 
             let victoryActive = false;
 
             // ─── Автопереход между полями ───
             inputs.forEach((input, index) => {
                 input.addEventListener('input', (e) => {
-                    // оставляем только одну цифру
                     let val = e.target.value.replace(/\D/g, '');
                     if (val.length > 1) val = val.slice(0, 1);
                     e.target.value = val;
 
-                    // переход к следующему полю
                     if (val.length === 1 && index < inputs.length - 1) {
                         inputs[index + 1].focus();
                     }
                 });
 
-                // обработать Backspace — перейти на предыдущее поле
                 input.addEventListener('keydown', (e) => {
                     if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
                         inputs[index - 1].focus();
                     }
-                    // Enter как триггер проверки
                     if (e.key === 'Enter') {
                         e.preventDefault();
                         checkCode();
                     }
                 });
 
-                // при фокусе выделяем содержимое
                 input.addEventListener('focus', () => input.select());
             });
 
@@ -304,34 +361,32 @@
                 if (victoryActive) return;
 
                 const code = inputs.map(inp => inp.value).join('');
-                const messageEl = document.getElementById('message');
 
-                // если поля не заполнены
                 if (code.length < 4) {
-                    messageEl.textContent = 'Введи все 4 цифры';
+                    messageEl.textContent = '❄️ Введи все 4 цифры';
                     messageEl.className = 'message error';
+                    errorSound.play();
                     return;
                 }
 
                 if (code === SECRET_CODE) {
-                    // ─── ПОБЕДА! ───
+                    // ─── 🏆 ПОБЕДА! ───
                     victoryActive = true;
-                    messageEl.textContent = '🍦 Лохматый соскучился по мороженому! ❄️';
+
+                    // Сообщение с Лохматым
+                    messageEl.innerHTML = `
+                        <span>🍦 Лохматый соскучился по мороженому! ❄️</span>
+                        <span class="lochmatiy">🐻‍❄️✨</span>
+                    `;
                     messageEl.className = 'message success';
 
-                    // анимация контейнера
                     container.classList.add('victory');
                     body.classList.add('victory-bg');
 
-                    // запускаем фейерверк
                     launchConfetti();
+                    winSound.play();
 
-                    // блокируем кнопку (можно нажать только один раз)
                     checkBtn.disabled = true;
-                    checkBtn.style.opacity = '0.5';
-                    checkBtn.style.cursor = 'default';
-
-                    // подсветить поля зелёным
                     inputs.forEach(inp => {
                         inp.style.borderColor = '#7fff7f';
                         inp.style.color = '#7fff7f';
@@ -339,47 +394,48 @@
                     });
 
                 } else {
-                    // ─── НЕПРАВИЛЬНЫЙ КОД ───
+                    // ─── ❌ ОШИБКА ───
                     messageEl.textContent = '❌ Неверный код. Попробуй снова.';
                     messageEl.className = 'message error';
 
-                    // тряска полей
+                    body.classList.add('error-bg');
+                    errorSound.play();
+
                     inputs.forEach(inp => {
                         inp.style.borderColor = '#ff6b6b';
                         inp.style.animation = 'shake 0.4s ease';
                     });
+
                     setTimeout(() => {
+                        body.classList.remove('error-bg');
                         inputs.forEach(inp => {
                             inp.style.borderColor = 'rgba(255,255,255,0.12)';
                             inp.style.animation = '';
                         });
                     }, 500);
 
-                    // очистить поля через секунду
                     setTimeout(() => {
                         inputs.forEach(inp => inp.value = '');
                         inputs[0].focus();
-                    }, 800);
+                    }, 700);
                 }
             }
 
-            // ─── Кнопка проверки ───
             checkBtn.addEventListener('click', checkCode);
 
-            // ─── ФЕЙЕРВЕРК (конфетти) ───
+            // ─── 🎆 Фейерверк ───
             function launchConfetti() {
-                const colors = ['#7fff7f', '#ff6b6b', '#ffd93d', '#6bcfff', '#ff6bff', '#ff9f43', '#a29bfe'];
-                const container = document.getElementById('confettiContainer');
-                container.innerHTML = '';
+                const colors = ['#7fff7f', '#ff6b6b', '#ffd93d', '#6bcfff', '#ff6bff', '#ff9f43', '#a29bfe', '#ff4757', '#2ed573'];
+                confettiContainer.innerHTML = '';
 
-                for (let i = 0; i < 180; i++) {
+                for (let i = 0; i < 220; i++) {
                     const el = document.createElement('div');
                     el.className = 'confetti';
-                    const size = 6 + Math.random() * 14;
+                    const size = 6 + Math.random() * 16;
                     const color = colors[Math.floor(Math.random() * colors.length)];
                     const left = Math.random() * 100;
-                    const delay = Math.random() * 2.5;
-                    const duration = 2.2 + Math.random() * 2.5;
+                    const delay = Math.random() * 2.8;
+                    const duration = 2.0 + Math.random() * 3.0;
                     const rotation = Math.random() * 720;
 
                     el.style.cssText = `
@@ -391,32 +447,30 @@
                         animation-duration: ${duration}s;
                         transform: rotate(${rotation}deg);
                         border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+                        box-shadow: 0 0 6px ${color}44;
                     `;
-                    container.appendChild(el);
+                    confettiContainer.appendChild(el);
                 }
 
-                // убираем конфетти через 6 секунд
                 setTimeout(() => {
-                    container.innerHTML = '';
-                }, 6000);
+                    confettiContainer.innerHTML = '';
+                }, 7000);
             }
 
-            // ─── Добавляем анимацию тряски ───
+            // ─── Анимация тряски ───
             const styleShake = document.createElement('style');
             styleShake.textContent = `
                 @keyframes shake {
                     0%, 100% { transform: translateX(0); }
-                    20% { transform: translateX(-12px); }
-                    40% { transform: translateX(12px); }
-                    60% { transform: translateX(-6px); }
-                    80% { transform: translateX(6px); }
+                    20% { transform: translateX(-14px); }
+                    40% { transform: translateX(14px); }
+                    60% { transform: translateX(-8px); }
+                    80% { transform: translateX(8px); }
                 }
             `;
             document.head.appendChild(styleShake);
 
-            // ─── Подсказка в консоли (для теста) ───
             console.log(`🔑 Правильный код: ${SECRET_CODE}`);
-
         })();
     </script>
 </body>
