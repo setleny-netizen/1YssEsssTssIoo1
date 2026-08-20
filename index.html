@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Kawasaki Ninja H2R — Ввод кода</title>
+    <style>
+        /* ─── Общий сброс и фон ─── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 50% 50%, #1a1a2e, #0a0a12);
+            font-family: 'Segoe UI', 'Arial Black', system-ui, sans-serif;
+            padding: 1rem;
+            transition: background 0.5s ease;
+        }
+
+        /* ─── Основной контейнер ─── */
+        .container {
+            background: rgba(10, 10, 20, 0.6);
+            backdrop-filter: blur(8px);
+            padding: 3rem 2.5rem;
+            border-radius: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.03);
+            text-align: center;
+            max-width: 550px;
+            width: 100%;
+            transition: all 0.4s ease;
+        }
+
+        /* ─── Заголовок ─── */
+        h1 {
+            font-size: clamp(2.2rem, 8vw, 3.8rem);
+            font-weight: 900;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            background: linear-gradient(145deg, #f0f9ff, #b0d4ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+            margin-bottom: 0.3rem;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.9rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+
+        /* ─── Поле ввода ─── */
+        .input-group {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .digit-input {
+            width: 70px;
+            height: 85px;
+            font-size: 2.8rem;
+            font-weight: 700;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            border-radius: 1.2rem;
+            color: #fff;
+            outline: none;
+            transition: all 0.25s ease;
+            font-family: 'Segoe UI', monospace;
+            caret-color: #7fff7f;
+        }
+
+        .digit-input:focus {
+            border-color: #7fff7f;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 25px rgba(127, 255, 127, 0.15), inset 0 0 15px rgba(127, 255, 127, 0.05);
+            transform: scale(1.04);
+        }
+
+        .digit-input::placeholder {
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+
+        /* убираем стрелки в input[type=number] */
+        .digit-input::-webkit-inner-spin-button,
+        .digit-input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .digit-input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        /* ─── Кнопка ─── */
+        .btn-check {
+            background: linear-gradient(145deg, #2a2a4a, #1a1a2e);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 0.9rem 2.8rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-top: 0.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-check:hover {
+            background: linear-gradient(145deg, #3a3a5a, #2a2a4a);
+            border-color: rgba(127, 255, 127, 0.25);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .btn-check:active {
+            transform: scale(0.96);
+        }
+
+        /* ─── Сообщение об ошибке ─── */
+        .message {
+            min-height: 2.2rem;
+            margin-top: 1rem;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            transition: all 0.3s ease;
+        }
+
+        .message.error {
+            color: #ff6b6b;
+            text-shadow: 0 0 20px rgba(255, 80, 80, 0.3);
+        }
+
+        .message.success {
+            color: #7fff7f;
+            text-shadow: 0 0 30px rgba(127, 255, 127, 0.4);
+        }
+
+        /* ─── ПОБЕДНАЯ АНИМАЦИЯ ─── */
+        .container.victory {
+            border-color: rgba(127, 255, 127, 0.3);
+            box-shadow: 0 0 60px rgba(127, 255, 127, 0.15), 0 30px 60px rgba(0, 0, 0, 0.8);
+            animation: victoryGlow 1.2s ease-in-out infinite alternate;
+        }
+
+        @keyframes victoryGlow {
+            0%   { box-shadow: 0 0 40px rgba(127, 255, 127, 0.10), 0 30px 60px rgba(0,0,0,0.8); }
+            100% { box-shadow: 0 0 90px rgba(127, 255, 127, 0.30), 0 0 150px rgba(127, 255, 127, 0.08), 0 30px 60px rgba(0,0,0,0.8); }
+        }
+
+        /* фон при победе */
+        body.victory-bg {
+            background: radial-gradient(circle at 50% 50%, #1a3a1a, #0a120a);
+        }
+
+        /* ─── Фейерверк (звёздочки) ─── */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 999;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            opacity: 0;
+            animation: confettiFall linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-20px) rotate(0deg) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(105vh) rotate(720deg) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* ─── Адаптив ─── */
+        @media (max-width: 480px) {
+            .container {
+                padding: 2rem 1.2rem;
+                border-radius: 2rem;
+            }
+            .digit-input {
+                width: 55px;
+                height: 70px;
+                font-size: 2.2rem;
+            }
+            .btn-check {
+                padding: 0.7rem 2rem;
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="container">
+        <h1>Kawasaki Ninja H2R</h1>
+        <p class="subtitle">Введи секретный код</p>
+
+        <!-- 4 поля для цифр -->
+        <div class="input-group" id="inputGroup">
+            <input type="number" class="digit-input" id="d1" maxlength="1" placeholder="•" inputmode="numeric" autofocus />
+            <input type="number" class="digit-input" id="d2" maxlength="1" placeholder="•" inputmode="numeric" />
+            <input type="number" class="digit-input" id="d3" maxlength="1" placeholder="•" inputmode="numeric" />
+            <input type="number" class="digit-input" id="d4" maxlength="1" placeholder="•" inputmode="numeric" />
+        </div>
+
+        <button class="btn-check" id="checkBtn">Проверить</button>
+        <div class="message" id="message"></div>
+    </div>
+
+    <!-- Контейнер для фейерверка -->
+    <div class="confetti-container" id="confettiContainer"></div>
+
+    <script>
+        (function() {
+            // ─── ПРАВИЛЬНЫЙ КОД (можно поменять) ───
+            const SECRET_CODE = '8848';  // ← сюда впиши свой код
+
+            const inputs = [
+                document.getElementById('d1'),
+                document.getElementById('d2'),
+                document.getElementById('d3'),
+                document.getElementById('d4')
+            ];
+            const checkBtn = document.getElementById('checkBtn');
+            const messageEl = document.getElementById('message');
+            const container = document.getElementById('container');
+            const body = document.body;
+            const confettiContainer = document.getElementById('confettiContainer');
+
+            let victoryActive = false;
+
+            // ─── Автопереход между полями ───
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    // оставляем только одну цифру
+                    let val = e.target.value.replace(/\D/g, '');
+                    if (val.length > 1) val = val.slice(0, 1);
+                    e.target.value = val;
+
+                    // переход к следующему полю
+                    if (val.length === 1 && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                });
+
+                // обработать Backspace — перейти на предыдущее поле
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                    // Enter как триггер проверки
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        checkCode();
+                    }
+                });
+
+                // при фокусе выделяем содержимое
+                input.addEventListener('focus', () => input.select());
+            });
+
+            // ─── Проверка кода ───
+            function checkCode() {
+                if (victoryActive) return;
+
+                const code = inputs.map(inp => inp.value).join('');
+                const messageEl = document.getElementById('message');
+
+                // если поля не заполнены
+                if (code.length < 4) {
+                    messageEl.textContent = 'Введи все 4 цифры';
+                    messageEl.className = 'message error';
+                    return;
+                }
+
+                if (code === SECRET_CODE) {
+                    // ─── ПОБЕДА! ───
+                    victoryActive = true;
+                    messageEl.textContent = '🏆 ПОБЕДА! Код принят! 🏆';
+                    messageEl.className = 'message success';
+
+                    // анимация контейнера
+                    container.classList.add('victory');
+                    body.classList.add('victory-bg');
+
+                    // запускаем фейерверк
+                    launchConfetti();
+
+                    // блокируем кнопку (можно нажать только один раз)
+                    checkBtn.disabled = true;
+                    checkBtn.style.opacity = '0.5';
+                    checkBtn.style.cursor = 'default';
+
+                    // подсветить поля зелёным
+                    inputs.forEach(inp => {
+                        inp.style.borderColor = '#7fff7f';
+                        inp.style.color = '#7fff7f';
+                        inp.disabled = true;
+                    });
+
+                } else {
+                    // ─── НЕПРАВИЛЬНЫЙ КОД ───
+                    messageEl.textContent = '❌ Неверный код. Попробуй снова.';
+                    messageEl.className = 'message error';
+
+                    // тряска полей
+                    inputs.forEach(inp => {
+                        inp.style.borderColor = '#ff6b6b';
+                        inp.style.animation = 'shake 0.4s ease';
+                    });
+                    setTimeout(() => {
+                        inputs.forEach(inp => {
+                            inp.style.borderColor = 'rgba(255,255,255,0.12)';
+                            inp.style.animation = '';
+                        });
+                    }, 500);
+
+                    // очистить поля через секунду
+                    setTimeout(() => {
+                        inputs.forEach(inp => inp.value = '');
+                        inputs[0].focus();
+                    }, 800);
+                }
+            }
+
+            // ─── Кнопка проверки ───
+            checkBtn.addEventListener('click', checkCode);
+
+            // ─── ФЕЙЕРВЕРК (конфетти) ───
+            function launchConfetti() {
+                const colors = ['#7fff7f', '#ff6b6b', '#ffd93d', '#6bcfff', '#ff6bff', '#ff9f43', '#a29bfe'];
+                const container = document.getElementById('confettiContainer');
+                container.innerHTML = '';
+
+                for (let i = 0; i < 180; i++) {
+                    const el = document.createElement('div');
+                    el.className = 'confetti';
+                    const size = 6 + Math.random() * 14;
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    const left = Math.random() * 100;
+                    const delay = Math.random() * 2.5;
+                    const duration = 2.2 + Math.random() * 2.5;
+                    const rotation = Math.random() * 720;
+
+                    el.style.cssText = `
+                        left: ${left}%;
+                        width: ${size}px;
+                        height: ${size * 0.6}px;
+                        background: ${color};
+                        animation-delay: ${delay}s;
+                        animation-duration: ${duration}s;
+                        transform: rotate(${rotation}deg);
+                        border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+                    `;
+                    container.appendChild(el);
+                }
+
+                // убираем конфетти через 6 секунд
+                setTimeout(() => {
+                    container.innerHTML = '';
+                }, 6000);
+            }
+
+            // ─── Добавляем анимацию тряски ───
+            const styleShake = document.createElement('style');
+            styleShake.textContent = `
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    20% { transform: translateX(-12px); }
+                    40% { transform: translateX(12px); }
+                    60% { transform: translateX(-6px); }
+                    80% { transform: translateX(6px); }
+                }
+            `;
+            document.head.appendChild(styleShake);
+
+            // ─── Подсказка в консоли (для теста) ───
+            console.log(`🔑 Правильный код: ${SECRET_CODE}`);
+
+        })();
+    </script>
+</body>
+</html>
