@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>Тайна Лохматого</title>
     <style>
         /* ─── Общий сброс и фон ─── */
@@ -21,6 +21,7 @@
             font-family: 'Segoe UI', 'Arial Black', system-ui, sans-serif;
             padding: 1rem;
             transition: background 0.6s ease;
+            touch-action: manipulation;
         }
 
         /* ─── Контейнер ─── */
@@ -41,7 +42,7 @@
 
         /* ─── Заголовок ─── */
         h1 {
-            font-size: clamp(2rem, 7vw, 2rem);
+            font-size: clamp(2rem, 7vw, 3.2rem);
             font-weight: 900;
             letter-spacing: 0.04em;
             text-transform: uppercase;
@@ -53,7 +54,7 @@
             margin-bottom: 1.5rem;
         }
 
-        /* ─── Поле ввода ─── */
+        /* ─── Поле ввода (только для отображения) ─── */
         .input-group {
             display: flex;
             gap: 0.7rem;
@@ -74,28 +75,32 @@
             outline: none;
             transition: all 0.2s ease;
             font-family: 'Segoe UI', monospace;
-            caret-color: #7fff7f;
+            /* Отключаем всё, что может вызвать клавиатуру */
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
-        .digit-input:focus {
+        /* Визуальный курсор (мигающий) */
+        .digit-input.active {
             border-color: #7fff7f;
-            background: rgba(255, 255, 255, 0.08);
             box-shadow: 0 0 20px rgba(127, 255, 127, 0.12);
-            transform: scale(1.03);
+            animation: cursorBlink 1s step-end infinite;
+        }
+
+        @keyframes cursorBlink {
+            0%, 100% { border-color: #7fff7f; }
+            50% { border-color: rgba(127, 255, 127, 0.2); }
+        }
+
+        .digit-input.filled {
+            border-color: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .digit-input::placeholder {
             color: rgba(255, 255, 255, 0.15);
             font-size: 1.2rem;
-        }
-
-        .digit-input::-webkit-inner-spin-button,
-        .digit-input::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        .digit-input[type="number"] {
-            -moz-appearance: textfield;
         }
 
         /* ─── Цифровая клавиатура 3×4 ─── */
@@ -116,16 +121,23 @@
             font-weight: 700;
             color: #fff;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: all 0.12s ease;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
             font-family: inherit;
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
         }
 
         .key-btn:active {
-            transform: scale(0.92);
+            transform: scale(0.90);
             background: rgba(255, 255, 255, 0.14);
             border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        /* Убираем синее выделение на телефонах */
+        .key-btn:focus {
+            outline: none;
         }
 
         .key-btn.backspace {
@@ -135,6 +147,11 @@
 
         .key-btn.empty {
             visibility: hidden;
+            pointer-events: none;
+        }
+
+        .key-btn.disabled {
+            opacity: 0.3;
             pointer-events: none;
         }
 
@@ -154,13 +171,8 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
             width: 100%;
             max-width: 320px;
-        }
-
-        .btn-check:hover {
-            background: linear-gradient(145deg, #3a3a5a, #2a2a4a);
-            border-color: rgba(127, 255, 127, 0.25);
-            color: #fff;
-            transform: translateY(-2px);
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .btn-check:active {
@@ -199,7 +211,7 @@
             gap: 0.3rem;
         }
 
-        /* ─── Лохматый (упрощённая анимация) ─── */
+        /* ─── Лохматый ─── */
         .lochmatiy {
             font-size: 4rem;
             display: inline-block;
@@ -244,7 +256,7 @@
             50% { background: radial-gradient(circle at 50% 50%, #4a2222, #1a0a0a); }
         }
 
-        /* ─── Фейерверк (лёгкий) ─── */
+        /* ─── Фейерверк ─── */
         .confetti-container {
             position: fixed;
             top: 0;
@@ -324,12 +336,12 @@
     <div class="container" id="container">
         <h1>Секретный код</h1>
 
-        <!-- 4 поля для цифр -->
+        <!-- 4 поля для цифр (readonly — не вызывают клавиатуру) -->
         <div class="input-group" id="inputGroup">
-            <input type="number" class="digit-input" id="d1" maxlength="1" placeholder="•" inputmode="none" autofocus />
-            <input type="number" class="digit-input" id="d2" maxlength="1" placeholder="•" inputmode="none" />
-            <input type="number" class="digit-input" id="d3" maxlength="1" placeholder="•" inputmode="none" />
-            <input type="number" class="digit-input" id="d4" maxlength="1" placeholder="•" inputmode="none" />
+            <input type="text" class="digit-input active" id="d1" maxlength="1" placeholder="•" readonly />
+            <input type="text" class="digit-input" id="d2" maxlength="1" placeholder="•" readonly />
+            <input type="text" class="digit-input" id="d3" maxlength="1" placeholder="•" readonly />
+            <input type="text" class="digit-input" id="d4" maxlength="1" placeholder="•" readonly />
         </div>
 
         <!-- Цифровая клавиатура 3×4 -->
@@ -381,83 +393,81 @@
             const confettiContainer = document.getElementById('confettiContainer');
             const winSound = document.getElementById('winSound');
             const errorSound = document.getElementById('errorSound');
+            const keyButtons = document.querySelectorAll('.key-btn[data-value]');
 
             let victoryActive = false;
-            let currentIndex = 0;
 
-            // ─── Фокус на первое поле ───
-            inputs[0].focus();
+            // ─── Обновить активный курсор ───
+            function updateCursor() {
+                let firstEmpty = -1;
+                for (let i = 0; i < inputs.length; i++) {
+                    if (inputs[i].value === '') {
+                        firstEmpty = i;
+                        break;
+                    }
+                }
+                // Если все заполнены — курсор на последнем
+                if (firstEmpty === -1) firstEmpty = inputs.length - 1;
 
-            // ─── Обработка клавиш на клавиатуре ───
-            inputs.forEach((input, index) => {
-                input.addEventListener('input', (e) => {
-                    let val = e.target.value.replace(/\D/g, '');
-                    if (val.length > 1) val = val.slice(0, 1);
-                    e.target.value = val;
-
-                    if (val.length === 1 && index < inputs.length - 1) {
-                        inputs[index + 1].focus();
-                        currentIndex = index + 1;
+                inputs.forEach((inp, idx) => {
+                    inp.classList.remove('active');
+                    if (idx === firstEmpty) {
+                        inp.classList.add('active');
                     }
                 });
+            }
 
-                input.addEventListener('keydown', (e) => {
-                    if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
-                        inputs[index - 1].focus();
-                        currentIndex = index - 1;
-                    }
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        checkCode();
-                    }
-                });
+            // ─── Вставить цифру ───
+            function insertDigit(value) {
+                if (victoryActive) return;
 
-                input.addEventListener('focus', () => {
-                    input.select();
-                    currentIndex = index;
-                });
-            });
-
-            // ─── Кнопки цифровой клавиатуры ───
-            document.querySelectorAll('.key-btn[data-value]').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    if (victoryActive) return;
-                    const value = btn.dataset.value;
-
-                    if (value === 'backspace') {
-                        // Удалить последнюю цифру
-                        for (let i = inputs.length - 1; i >= 0; i--) {
-                            if (inputs[i].value !== '') {
-                                inputs[i].value = '';
-                                inputs[i].focus();
-                                currentIndex = i;
-                                break;
-                            }
-                        }
-                        // Если все поля пустые — фокус на первое
-                        if (inputs.every(inp => inp.value === '')) {
-                            inputs[0].focus();
-                            currentIndex = 0;
-                        }
+                for (let i = 0; i < inputs.length; i++) {
+                    if (inputs[i].value === '') {
+                        inputs[i].value = value;
+                        inputs[i].classList.add('filled');
+                        updateCursor();
                         return;
                     }
+                }
+                // Если все поля заполнены — ничего не делаем
+            }
 
-                    // Вставить цифру в первое пустое поле
-                    for (let i = 0; i < inputs.length; i++) {
-                        if (inputs[i].value === '') {
-                            inputs[i].value = value;
-                            if (i < inputs.length - 1) {
-                                inputs[i + 1].focus();
-                                currentIndex = i + 1;
-                            } else {
-                                inputs[i].focus();
-                                currentIndex = i;
-                            }
-                            break;
-                        }
+            // ─── Удалить последнюю цифру ───
+            function deleteLast() {
+                if (victoryActive) return;
+
+                for (let i = inputs.length - 1; i >= 0; i--) {
+                    if (inputs[i].value !== '') {
+                        inputs[i].value = '';
+                        inputs[i].classList.remove('filled');
+                        updateCursor();
+                        return;
+                    }
+                }
+                // Если все пустые — просто обновляем курсор
+                updateCursor();
+            }
+
+            // ─── Обработка кнопок клавиатуры ───
+            keyButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const value = btn.dataset.value;
+                    if (value === 'backspace') {
+                        deleteLast();
+                    } else {
+                        insertDigit(value);
                     }
                 });
+
+                // Предотвращаем появление клавиатуры на телефонах
+                btn.addEventListener('touchstart', (e) => {
+                    // Просто чтобы ничего не мешало
+                }, { passive: true });
             });
+
+            // ─── Инициализация курсора ───
+            updateCursor();
 
             // ─── Проверка кода ───
             function checkCode() {
@@ -492,11 +502,10 @@
                     inputs.forEach(inp => {
                         inp.style.borderColor = '#7fff7f';
                         inp.style.color = '#7fff7f';
-                        inp.disabled = true;
+                        inp.classList.remove('active');
                     });
 
-                    // Блокируем клавиатуру
-                    document.querySelectorAll('.key-btn').forEach(b => b.style.opacity = '0.3');
+                    keyButtons.forEach(b => b.classList.add('disabled'));
 
                 } else {
                     // ❌ ОШИБКА
@@ -520,16 +529,18 @@
                     }, 400);
 
                     setTimeout(() => {
-                        inputs.forEach(inp => inp.value = '');
-                        inputs[0].focus();
-                        currentIndex = 0;
+                        inputs.forEach(inp => {
+                            inp.value = '';
+                            inp.classList.remove('filled');
+                        });
+                        updateCursor();
                     }, 600);
                 }
             }
 
             checkBtn.addEventListener('click', checkCode);
 
-            // ─── 🎆 Фейерверк (упрощённый) ───
+            // ─── 🎆 Фейерверк ───
             function launchConfetti() {
                 const colors = ['#7fff7f', '#ff6b6b', '#ffd93d', '#6bcfff', '#ff6bff', '#ff9f43', '#a29bfe'];
                 confettiContainer.innerHTML = '';
