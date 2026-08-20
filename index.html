@@ -20,29 +20,28 @@
             background: radial-gradient(circle at 50% 50%, #1a1a2e, #0a0a12);
             font-family: 'Segoe UI', 'Arial Black', system-ui, sans-serif;
             padding: 1rem;
-            transition: background 0.8s ease;
-            overflow: hidden;
+            transition: background 0.6s ease;
         }
 
-        /* ─── Основной контейнер ─── */
+        /* ─── Контейнер ─── */
         .container {
             background: rgba(10, 10, 20, 0.6);
             backdrop-filter: blur(8px);
-            padding: 3rem 2.5rem;
+            padding: 2.5rem 2rem;
             border-radius: 3rem;
             border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.03);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
             text-align: center;
-            max-width: 550px;
+            max-width: 420px;
             width: 100%;
-            transition: all 0.6s ease;
+            transition: all 0.5s ease;
             position: relative;
             z-index: 10;
         }
 
         /* ─── Заголовок ─── */
         h1 {
-            font-size: clamp(2.2rem, 8vw, 3.8rem);
+            font-size: clamp(2rem, 7vw, 3.2rem);
             font-weight: 900;
             letter-spacing: 0.04em;
             text-transform: uppercase;
@@ -51,31 +50,21 @@
             background-clip: text;
             -webkit-text-fill-color: transparent;
             filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
-            margin-bottom: 0.3rem;
-        }
-
-        .subtitle {
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 0.9rem;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            margin-bottom: 2rem;
-            font-weight: 300;
+            margin-bottom: 1.5rem;
         }
 
         /* ─── Поле ввода ─── */
         .input-group {
             display: flex;
-            gap: 0.8rem;
+            gap: 0.7rem;
             justify-content: center;
-            flex-wrap: wrap;
             margin-bottom: 1.5rem;
         }
 
         .digit-input {
-            width: 70px;
-            height: 85px;
-            font-size: 2.8rem;
+            width: 65px;
+            height: 80px;
+            font-size: 2.6rem;
             font-weight: 700;
             text-align: center;
             background: rgba(255, 255, 255, 0.05);
@@ -83,7 +72,7 @@
             border-radius: 1.2rem;
             color: #fff;
             outline: none;
-            transition: all 0.25s ease;
+            transition: all 0.2s ease;
             font-family: 'Segoe UI', monospace;
             caret-color: #7fff7f;
         }
@@ -91,14 +80,13 @@
         .digit-input:focus {
             border-color: #7fff7f;
             background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 25px rgba(127, 255, 127, 0.15), inset 0 0 15px rgba(127, 255, 127, 0.05);
-            transform: scale(1.04);
+            box-shadow: 0 0 20px rgba(127, 255, 127, 0.12);
+            transform: scale(1.03);
         }
 
         .digit-input::placeholder {
             color: rgba(255, 255, 255, 0.15);
             font-size: 1.2rem;
-            font-weight: 300;
         }
 
         .digit-input::-webkit-inner-spin-button,
@@ -110,21 +98,62 @@
             -moz-appearance: textfield;
         }
 
-        /* ─── Кнопка ─── */
+        /* ─── Цифровая клавиатура 3×4 ─── */
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.6rem;
+            max-width: 320px;
+            margin: 0 auto 1rem;
+        }
+
+        .key-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: 1rem;
+            padding: 0.9rem 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            font-family: inherit;
+        }
+
+        .key-btn:active {
+            transform: scale(0.92);
+            background: rgba(255, 255, 255, 0.14);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .key-btn.backspace {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .key-btn.empty {
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* ─── Кнопка проверки ─── */
         .btn-check {
             background: linear-gradient(145deg, #2a2a4a, #1a1a2e);
             border: 1px solid rgba(255, 255, 255, 0.08);
             color: rgba(255, 255, 255, 0.7);
-            padding: 0.9rem 2.8rem;
-            font-size: 1.1rem;
+            padding: 0.8rem 2.5rem;
+            font-size: 1rem;
             font-weight: 700;
             border-radius: 3rem;
             cursor: pointer;
             transition: all 0.3s ease;
             letter-spacing: 0.08em;
             text-transform: uppercase;
-            margin-top: 0.5rem;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 320px;
         }
 
         .btn-check:hover {
@@ -132,7 +161,6 @@
             border-color: rgba(127, 255, 127, 0.25);
             color: #fff;
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
         }
 
         .btn-check:active {
@@ -147,88 +175,76 @@
 
         /* ─── Сообщение ─── */
         .message {
-            min-height: 3.5rem;
-            margin-top: 1rem;
-            font-size: 1.1rem;
+            min-height: 2.8rem;
+            margin-top: 0.8rem;
+            font-size: 1rem;
             font-weight: 600;
-            letter-spacing: 0.02em;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         .message.error {
             color: #ff6b6b;
-            text-shadow: 0 0 20px rgba(255, 80, 80, 0.3);
+            text-shadow: 0 0 20px rgba(255, 80, 80, 0.25);
         }
 
         .message.success {
             color: #7fff7f;
-            text-shadow: 0 0 30px rgba(127, 255, 127, 0.4);
+            text-shadow: 0 0 30px rgba(127, 255, 127, 0.3);
             flex-direction: column;
-            gap: 0.8rem;
+            gap: 0.3rem;
         }
 
-        /* ─── ЛОХМАТЫЙ (анимация появления) ─── */
+        /* ─── Лохматый (упрощённая анимация) ─── */
         .lochmatiy {
-            font-size: 5rem;
+            font-size: 4rem;
             display: inline-block;
-            animation: lochmatiyAppear 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-            transform-origin: center;
-            filter: drop-shadow(0 0 30px rgba(255, 200, 100, 0.3));
+            animation: lochmatiyPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
             line-height: 1.2;
         }
 
-        @keyframes lochmatiyAppear {
+        @keyframes lochmatiyPop {
             0% {
-                transform: scale(0) rotate(-30deg) translateY(50px);
+                transform: scale(0) rotate(-15deg);
                 opacity: 0;
-                filter: drop-shadow(0 0 0px rgba(255, 200, 100, 0));
-            }
-            50% {
-                transform: scale(1.3) rotate(5deg) translateY(-10px);
-                opacity: 1;
-                filter: drop-shadow(0 0 60px rgba(255, 200, 100, 0.5));
-            }
-            70% {
-                transform: scale(0.9) rotate(-3deg) translateY(5px);
             }
             100% {
-                transform: scale(1) rotate(0deg) translateY(0);
+                transform: scale(1) rotate(0deg);
                 opacity: 1;
-                filter: drop-shadow(0 0 30px rgba(255, 200, 100, 0.3));
             }
         }
 
-        /* ─── ПОБЕДНАЯ АНИМАЦИЯ ─── */
+        /* ─── Победа ─── */
         .container.victory {
-            border-color: rgba(127, 255, 127, 0.3);
-            box-shadow: 0 0 60px rgba(127, 255, 127, 0.15), 0 30px 60px rgba(0, 0, 0, 0.8);
-            animation: victoryGlow 1.2s ease-in-out infinite alternate;
+            border-color: rgba(127, 255, 127, 0.25);
+            box-shadow: 0 0 50px rgba(127, 255, 127, 0.10), 0 30px 60px rgba(0, 0, 0, 0.8);
+            animation: victoryPulse 1.5s ease-in-out infinite alternate;
         }
 
-        @keyframes victoryGlow {
-            0%   { box-shadow: 0 0 40px rgba(127, 255, 127, 0.10), 0 30px 60px rgba(0,0,0,0.8); }
-            100% { box-shadow: 0 0 90px rgba(127, 255, 127, 0.30), 0 0 150px rgba(127, 255, 127, 0.08), 0 30px 60px rgba(0,0,0,0.8); }
+        @keyframes victoryPulse {
+            0% { box-shadow: 0 0 30px rgba(127, 255, 127, 0.08), 0 30px 60px rgba(0,0,0,0.8); }
+            100% { box-shadow: 0 0 70px rgba(127, 255, 127, 0.20), 0 0 120px rgba(127, 255, 127, 0.05), 0 30px 60px rgba(0,0,0,0.8); }
         }
 
         body.victory-bg {
-            background: radial-gradient(circle at 50% 50%, #1a3a1a, #0a120a);
+            background: radial-gradient(circle at 50% 50%, #1a351a, #0a120a);
         }
 
         body.error-bg {
-            background: radial-gradient(circle at 50% 50%, #3a1a1a, #120a0a);
-            animation: errorFlash 0.5s ease 3;
+            background: radial-gradient(circle at 50% 50%, #351a1a, #120a0a);
+            animation: errorFlash 0.4s ease 2;
         }
 
         @keyframes errorFlash {
-            0%, 100% { background: radial-gradient(circle at 50% 50%, #3a1a1a, #120a0a); }
-            50% { background: radial-gradient(circle at 50% 50%, #5a2a2a, #1a0a0a); }
+            0%, 100% { background: radial-gradient(circle at 50% 50%, #351a1a, #120a0a); }
+            50% { background: radial-gradient(circle at 50% 50%, #4a2222, #1a0a0a); }
         }
 
-        /* ─── Фейерверк ─── */
+        /* ─── Фейерверк (лёгкий) ─── */
         .confetti-container {
             position: fixed;
             top: 0;
@@ -242,22 +258,22 @@
 
         .confetti {
             position: absolute;
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 2px;
             opacity: 0;
-            animation: confettiFall linear forwards;
+            animation: confettiDrop linear forwards;
         }
 
-        @keyframes confettiFall {
+        @keyframes confettiDrop {
             0% {
-                transform: translateY(-20px) rotate(0deg) scale(0.5);
+                transform: translateY(-20px) rotate(0deg);
                 opacity: 0;
             }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
+            15% { opacity: 1; }
+            85% { opacity: 1; }
             100% {
-                transform: translateY(105vh) rotate(720deg) scale(1.2);
+                transform: translateY(105vh) rotate(360deg);
                 opacity: 0;
             }
         }
@@ -265,20 +281,40 @@
         /* ─── Адаптив ─── */
         @media (max-width: 480px) {
             .container {
-                padding: 2rem 1.2rem;
+                padding: 1.8rem 1.2rem;
                 border-radius: 2rem;
             }
             .digit-input {
                 width: 55px;
-                height: 70px;
+                height: 68px;
                 font-size: 2.2rem;
             }
+            .key-btn {
+                padding: 0.7rem 0;
+                font-size: 1.5rem;
+                border-radius: 0.8rem;
+            }
+            .key-btn.backspace {
+                font-size: 1rem;
+            }
             .btn-check {
-                padding: 0.7rem 2rem;
-                font-size: 0.95rem;
+                padding: 0.7rem 1.5rem;
+                font-size: 0.9rem;
             }
             .lochmatiy {
-                font-size: 3.5rem;
+                font-size: 3rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .digit-input {
+                width: 45px;
+                height: 58px;
+                font-size: 1.8rem;
+            }
+            .key-btn {
+                padding: 0.5rem 0;
+                font-size: 1.3rem;
             }
         }
     </style>
@@ -287,19 +323,36 @@
 
     <div class="container" id="container">
         <h1>Секретный код</h1>
-        <p class="subtitle">Найди Лохматого! 🐻‍❄️</p>
 
+        <!-- 4 поля для цифр -->
         <div class="input-group" id="inputGroup">
-            <input type="number" class="digit-input" id="d1" maxlength="1" placeholder="•" inputmode="numeric" autofocus />
-            <input type="number" class="digit-input" id="d2" maxlength="1" placeholder="•" inputmode="numeric" />
-            <input type="number" class="digit-input" id="d3" maxlength="1" placeholder="•" inputmode="numeric" />
-            <input type="number" class="digit-input" id="d4" maxlength="1" placeholder="•" inputmode="numeric" />
+            <input type="number" class="digit-input" id="d1" maxlength="1" placeholder="•" inputmode="none" autofocus />
+            <input type="number" class="digit-input" id="d2" maxlength="1" placeholder="•" inputmode="none" />
+            <input type="number" class="digit-input" id="d3" maxlength="1" placeholder="•" inputmode="none" />
+            <input type="number" class="digit-input" id="d4" maxlength="1" placeholder="•" inputmode="none" />
+        </div>
+
+        <!-- Цифровая клавиатура 3×4 -->
+        <div class="keypad" id="keypad">
+            <button class="key-btn" data-value="1">1</button>
+            <button class="key-btn" data-value="2">2</button>
+            <button class="key-btn" data-value="3">3</button>
+            <button class="key-btn" data-value="4">4</button>
+            <button class="key-btn" data-value="5">5</button>
+            <button class="key-btn" data-value="6">6</button>
+            <button class="key-btn" data-value="7">7</button>
+            <button class="key-btn" data-value="8">8</button>
+            <button class="key-btn" data-value="9">9</button>
+            <button class="key-btn empty"></button>
+            <button class="key-btn" data-value="0">0</button>
+            <button class="key-btn backspace" data-value="backspace">⌫</button>
         </div>
 
         <button class="btn-check" id="checkBtn">Проверить</button>
         <div class="message" id="message"></div>
     </div>
 
+    <!-- Фейерверк -->
     <div class="confetti-container" id="confettiContainer"></div>
 
     <!-- Звуки -->
@@ -312,8 +365,8 @@
 
     <script>
         (function() {
-            // ─── ⚡ ЗДЕСЬ УКАЖИ СВОЙ КОД ⚡ ───
-            const SECRET_CODE = '8848';  // ← поменяй на свой код
+            // ─── ⚡ КОД (поменяй на свой) ⚡ ───
+            const SECRET_CODE = '8848';
 
             const inputs = [
                 document.getElementById('d1'),
@@ -330,8 +383,12 @@
             const errorSound = document.getElementById('errorSound');
 
             let victoryActive = false;
+            let currentIndex = 0;
 
-            // ─── Автопереход между полями ───
+            // ─── Фокус на первое поле ───
+            inputs[0].focus();
+
+            // ─── Обработка клавиш на клавиатуре ───
             inputs.forEach((input, index) => {
                 input.addEventListener('input', (e) => {
                     let val = e.target.value.replace(/\D/g, '');
@@ -340,12 +397,14 @@
 
                     if (val.length === 1 && index < inputs.length - 1) {
                         inputs[index + 1].focus();
+                        currentIndex = index + 1;
                     }
                 });
 
                 input.addEventListener('keydown', (e) => {
                     if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
                         inputs[index - 1].focus();
+                        currentIndex = index - 1;
                     }
                     if (e.key === 'Enter') {
                         e.preventDefault();
@@ -353,7 +412,51 @@
                     }
                 });
 
-                input.addEventListener('focus', () => input.select());
+                input.addEventListener('focus', () => {
+                    input.select();
+                    currentIndex = index;
+                });
+            });
+
+            // ─── Кнопки цифровой клавиатуры ───
+            document.querySelectorAll('.key-btn[data-value]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    if (victoryActive) return;
+                    const value = btn.dataset.value;
+
+                    if (value === 'backspace') {
+                        // Удалить последнюю цифру
+                        for (let i = inputs.length - 1; i >= 0; i--) {
+                            if (inputs[i].value !== '') {
+                                inputs[i].value = '';
+                                inputs[i].focus();
+                                currentIndex = i;
+                                break;
+                            }
+                        }
+                        // Если все поля пустые — фокус на первое
+                        if (inputs.every(inp => inp.value === '')) {
+                            inputs[0].focus();
+                            currentIndex = 0;
+                        }
+                        return;
+                    }
+
+                    // Вставить цифру в первое пустое поле
+                    for (let i = 0; i < inputs.length; i++) {
+                        if (inputs[i].value === '') {
+                            inputs[i].value = value;
+                            if (i < inputs.length - 1) {
+                                inputs[i + 1].focus();
+                                currentIndex = i + 1;
+                            } else {
+                                inputs[i].focus();
+                                currentIndex = i;
+                            }
+                            break;
+                        }
+                    }
+                });
             });
 
             // ─── Проверка кода ───
@@ -370,13 +473,12 @@
                 }
 
                 if (code === SECRET_CODE) {
-                    // ─── 🏆 ПОБЕДА! ───
+                    // 🏆 ПОБЕДА
                     victoryActive = true;
 
-                    // Сообщение с Лохматым
                     messageEl.innerHTML = `
                         <span>🍦 Лохматый соскучился по мороженому! ❄️</span>
-                        <span class="lochmatiy">🐻‍❄️✨</span>
+                        <span class="lochmatiy">🐻‍❄️</span>
                     `;
                     messageEl.className = 'message success';
 
@@ -393,8 +495,11 @@
                         inp.disabled = true;
                     });
 
+                    // Блокируем клавиатуру
+                    document.querySelectorAll('.key-btn').forEach(b => b.style.opacity = '0.3');
+
                 } else {
-                    // ─── ❌ ОШИБКА ───
+                    // ❌ ОШИБКА
                     messageEl.textContent = '❌ Неверный код. Попробуй снова.';
                     messageEl.className = 'message error';
 
@@ -403,7 +508,7 @@
 
                     inputs.forEach(inp => {
                         inp.style.borderColor = '#ff6b6b';
-                        inp.style.animation = 'shake 0.4s ease';
+                        inp.style.animation = 'shake 0.35s ease';
                     });
 
                     setTimeout(() => {
@@ -412,31 +517,31 @@
                             inp.style.borderColor = 'rgba(255,255,255,0.12)';
                             inp.style.animation = '';
                         });
-                    }, 500);
+                    }, 400);
 
                     setTimeout(() => {
                         inputs.forEach(inp => inp.value = '');
                         inputs[0].focus();
-                    }, 700);
+                        currentIndex = 0;
+                    }, 600);
                 }
             }
 
             checkBtn.addEventListener('click', checkCode);
 
-            // ─── 🎆 Фейерверк ───
+            // ─── 🎆 Фейерверк (упрощённый) ───
             function launchConfetti() {
-                const colors = ['#7fff7f', '#ff6b6b', '#ffd93d', '#6bcfff', '#ff6bff', '#ff9f43', '#a29bfe', '#ff4757', '#2ed573'];
+                const colors = ['#7fff7f', '#ff6b6b', '#ffd93d', '#6bcfff', '#ff6bff', '#ff9f43', '#a29bfe'];
                 confettiContainer.innerHTML = '';
 
-                for (let i = 0; i < 220; i++) {
+                for (let i = 0; i < 120; i++) {
                     const el = document.createElement('div');
                     el.className = 'confetti';
-                    const size = 6 + Math.random() * 16;
+                    const size = 6 + Math.random() * 10;
                     const color = colors[Math.floor(Math.random() * colors.length)];
                     const left = Math.random() * 100;
-                    const delay = Math.random() * 2.8;
-                    const duration = 2.0 + Math.random() * 3.0;
-                    const rotation = Math.random() * 720;
+                    const delay = Math.random() * 1.5;
+                    const duration = 1.8 + Math.random() * 2;
 
                     el.style.cssText = `
                         left: ${left}%;
@@ -445,16 +550,14 @@
                         background: ${color};
                         animation-delay: ${delay}s;
                         animation-duration: ${duration}s;
-                        transform: rotate(${rotation}deg);
                         border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
-                        box-shadow: 0 0 6px ${color}44;
                     `;
                     confettiContainer.appendChild(el);
                 }
 
                 setTimeout(() => {
                     confettiContainer.innerHTML = '';
-                }, 7000);
+                }, 5000);
             }
 
             // ─── Анимация тряски ───
@@ -462,10 +565,8 @@
             styleShake.textContent = `
                 @keyframes shake {
                     0%, 100% { transform: translateX(0); }
-                    20% { transform: translateX(-14px); }
-                    40% { transform: translateX(14px); }
-                    60% { transform: translateX(-8px); }
-                    80% { transform: translateX(8px); }
+                    25% { transform: translateX(-10px); }
+                    75% { transform: translateX(10px); }
                 }
             `;
             document.head.appendChild(styleShake);
