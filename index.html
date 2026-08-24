@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>Тайна Лохматого</title>
     <style>
-        /* ─── Общий сброс и фон ─── */
         * {
             margin: 0;
             padding: 0;
@@ -20,23 +19,22 @@
             background: radial-gradient(circle at 50% 50%, #1a1a2e, #0a0a12);
             font-family: 'Segoe UI', 'Arial Black', system-ui, sans-serif;
             padding: 1rem;
-            transition: background 0.8s ease;
+            transition: background 1.2s ease;
             touch-action: manipulation;
-            perspective: 1200px;
+            perspective: 1500px;
         }
 
-        /* ─── Контейнер с 3D-флипом ─── */
         .flip-container {
             width: 100%;
             max-width: 420px;
-            perspective: 1200px;
+            perspective: 1500px;
             position: relative;
         }
 
         .flip-inner {
             position: relative;
             width: 100%;
-            transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transition: transform 1.2s cubic-bezier(0.34, 1.2, 0.64, 1);
             transform-style: preserve-3d;
         }
 
@@ -44,7 +42,6 @@
             transform: rotateY(180deg);
         }
 
-        /* ─── Передняя и задняя стороны ─── */
         .flip-front,
         .flip-back {
             backface-visibility: hidden;
@@ -57,7 +54,6 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
             text-align: center;
-            transition: all 0.3s ease;
         }
 
         .flip-front {
@@ -78,48 +74,58 @@
             min-height: 100%;
             background: radial-gradient(circle at 50% 50%, #1a351a, #0a120a);
             border-color: rgba(127, 255, 127, 0.3);
-            box-shadow: 0 0 60px rgba(127, 255, 127, 0.10), 0 30px 60px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 80px rgba(127, 255, 127, 0.12), 0 30px 60px rgba(0, 0, 0, 0.8);
+            transition: box-shadow 1.2s ease;
+            font-family: 'Segoe UI', 'Arial Black', system-ui, sans-serif;
         }
 
-        /* ─── Задняя сторона (победа) ─── */
-        .flip-back h2 {
+        .flip-inner.flipped .flip-back {
+            box-shadow: 0 0 120px rgba(127, 255, 127, 0.25), 0 0 200px rgba(127, 255, 127, 0.08), 0 30px 60px rgba(0, 0, 0, 0.8);
+        }
+
+        /* ─── ЗАДНЯЯ СТОРОНА — единый стиль для всего текста ─── */
+        .flip-back .victory-text {
+            font-family: 'Segoe UI', 'Arial Black', system-ui, sans-serif;
             font-size: clamp(2rem, 7vw, 3.2rem);
             font-weight: 900;
+            color: #fff;
             background: linear-gradient(145deg, #f0f9ff, #b0d4ff);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
+            display: block;
+            line-height: 1.4;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition-delay: 0.3s;
         }
 
-        .flip-back .lochmatiy-big {
-            font-size: 5rem;
-            display: inline-block;
-            animation: lochmatiyPop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-            line-height: 1.2;
-            margin: 0.5rem 0;
+        .flip-inner.flipped .flip-back .victory-text {
+            opacity: 1;
+            transform: translateY(0) scale(1);
         }
 
-        .flip-back .victory-text {
-            color: #7fff7f;
+        .flip-back .victory-sub {
+            font-family: 'Segoe UI', 'Arial Black', system-ui, sans-serif;
             font-size: 1.2rem;
             font-weight: 600;
-            text-shadow: 0 0 30px rgba(127, 255, 127, 0.3);
+            color: #7fff7f;
+            text-shadow: 0 0 40px rgba(127, 255, 127, 0.25);
+            display: block;
+            line-height: 1.5;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition-delay: 0.7s;
             margin-top: 0.5rem;
         }
 
-        @keyframes lochmatiyPop {
-            0% {
-                transform: scale(0) rotate(-20deg);
-                opacity: 0;
-            }
-            100% {
-                transform: scale(1) rotate(0deg);
-                opacity: 1;
-            }
+        .flip-inner.flipped .flip-back .victory-sub {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        /* ─── Заголовок ─── */
         .flip-front h1 {
             font-size: clamp(2rem, 7vw, 3.2rem);
             font-weight: 900;
@@ -133,7 +139,6 @@
             margin-bottom: 1.5rem;
         }
 
-        /* ─── Поле ввода ─── */
         .input-group {
             display: flex;
             gap: 0.7rem;
@@ -152,7 +157,7 @@
             border-radius: 1.2rem;
             color: #fff;
             outline: none;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
             font-family: 'Segoe UI', monospace;
             pointer-events: none;
             user-select: none;
@@ -161,13 +166,13 @@
 
         .digit-input.active {
             border-color: #7fff7f;
-            box-shadow: 0 0 20px rgba(127, 255, 127, 0.12);
+            box-shadow: 0 0 25px rgba(127, 255, 127, 0.15);
             animation: cursorBlink 1s step-end infinite;
         }
 
         @keyframes cursorBlink {
-            0%, 100% { border-color: #7fff7f; }
-            50% { border-color: rgba(127, 255, 127, 0.2); }
+            0%, 100% { border-color: #7fff7f; box-shadow: 0 0 25px rgba(127, 255, 127, 0.15); }
+            50% { border-color: rgba(127, 255, 127, 0.2); box-shadow: 0 0 10px rgba(127, 255, 127, 0.05); }
         }
 
         .digit-input.filled {
@@ -180,7 +185,6 @@
             font-size: 1.2rem;
         }
 
-        /* ─── Цифровая клавиатура 3×4 ─── */
         .keypad {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -198,7 +202,7 @@
             font-weight: 700;
             color: #fff;
             cursor: pointer;
-            transition: all 0.12s ease;
+            transition: all 0.15s ease;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
             font-family: inherit;
@@ -231,7 +235,6 @@
             pointer-events: none;
         }
 
-        /* ─── Кнопка проверки ─── */
         .btn-check {
             background: linear-gradient(145deg, #2a2a4a, #1a1a2e);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -261,7 +264,6 @@
             transform: none !important;
         }
 
-        /* ─── Сообщение об ошибке ─── */
         .message {
             min-height: 2.8rem;
             margin-top: 0.8rem;
@@ -280,14 +282,14 @@
             text-shadow: 0 0 20px rgba(255, 80, 80, 0.25);
         }
 
-        /* ─── Фон при победе ─── */
         body.victory-bg {
-            background: radial-gradient(circle at 50% 50%, #1a351a, #0a120a);
+            background: radial-gradient(circle at 50% 50%, #1a3a1a, #0a120a);
+            transition: background 1.2s ease;
         }
 
         body.error-bg {
             background: radial-gradient(circle at 50% 50%, #351a1a, #120a0a);
-            animation: errorFlash 0.4s ease 2;
+            animation: errorFlash 0.5s ease 2;
         }
 
         @keyframes errorFlash {
@@ -295,41 +297,6 @@
             50% { background: radial-gradient(circle at 50% 50%, #4a2222, #1a0a0a); }
         }
 
-        /* ─── Фейерверк ─── */
-        .confetti-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: 999;
-        }
-
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            border-radius: 2px;
-            opacity: 0;
-            animation: confettiDrop linear forwards;
-        }
-
-        @keyframes confettiDrop {
-            0% {
-                transform: translateY(-20px) rotate(0deg);
-                opacity: 0;
-            }
-            15% { opacity: 1; }
-            85% { opacity: 1; }
-            100% {
-                transform: translateY(105vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
-        /* ─── Адаптив ─── */
         @media (max-width: 480px) {
             .flip-front,
             .flip-back {
@@ -353,8 +320,8 @@
                 padding: 0.7rem 1.5rem;
                 font-size: 0.9rem;
             }
-            .flip-back .lochmatiy-big {
-                font-size: 3.5rem;
+            .flip-back .victory-sub {
+                font-size: 1rem;
             }
         }
 
@@ -376,7 +343,6 @@
     <div class="flip-container">
         <div class="flip-inner" id="flipInner">
 
-            <!-- ПЕРЕДНЯЯ СТОРОНА (кодовый замок) -->
             <div class="flip-front">
                 <h1>Секретный код</h1>
 
@@ -406,20 +372,14 @@
                 <div class="message" id="message"></div>
             </div>
 
-            <!-- ЗАДНЯЯ СТОРОНА (победа) -->
+            <!-- ЗАДНЯЯ СТОРОНА — ТОЛЬКО ТЕКСТ, БЕЗ ЭМОДЗИ -->
             <div class="flip-back" id="flipBack">
-                <h2>🍦 Лохматый</h2>
-                <span class="lochmatiy-big">🐻‍❄️</span>
-                <div class="victory-text">соскучился по мороженому! ❄️</div>
+                <span class="victory-sub">Порхай как бабочка, жаль как пчела</span>
             </div>
 
         </div>
     </div>
 
-    <!-- Фейерверк -->
-    <div class="confetti-container" id="confettiContainer"></div>
-
-    <!-- Звуки -->
     <audio id="winSound" preload="auto">
         <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" type="audio/mpeg">
     </audio>
@@ -429,8 +389,7 @@
 
     <script>
         (function() {
-            // ─── ⚡ КОД (поменяй на свой) ⚡ ───
-            const SECRET_CODE = '8848';
+            const SECRET_CODE = '1357';
 
             const inputs = [
                 document.getElementById('d1'),
@@ -441,7 +400,6 @@
             const checkBtn = document.getElementById('checkBtn');
             const messageEl = document.getElementById('message');
             const body = document.body;
-            const confettiContainer = document.getElementById('confettiContainer');
             const winSound = document.getElementById('winSound');
             const errorSound = document.getElementById('errorSound');
             const keyButtons = document.querySelectorAll('.key-btn[data-value]');
@@ -449,7 +407,6 @@
 
             let victoryActive = false;
 
-            // ─── Обновить активный курсор ───
             function updateCursor() {
                 let firstEmpty = -1;
                 for (let i = 0; i < inputs.length; i++) {
@@ -468,7 +425,6 @@
                 });
             }
 
-            // ─── Вставить цифру ───
             function insertDigit(value) {
                 if (victoryActive) return;
 
@@ -482,7 +438,6 @@
                 }
             }
 
-            // ─── Удалить последнюю цифру ───
             function deleteLast() {
                 if (victoryActive) return;
 
@@ -497,7 +452,6 @@
                 updateCursor();
             }
 
-            // ─── Обработка кнопок клавиатуры ───
             keyButtons.forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -510,10 +464,8 @@
                 });
             });
 
-            // ─── Инициализация ───
             updateCursor();
 
-            // ─── Проверка кода ───
             function checkCode() {
                 if (victoryActive) return;
 
@@ -527,22 +479,13 @@
                 }
 
                 if (code === SECRET_CODE) {
-                    // ─── 🏆 ПОБЕДА — ФЛИП! ───
                     victoryActive = true;
 
-                    // Переворачиваем карту
                     flipInner.classList.add('flipped');
-
-                    // Фон
                     body.classList.add('victory-bg');
 
-                    // Фейерверк
-                    setTimeout(() => launchConfetti(), 300);
+                    setTimeout(() => winSound.play(), 500);
 
-                    // Звук
-                    setTimeout(() => winSound.play(), 400);
-
-                    // Блокируем всё
                     checkBtn.disabled = true;
                     inputs.forEach(inp => {
                         inp.style.borderColor = '#7fff7f';
@@ -551,11 +494,9 @@
                     });
                     keyButtons.forEach(b => b.classList.add('disabled'));
 
-                    // Скрываем сообщение об ошибке
                     messageEl.textContent = '';
 
                 } else {
-                    // ─── ❌ ОШИБКА ───
                     messageEl.textContent = '❌ Неверный код. Попробуй снова.';
                     messageEl.className = 'message error';
 
@@ -564,7 +505,7 @@
 
                     inputs.forEach(inp => {
                         inp.style.borderColor = '#ff6b6b';
-                        inp.style.animation = 'shake 0.35s ease';
+                        inp.style.animation = 'shake 0.4s ease';
                     });
 
                     setTimeout(() => {
@@ -573,7 +514,7 @@
                             inp.style.borderColor = 'rgba(255,255,255,0.12)';
                             inp.style.animation = '';
                         });
-                    }, 400);
+                    }, 500);
 
                     setTimeout(() => {
                         inputs.forEach(inp => {
@@ -581,50 +522,20 @@
                             inp.classList.remove('filled');
                         });
                         updateCursor();
-                    }, 600);
+                    }, 700);
                 }
             }
 
             checkBtn.addEventListener('click', checkCode);
 
-            // ─── 🎆 Фейерверк ───
-            function launchConfetti() {
-                const colors = ['#7fff7f', '#ff6b6b', '#ffd93d', '#6bcfff', '#ff6bff', '#ff9f43', '#a29bfe'];
-                confettiContainer.innerHTML = '';
-
-                for (let i = 0; i < 130; i++) {
-                    const el = document.createElement('div');
-                    el.className = 'confetti';
-                    const size = 6 + Math.random() * 10;
-                    const color = colors[Math.floor(Math.random() * colors.length)];
-                    const left = Math.random() * 100;
-                    const delay = Math.random() * 1.5;
-                    const duration = 1.8 + Math.random() * 2.2;
-
-                    el.style.cssText = `
-                        left: ${left}%;
-                        width: ${size}px;
-                        height: ${size * 0.6}px;
-                        background: ${color};
-                        animation-delay: ${delay}s;
-                        animation-duration: ${duration}s;
-                        border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
-                    `;
-                    confettiContainer.appendChild(el);
-                }
-
-                setTimeout(() => {
-                    confettiContainer.innerHTML = '';
-                }, 5000);
-            }
-
-            // ─── Анимация тряски ───
             const styleShake = document.createElement('style');
             styleShake.textContent = `
                 @keyframes shake {
                     0%, 100% { transform: translateX(0); }
-                    25% { transform: translateX(-10px); }
-                    75% { transform: translateX(10px); }
+                    20% { transform: translateX(-12px); }
+                    40% { transform: translateX(12px); }
+                    60% { transform: translateX(-8px); }
+                    80% { transform: translateX(8px); }
                 }
             `;
             document.head.appendChild(styleShake);
