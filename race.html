@@ -66,21 +66,23 @@
                             <div class="racer-speed"><span id="npc-speed">??</span> км/ч</div>
                         </div>
                         <div class="racer-avatar">
-                            <img src="https://cdn.pixabay.com/photo/2026/09/10/20/27/20-27-56-577_1280.png" alt="НПС" draggable="false">
+                            <img src="https://cdn.pixabay.com/photo/2026/09/10/20/54/20-54-13-256_1280.png" alt="НПС" draggable="false">
                         </div>
                     </div>
                 </div>
 
                 <!-- TRACK -->
                 <div class="race-track" id="race-track">
-                    <img class="race-track-bg" src="https://cdn.pixabay.com/photo/2026/09/10/19/57/19-57-46-407_1280.png" alt="Трасса" draggable="false">
+                    <div class="race-track-inner">
+                        <img class="race-track-bg" src="https://cdn.pixabay.com/photo/2026/09/10/19/57/19-57-46-407_1280.png" alt="Трасса" draggable="false">
 
-                    <div class="race-runner race-runner-npc" id="runner-npc">
-                        <img src="https://cdn.pixabay.com/photo/2026/09/10/20/27/20-27-56-577_1280.png" alt="" draggable="false">
-                    </div>
+                        <div class="race-runner race-runner-npc" id="runner-npc">
+                            <img src="https://cdn.pixabay.com/photo/2026/09/10/20/54/20-54-13-256_1280.png" alt="" draggable="false">
+                        </div>
 
-                    <div class="race-runner race-runner-me" id="runner-me">
-                        <img src="https://cdn.pixabay.com/photo/2026/09/10/20/27/20-27-55-61_1280.png" alt="" draggable="false">
+                        <div class="race-runner race-runner-me" id="runner-me">
+                            <img src="https://cdn.pixabay.com/photo/2026/09/10/20/27/20-27-55-61_1280.png" alt="" draggable="false">
+                        </div>
                     </div>
                 </div>
 
@@ -126,20 +128,20 @@
             const PLAYER_KEY = 'lokhmaty_player_v1';
 
             // ====== КОНСТАНТЫ ГОНКИ ======
-            const MY_SPEED = 80;              // км/ч (фиксированная скорость игрока)
-            const RACE_DURATION = 5000;       // мс — длительность анимации
-            const WIN_CHANCE = 0.78;          // 78% шанс победы
-            const REWARD_WIN_WALLET = 100;    // валюта за победу
-            const REWARD_WIN_XP = 3;          // опыт за победу
-            const REWARD_LOSE_XP = 1;         // опыт за проигрыш
+            const MY_SPEED = 80;
+            const RACE_DURATION = 5000;
+            const WIN_CHANCE = 0.78;
+            const REWARD_WIN_WALLET = 100;
+            const REWARD_WIN_XP = 3;
+            const REWARD_LOSE_XP = 1;
 
             const NPC_NAMES = ['Мороз', 'Пурга', 'Метель', 'Вьюга', 'Снеговик', 'Ледокол', 'Сугроб'];
 
-            // Позиции на трассе (в % от ширины контейнера)
-            const START_X = 7;
-            const END_X = 80;
+            // Позиции на трассе (в % от ширины)
+            const START_X = 10;
+            const END_X = 78;
 
-            // ====== ЛОГИКА УРОВНЕЙ (та же, что и в index.html) ======
+            // ====== УРОВНИ ======
             function cumulativeXp(level) {
                 let total = 0;
                 for (let i = 1; i < level; i++) total += i * 100;
@@ -194,7 +196,7 @@
                 return num.toString();
             }
 
-            // ====== СОХРАНЕНИЕ / ЗАГРУЗКА ======
+            // ====== СОХРАНЕНИЕ ======
             function savePlayer() {
                 try {
                     localStorage.setItem(PLAYER_KEY, JSON.stringify({
@@ -217,7 +219,7 @@
                 } catch (e) {}
             }
 
-            // ====== ОТРИСОВКА ВЕРХА ======
+            // ====== ОТРИСОВКА ======
             function renderTop() {
                 balanceValue.textContent = formatNumber(state.wallet);
                 iceValue.textContent = formatNumber(state.ice);
@@ -229,51 +231,41 @@
                 playerLevelEl.textContent = 'Уровень ' + info.level;
             }
 
-            // ====== СБРОС РАННЕРОВ НА СТАРТ ======
+            // ====== СБРОС ======
             function resetRunners() {
                 runnerMe.style.left = START_X + '%';
                 runnerNpc.style.left = START_X + '%';
             }
 
-            // ====== ЗАПУСК ГОНКИ ======
+            // ====== ЗАПУСК ======
             function startRace() {
                 if (state.racing) return;
                 state.racing = true;
 
-                // Скрываем прошлый результат
                 resultEl.classList.add('hidden');
                 resultEl.classList.remove('win', 'lose');
 
-                // Сброс позиций
                 resetRunners();
 
-                // Кнопка на время гонки неактивна
                 startBtn.disabled = true;
                 startText.textContent = 'В ГОНКЕ...';
 
-                // Имя НПС
                 const npcName = NPC_NAMES[Math.floor(Math.random() * NPC_NAMES.length)];
                 npcSledEl.textContent = npcName;
 
-                // Сначала решаем исход (78%)
                 const playerWins = Math.random() < WIN_CHANCE;
 
-                // Скорость НПС в зависимости от исхода
                 let npcSpeed;
                 if (playerWins) {
-                    // Меньше 80 → игрок побеждает
-                    npcSpeed = 60 + Math.floor(Math.random() * 20); // 60..79
+                    npcSpeed = 60 + Math.floor(Math.random() * 20);
                 } else {
-                    // Больше 80 → игрок проигрывает
-                    npcSpeed = 81 + Math.floor(Math.random() * 20); // 81..100
+                    npcSpeed = 81 + Math.floor(Math.random() * 20);
                 }
 
-                // Показываем скорость НПС
                 npcSpeedEl.textContent = npcSpeed;
 
-                // Расчёт анимации
                 const maxSpeed = Math.max(MY_SPEED, npcSpeed);
-                const myFinalProgress = MY_SPEED / maxSpeed;   // доля от 1
+                const myFinalProgress = MY_SPEED / maxSpeed;
                 const npcFinalProgress = npcSpeed / maxSpeed;
 
                 const range = END_X - START_X;
@@ -328,7 +320,7 @@
             navItems.forEach(item => {
                 const go = function(e) {
                     e.preventDefault();
-                    if (state.racing) return; // не уходим во время гонки
+                    if (state.racing) return;
                     if (this.dataset.screen === 'earn') {
                         window.location.href = 'index.html#earn';
                     } else if (this.dataset.screen === 'berloga') {
@@ -344,7 +336,7 @@
                 }, { passive: false });
             });
 
-            // ====== ОБРАБОТЧИК СТАРТА ======
+            // ====== СТАРТ ======
             startBtn.addEventListener('click', startRace);
             startBtn.addEventListener('touchstart', function(e) {
                 e.preventDefault();
