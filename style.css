@@ -1077,8 +1077,8 @@ body {
 
 .race-runner {
     position: absolute;
-    width: 46px;
-    height: 46px;
+    width: 64px;
+    height: 64px;
     transform: translate(-50%, -50%);
     z-index: 3;
     pointer-events: none;
@@ -1281,7 +1281,7 @@ body {
     .racer-sled { font-size: 12px; }
     .racer-speed { font-size: 10px; }
     .racer-vs { font-size: 11px; }
-    .race-runner { width: 40px; height: 40px; }
+    .race-runner { width: 56px; height: 56px; }
     .race-start-btn { font-size: 13px; padding: 10px 14px; }
 
     .earn-title { font-size: 20px; }
@@ -1306,7 +1306,7 @@ body {
 
     .racer-card { padding: 6px 8px; gap: 8px; }
     .racer-avatar { width: 42px; height: 42px; }
-    .race-runner { width: 42px; height: 42px; }
+    .race-runner { width: 58px; height: 58px; }
 }
 
 @media (max-height: 600px) {
@@ -1349,7 +1349,7 @@ body {
     .racer-title { font-size: 8px; }
     .racer-sled { font-size: 12px; }
     .racer-speed { font-size: 9px; }
-    .race-runner { width: 36px; height: 36px; }
+    .race-runner { width: 52px; height: 52px; }
     .race-result { font-size: 11px; padding: 6px 10px; }
     .race-start-btn { padding: 9px 14px; font-size: 12px; letter-spacing: 1.5px; }
 
