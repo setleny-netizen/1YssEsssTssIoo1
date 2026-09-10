@@ -346,7 +346,7 @@ body {
     justify-content: center;
     gap: 4px;
     cursor: default;
-    transition: all 0.15s ease;
+    transition: transform 0.15s ease, background 0.15s ease;
     padding: 6px;
     min-height: 0;
     min-width: 0;
@@ -387,6 +387,12 @@ body {
     font-family: inherit;
     cursor: pointer;
     width: 100%;
+    touch-action: manipulation;
+}
+
+.ice-generator.is-pressed {
+    transform: scale(0.96);
+    background: var(--bg-secondary);
 }
 
 /* ====== PLACEHOLDER SCREENS ====== */
