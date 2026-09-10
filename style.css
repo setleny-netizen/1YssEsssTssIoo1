@@ -396,7 +396,7 @@ body {
     max-width: 100%;
 }
 
-/* ====== ICE GENERATOR ====== */
+/* ====== ICE GENERATOR BUTTON ====== */
 .ice-generator {
     grid-column: 1 / -1;
     appearance: none;
@@ -456,6 +456,36 @@ body {
     color: var(--text-secondary);
     line-height: 1.5;
     letter-spacing: 0.3px;
+}
+
+/* ====== ICE GENERATOR PAGE ====== */
+#screen-ice {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    max-width: 420px;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.ice-page-image {
+    width: 100%;
+    height: 100%;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background: var(--bg-card);
+}
+
+.ice-page-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    pointer-events: none;
+    -webkit-user-drag: none;
+    user-drag: none;
+    background: #0A0A0A;
 }
 
 /* ====== BOTTOM NAV ====== */
@@ -655,39 +685,6 @@ body {
         font-size: 9px;
     }
 }
-
-
-
-/* ====== ICE GENERATOR PAGE ====== */
-#screen-ice {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-    max-width: 420px;
-    overflow: hidden;
-    min-height: 0;
-}
-
-.ice-page-image {
-    width: 100%;
-    height: 100%;
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    background: var(--bg-card);
-}
-
-.ice-page-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-    pointer-events: none;
-    -webkit-user-drag: none;
-    user-drag: none;
-    background: #0A0A0A;
-}
-
 
 @media (min-width: 500px) {
     #content {
