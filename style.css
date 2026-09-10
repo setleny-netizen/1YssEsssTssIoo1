@@ -1090,11 +1090,11 @@ body {
 }
 
 .race-runner-npc {
-    top: 33%;
+    top: 45%;
 }
 
 .race-runner-me {
-    top: 67%;
+    top: 53%;
 }
 
 .race-result {
