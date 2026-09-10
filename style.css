@@ -1040,7 +1040,7 @@ body {
     padding: 0 2px;
 }
 
-/* Track — aspect 16:9, ширина по родителю */
+/* Track — aspect 16:9 */
 .race-track {
     position: relative;
     width: 100%;
@@ -1094,11 +1094,11 @@ body {
 }
 
 .race-runner-npc {
-    top: 24%;
+    top: 19%;
 }
 
 .race-runner-me {
-    top: 72%;
+    top: 77%;
 }
 
 .race-result {
