@@ -955,6 +955,7 @@ body {
 }
 
 .racer-card.racer-me {
+    top: 58%;
     border-color: rgba(201, 162, 39, 0.4);
 }
 
