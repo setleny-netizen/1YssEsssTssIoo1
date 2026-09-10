@@ -331,13 +331,12 @@ body {
     min-height: 0;
     display: flex;
     flex-direction: column;
-    gap: 6px;
 }
 
 .berloga-buttons-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
     gap: 5px;
     flex: 1;
     min-height: 0;
@@ -391,58 +390,15 @@ body {
     max-width: 100%;
 }
 
-/* ====== ICE GENERATOR (button) ====== */
+/* ====== ICE GENERATOR (button in grid) ====== */
 .ice-generator {
-    background: var(--bg-card);
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(201, 162, 39, 0.12);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    padding: 4px;
-    flex-shrink: 0;
-    min-height: 0;
-    cursor: pointer;
+    grid-column: 1 / -1;
     appearance: none;
     -webkit-tap-highlight-color: transparent;
     outline: none;
     font-family: inherit;
-    text-align: left;
+    cursor: pointer;
     width: 100%;
-    transition: all 0.15s ease;
-    overflow: hidden;
-}
-
-.ice-generator:active {
-    transform: scale(0.97);
-    background: var(--bg-secondary);
-}
-
-.ice-gen-icon {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-}
-
-.ice-gen-icon svg {
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.6));
-}
-
-.ice-gen-label {
-    font-size: 7px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    letter-spacing: 0.1px;
-    text-align: center;
-    line-height: 1.1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
 }
 
 /* ====== PLACEHOLDER SCREENS ====== */
@@ -628,13 +584,6 @@ body {
         padding: 6px;
         gap: 4px;
     }
-    .ice-gen-icon {
-        width: 16px;
-        height: 16px;
-    }
-    .ice-gen-label {
-        font-size: 6px;
-    }
 }
 
 @media (max-height: 600px) {
@@ -678,17 +627,6 @@ body {
     }
     .stat-label {
         font-size: 8px;
-    }
-    .ice-generator {
-        padding: 2px;
-        gap: 3px;
-    }
-    .ice-gen-icon {
-        width: 14px;
-        height: 14px;
-    }
-    .ice-gen-label {
-        font-size: 5px;
     }
 }
 
