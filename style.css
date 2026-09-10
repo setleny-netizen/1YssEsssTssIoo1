@@ -1044,7 +1044,7 @@ body {
 .race-track {
     position: relative;
     width: 100%;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 16 / 10;
     flex-shrink: 0;
     border-radius: var(--border-radius);
     overflow: hidden;
