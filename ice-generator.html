@@ -44,7 +44,6 @@
         <main id="content">
             <div id="screen-ice" class="screen-content">
 
-                <!-- IMAGE + TITLE -->
                 <div class="ice-hero">
                     <div class="ice-image-wrap">
                         <div class="ice-glow"></div>
@@ -59,7 +58,6 @@
                     </div>
                 </div>
 
-                <!-- PRODUCTION + NEXT ICE -->
                 <div class="ice-info-row">
                     <div class="ice-info-cell">
                         <div class="ice-info-label">Производство</div>
@@ -71,7 +69,6 @@
                     </div>
                 </div>
 
-                <!-- STORAGE -->
                 <div class="ice-storage-card">
                     <div class="ice-storage-header">
                         <span class="ice-storage-emoji">🧊</span>
@@ -87,14 +84,12 @@
                     </div>
                 </div>
 
-                <!-- COLLECT BUTTON -->
                 <button class="ice-collect-btn" id="ice-collect-btn" disabled>
                     <span class="ice-collect-emoji">🧊</span>
                     <span class="ice-collect-text">ЗАБРАТЬ</span>
                     <span class="ice-collect-amount" id="ice-collect-amount">0</span>
                 </button>
 
-                <!-- UPGRADE BUTTON -->
                 <button class="ice-upgrade-btn" id="ice-upgrade-btn">
                     <div class="ice-upgrade-left">
                         <div class="ice-upgrade-title">
@@ -139,22 +134,18 @@
             const PLAYER_KEY = 'lokhmaty_player_v1';
             const GEN_KEY = 'lokhmaty_ice_gen_v1';
 
-            // ====== КОНФИГ УРОВНЕЙ ======
+            // ====== КОНФИГ УРОВНЕЙ (10 шт) ======
             const LEVELS = {
-                1: {
-                    name: 'ЛЕДОГЕНЕРАТОР I',
-                    productionPerHour: 5,
-                    capacity: 500,
-                    upgradeCost: 2500,
-                    nextLevel: 2,
-                },
-                2: {
-                    name: 'ЛЕДОГЕНЕРАТОР II',
-                    productionPerHour: 10,
-                    capacity: 1000,
-                    upgradeCost: null,
-                    nextLevel: null,
-                },
+                1:  { name: 'ЛЕДОГЕНЕРАТОР I',    productionPerHour: 5,    capacity: 500,    upgradeCost: 2500,     nextLevel: 2 },
+                2:  { name: 'ЛЕДОГЕНЕРАТОР II',   productionPerHour: 10,   capacity: 1000,   upgradeCost: 7500,     nextLevel: 3 },
+                3:  { name: 'ЛЕДОГЕНЕРАТОР III',  productionPerHour: 20,   capacity: 2000,   upgradeCost: 20000,    nextLevel: 4 },
+                4:  { name: 'ЛЕДОГЕНЕРАТОР IV',   productionPerHour: 40,   capacity: 4000,   upgradeCost: 50000,    nextLevel: 5 },
+                5:  { name: 'ЛЕДОГЕНЕРАТОР V',    productionPerHour: 80,   capacity: 8000,   upgradeCost: 120000,   nextLevel: 6 },
+                6:  { name: 'ЛЕДОГЕНЕРАТОР VI',   productionPerHour: 150,  capacity: 15000,  upgradeCost: 300000,   nextLevel: 7 },
+                7:  { name: 'ЛЕДОГЕНЕРАТОР VII',  productionPerHour: 300,  capacity: 30000,  upgradeCost: 750000,   nextLevel: 8 },
+                8:  { name: 'ЛЕДОГЕНЕРАТОР VIII', productionPerHour: 600,  capacity: 60000,  upgradeCost: 1800000,  nextLevel: 9 },
+                9:  { name: 'ЛЕДОГЕНЕРАТОР IX',   productionPerHour: 1200, capacity: 120000, upgradeCost: 4500000,  nextLevel: 10 },
+                10: { name: 'ЛЕДОГЕНЕРАТОР X',    productionPerHour: 2500, capacity: 250000, upgradeCost: null,     nextLevel: null },
             };
 
             // ====== УРОВНИ ИГРОКА ======
@@ -215,6 +206,7 @@
             // ====== ФОРМАТ ======
             function formatNumber(num) {
                 num = Math.floor(num);
+                if (num >= 1000000000) return (num / 1000000000).toFixed(1) + 'B';
                 if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
                 if (num >= 1000) return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
                 return num.toString();
@@ -223,8 +215,12 @@
             function formatTimer(seconds) {
                 if (seconds == null || seconds < 0) return '--:--';
                 seconds = Math.max(0, Math.floor(seconds));
-                const m = Math.floor(seconds / 60);
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
                 const s = seconds % 60;
+                if (h > 0) {
+                    return h + 'ч ' + String(m).padStart(2, '0') + 'м';
+                }
                 return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
             }
 
@@ -325,7 +321,7 @@
                 const cfg = getConfig();
 
                 levelTitle.textContent = cfg.name;
-                productionEl.textContent = '+' + cfg.productionPerHour + ' 🧊 / час';
+                productionEl.textContent = '+' + formatNumber(cfg.productionPerHour) + ' 🧊 / час';
                 capacityEl.textContent = formatNumber(cfg.capacity);
                 storedEl.textContent = formatNumber(gen.storedIce);
 
@@ -346,7 +342,7 @@
                 if (cfg.nextLevel) {
                     const next = LEVELS[cfg.nextLevel];
                     upgradeDesc.textContent =
-                        next.name + ' · +' + next.productionPerHour + ' 🧊 / час · ' +
+                        next.name + ' · +' + formatNumber(next.productionPerHour) + ' 🧊 / час · ' +
                         formatNumber(next.capacity);
                     upgradeCost.textContent = formatNumber(cfg.upgradeCost) + ' 💵';
                     upgradeBtn.disabled = false;
@@ -476,7 +472,6 @@
                 }
             }, 1000);
 
-            // Обновление при возврате
             document.addEventListener('visibilitychange', function() {
                 if (document.visibilityState === 'hidden') {
                     recalculate();
