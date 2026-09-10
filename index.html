@@ -225,13 +225,40 @@
                 }, { passive: false });
             });
 
-            iceGenBtn.addEventListener('click', function() {
-                // Пока заглушка
-            });
+            // ====== ICE GENERATOR: press animation ======
+            function press() {
+                iceGenBtn.classList.add('is-pressed');
+            }
+            function release() {
+                iceGenBtn.classList.remove('is-pressed');
+            }
+
             iceGenBtn.addEventListener('touchstart', function(e) {
                 e.preventDefault();
+                press();
                 // Пока заглушка
             }, { passive: false });
+
+            iceGenBtn.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                release();
+            }, { passive: false });
+
+            iceGenBtn.addEventListener('touchcancel', function() {
+                release();
+            });
+
+            iceGenBtn.addEventListener('mousedown', function() {
+                press();
+            });
+
+            iceGenBtn.addEventListener('mouseup', function() {
+                release();
+            });
+
+            iceGenBtn.addEventListener('mouseleave', function() {
+                release();
+            });
 
             function init() {
                 updateBalance();
