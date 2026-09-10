@@ -20,9 +20,15 @@
                         <div class="player-level">Уровень 5</div>
                     </div>
                 </div>
-                <div class="balance-badge" id="balance-badge">
-                    <span class="wallet-icon">💵</span>
-                    <span class="balance-value" id="balance-value">0</span>
+                <div class="balance-badge-group">
+                    <div class="balance-badge">
+                        <span class="wallet-icon">💵</span>
+                        <span class="balance-value" id="balance-value">0</span>
+                    </div>
+                    <div class="balance-badge ice">
+                        <span class="wallet-icon">🧊</span>
+                        <span class="balance-value" id="ice-value">0</span>
+                    </div>
                 </div>
             </div>
             <div class="xp-row">
@@ -38,7 +44,6 @@
         <main id="content">
             <!-- Берлога -->
             <div id="screen-berloga" class="screen-content">
-                <!-- TOP BLOCK: image with stats overlay -->
                 <div class="berloga-top-block">
                     <div class="yeti-image-block">
                         <img src="https://cdn.pixabay.com/photo/2026/09/09/16/10/16-10-12-677_1280.png" alt="Йети Лохматый" draggable="false" loading="eager">
@@ -59,7 +64,6 @@
                     </div>
                 </div>
 
-                <!-- BOTTOM BLOCK: buttons + ice generator -->
                 <div class="berloga-buttons-block">
                     <div class="berloga-buttons-grid">
 
@@ -88,10 +92,10 @@
                             <span class="btn-label">Клан</span>
                         </div>
 
-                        <button class="berloga-btn ice-generator" id="ice-generator-btn">
+                        <a class="berloga-btn ice-generator" href="ice-generator.html">
                             <span class="btn-emoji">🧊</span>
                             <span class="btn-label">Ледогенератор</span>
-                        </button>
+                        </a>
 
                     </div>
                 </div>
@@ -163,15 +167,16 @@
         (function() {
             const state = {
                 balance: 0,
+                ice: 0,
                 xp: 1175,
                 xpMax: 24000,
                 activeScreen: 'berloga',
             };
 
             const balanceValue = document.getElementById('balance-value');
+            const iceValue = document.getElementById('ice-value');
             const xpFill = document.getElementById('xp-fill');
             const xpText = document.getElementById('xp-text');
-            const iceGenBtn = document.getElementById('ice-generator-btn');
             const navItems = document.querySelectorAll('.nav-item');
             const screens = {
                 berloga: document.getElementById('screen-berloga'),
@@ -189,6 +194,7 @@
 
             function updateBalance() {
                 balanceValue.textContent = formatNumber(state.balance);
+                iceValue.textContent = formatNumber(state.ice);
             }
 
             function updateXP() {
@@ -223,41 +229,6 @@
                     e.preventDefault();
                     switchScreen(this.dataset.screen);
                 }, { passive: false });
-            });
-
-            // ====== ICE GENERATOR: press animation ======
-            function press() {
-                iceGenBtn.classList.add('is-pressed');
-            }
-            function release() {
-                iceGenBtn.classList.remove('is-pressed');
-            }
-
-            iceGenBtn.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-                press();
-                // Пока заглушка
-            }, { passive: false });
-
-            iceGenBtn.addEventListener('touchend', function(e) {
-                e.preventDefault();
-                release();
-            }, { passive: false });
-
-            iceGenBtn.addEventListener('touchcancel', function() {
-                release();
-            });
-
-            iceGenBtn.addEventListener('mousedown', function() {
-                press();
-            });
-
-            iceGenBtn.addEventListener('mouseup', function() {
-                release();
-            });
-
-            iceGenBtn.addEventListener('mouseleave', function() {
-                release();
             });
 
             function init() {
