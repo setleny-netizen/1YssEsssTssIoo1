@@ -145,16 +145,28 @@ body {
     letter-spacing: 0.5px;
 }
 
+/* ====== BALANCE BADGES GROUP ====== */
+.balance-badge-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
 .balance-badge {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
     background: var(--bg-card);
     border: 1px solid rgba(201, 162, 39, 0.3);
     border-radius: 20px;
     padding: 5px 10px 5px 8px;
     flex-shrink: 0;
     transition: all 0.2s ease;
+}
+
+.balance-badge.ice {
+    border-color: rgba(74, 122, 158, 0.5);
 }
 
 .balance-badge .wallet-icon {
@@ -171,6 +183,10 @@ body {
     font-weight: 700;
     color: var(--accent-orange-light);
     letter-spacing: 0.5px;
+}
+
+.balance-badge.ice .balance-value {
+    color: var(--accent-blue-light);
 }
 
 .xp-row {
@@ -351,6 +367,8 @@ body {
     min-height: 0;
     min-width: 0;
     overflow: hidden;
+    text-decoration: none;
+    color: inherit;
 }
 
 .berloga-btn:active {
@@ -387,12 +405,9 @@ body {
     font-family: inherit;
     cursor: pointer;
     width: 100%;
+    text-decoration: none;
+    color: inherit;
     touch-action: manipulation;
-}
-
-.ice-generator.is-pressed {
-    transform: scale(0.96);
-    background: var(--bg-secondary);
 }
 
 /* ====== PLACEHOLDER SCREENS ====== */
@@ -472,6 +487,8 @@ body {
     transition: all 0.2s ease;
     position: relative;
     font-family: inherit;
+    text-decoration: none;
+    color: inherit;
 }
 
 .nav-item .nav-emoji {
@@ -566,6 +583,13 @@ body {
     .stats-row {
         padding: 6px;
         gap: 4px;
+    }
+    .balance-badge {
+        padding: 4px 8px 4px 6px;
+        gap: 3px;
+    }
+    .balance-badge .wallet-icon {
+        font-size: 12px;
     }
 }
 
