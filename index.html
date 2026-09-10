@@ -69,7 +69,7 @@
         <main id="content">
             <!-- Берлога -->
             <div id="screen-berloga" class="screen-content">
-                <!-- TOP BLOCK: image with stats overlay (50%) -->
+                <!-- TOP BLOCK: image with stats overlay -->
                 <div class="berloga-top-block">
                     <div class="yeti-image-block">
                         <img src="https://cdn.pixabay.com/photo/2026/09/09/16/10/16-10-12-677_1280.png" alt="Йети Лохматый" draggable="false" loading="eager">
@@ -111,77 +111,37 @@
                     </div>
                 </div>
 
-                <!-- BOTTOM BLOCK: 6 buttons + ice generator (50%) -->
+                <!-- BOTTOM BLOCK: buttons + ice generator -->
                 <div class="berloga-buttons-block">
                     <div class="berloga-buttons-grid">
 
                         <div class="berloga-btn">
-                            <span class="btn-icon">
-                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
-                                    <path d="M3 9L5 4H19L21 9M3 9H21M3 9V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V9M8 14H16" stroke="#C9A227" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <circle cx="9" cy="16" r="1" fill="#C9A227"/>
-                                    <circle cx="15" cy="16" r="1" fill="#C9A227"/>
-                                </svg>
-                            </span>
+                            <span class="btn-emoji">🏪</span>
                             <span class="btn-label">Магазин</span>
                         </div>
                         <div class="berloga-btn">
-                            <span class="btn-icon">
-                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
-                                    <path d="M3 5H21V19H3V5Z" stroke="#C9A227" stroke-width="1.5" stroke-linejoin="round"/>
-                                    <path d="M8 9H16M8 13H13" stroke="#D4AF37" stroke-width="1.3" stroke-linecap="round"/>
-                                    <path d="M17 14L19 16L17 18" stroke="#C9A227" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </span>
+                            <span class="btn-emoji">🎟️</span>
                             <span class="btn-label">Промокод</span>
                         </div>
                         <div class="berloga-btn">
-                            <span class="btn-icon">
-                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
-                                    <path d="M5 4H19L21 8H3L5 4Z" stroke="#C9A227" stroke-width="1.5" stroke-linejoin="round"/>
-                                    <path d="M4 8V18C4 19.1 4.9 20 6 20H18C19.1 20 20 19.1 20 18V8M7 12H17M7 16H14" stroke="#D4AF37" stroke-width="1.3" stroke-linecap="round"/>
-                                </svg>
-                            </span>
+                            <span class="btn-emoji">📋</span>
                             <span class="btn-label">Задания</span>
                         </div>
                         <div class="berloga-btn">
-                            <span class="btn-icon">
-                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
-                                    <path d="M3 4H8L10 8H21V17C21 18.1 20.1 19 19 19H8C6.9 19 6 18.1 6 17V4Z" stroke="#C9A227" stroke-width="1.5" stroke-linejoin="round"/>
-                                    <path d="M6 8H10M3 4H5" stroke="#D4AF37" stroke-width="1.2" stroke-linecap="round"/>
-                                    <circle cx="13" cy="13" r="3" fill="#C9A227" opacity="0.3"/>
-                                </svg>
-                            </span>
+                            <span class="btn-emoji">🎒</span>
                             <span class="btn-label">Инвентарь</span>
                         </div>
                         <div class="berloga-btn">
-                            <span class="btn-icon">
-                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
-                                    <circle cx="10" cy="9" r="5" stroke="#C9A227" stroke-width="1.5"/>
-                                    <circle cx="12" cy="9" r="3" fill="#C9A227" opacity="0.3"/>
-                                    <path d="M12 14L7 19M7 19L5 21M7 19L10 21M12 14L15 19M15 19L13 21M15 19L18 21M12 14V21" stroke="#D4AF37" stroke-width="1.3" stroke-linecap="round"/>
-                                </svg>
-                            </span>
+                            <span class="btn-emoji">🎮</span>
                             <span class="btn-label">Игры</span>
                         </div>
                         <div class="berloga-btn">
-                            <span class="btn-icon">
-                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
-                                    <path d="M4 19L8 7L12 11L15 9L21 19H4Z" stroke="#C9A227" stroke-width="1.5" stroke-linejoin="round"/>
-                                    <path d="M8 19C8 16.5 9.5 15 12 15C14.5 15 16 16.5 16 19" fill="#C9A227" opacity="0.3" stroke="#D4AF37" stroke-width="1.3"/>
-                                </svg>
-                            </span>
+                            <span class="btn-emoji">🛡️</span>
                             <span class="btn-label">Клан</span>
                         </div>
 
-                        <!-- Ледогенератор — на всю ширину в 3-м ряду -->
                         <button class="berloga-btn ice-generator" id="ice-generator-btn">
-                            <span class="btn-icon">
-                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none">
-                                    <path d="M12 2V22M12 2L9 5M12 2L15 5M12 22L9 19M12 22L15 19M4 7L20 17M4 7L7 5M4 7L7 9M20 17L17 15M20 17L17 19" stroke="#C9A227" stroke-width="1.5" stroke-linecap="round"/>
-                                    <circle cx="12" cy="12" r="3" fill="#C9A227" opacity="0.4" stroke="#C9A227" stroke-width="1"/>
-                                </svg>
-                            </span>
+                            <span class="btn-emoji">❄️</span>
                             <span class="btn-label">Ледогенератор</span>
                         </button>
 
