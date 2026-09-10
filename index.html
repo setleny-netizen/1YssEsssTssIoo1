@@ -102,16 +102,16 @@
             </div>
 
             <!-- Заработок -->
-            <div id="screen-earn" class="screen-content screen-placeholder hidden">
-                <div class="placeholder-card">
-                    <div class="icon">💵</div>
-                    <div class="title">Заработок</div>
-                    <div class="subtitle">Здесь ты можешь заработать валюту.</div>
-                    <a class="quick-race-btn" href="race.html">
-                        <span class="quick-race-emoji">🏁</span>
-                        <span class="quick-race-text">Быстрый заезд</span>
-                    </a>
+            <div id="screen-earn" class="screen-content earn-screen hidden">
+                <div class="earn-header">
+                    <div class="earn-title">Заработок</div>
+                    <div class="earn-subtitle">Выбери способ заработка</div>
                 </div>
+
+                <a class="quick-race-btn" href="race.html">
+                    <span class="quick-race-emoji">🏁</span>
+                    <span class="quick-race-text">Быстрый заезд</span>
+                </a>
             </div>
 
             <!-- Бизнес -->
@@ -180,16 +180,7 @@
             };
 
             // ====== ЛОГИКА УРОВНЕЙ ======
-            // Для перехода с уровня N на N+1 нужно N * 100 опыта
-            // Кумулятивно:
-            //  L1: 0-99    (нужно 100 для L2)
-            //  L2: 100-299 (нужно 200 для L3)
-            //  L3: 300-599 (нужно 300 для L4)
-            //  L4: 600-999 (нужно 400 для L5)
-            //  L5: 1000-1499 (нужно 500 для L6)
             function cumulativeXp(level) {
-                // Опыт, необходимый суммарно для достижения уровня `level`
-                // (уровень 1 = 0 опыта)
                 let total = 0;
                 for (let i = 1; i < level; i++) total += i * 100;
                 return total;
@@ -204,7 +195,6 @@
                     level,
                     currentInLevel: totalXp - base,
                     needForLevel: next - base,
-                    totalForNext: next,
                 };
             }
 
@@ -279,15 +269,15 @@
             }
 
             navItems.forEach(item => {
-                item.addEventListener('click', function(e) {
+                const go = function(e) {
                     e.preventDefault();
                     switchScreen(this.dataset.screen);
                     history.replaceState(null, '', '#' + this.dataset.screen);
-                });
+                };
+                item.addEventListener('click', go);
                 item.addEventListener('touchstart', function(e) {
                     e.preventDefault();
-                    switchScreen(this.dataset.screen);
-                    history.replaceState(null, '', '#' + this.dataset.screen);
+                    go.call(this, e);
                 }, { passive: false });
             });
 
