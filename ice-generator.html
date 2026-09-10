@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ледогенератор — Лохматый клуб</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- TOP PANEL -->
+        <header id="top-panel">
+            <div class="top-row">
+                <div class="player-info">
+                    <div class="avatar">
+                        <div class="avatar-inner">🐻</div>
+                    </div>
+                    <div class="player-name-level">
+                        <div class="player-name">Игрок</div>
+                        <div class="player-level">Уровень 5</div>
+                    </div>
+                </div>
+                <div class="balance-badge-group">
+                    <div class="balance-badge">
+                        <span class="wallet-icon">💵</span>
+                        <span class="balance-value" id="balance-value">0</span>
+                    </div>
+                    <div class="balance-badge ice">
+                        <span class="wallet-icon">🧊</span>
+                        <span class="balance-value" id="ice-value">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="xp-row">
+                <span class="xp-label">XP</span>
+                <div class="xp-bar">
+                    <div class="xp-bar-fill" id="xp-fill"></div>
+                </div>
+                <span class="xp-text" id="xp-text">1 175 / 24 000</span>
+            </div>
+        </header>
+
+        <!-- CONTENT AREA -->
+        <main id="content">
+            <div id="screen-ice" class="screen-content screen-placeholder">
+                <div class="placeholder-card">
+                    <div class="icon">🧊</div>
+                    <div class="title">Ледогенератор</div>
+                    <div class="subtitle">Раздел в разработке.<br>Скоро здесь можно будет добывать лёд.</div>
+                </div>
+            </div>
+        </main>
+
+        <!-- BOTTOM NAV -->
+        <nav id="bottom-nav">
+            <button class="nav-item" data-screen="invest" aria-label="Инвестиции">
+                <span class="nav-emoji">📈</span>
+                <span class="nav-label">Инвест</span>
+            </button>
+            <button class="nav-item" data-screen="business" aria-label="Бизнес">
+                <span class="nav-emoji">💼</span>
+                <span class="nav-label">Бизнес</span>
+            </button>
+            <button class="nav-item" data-screen="earn" aria-label="Заработок">
+                <span class="nav-emoji">💵</span>
+                <span class="nav-label">Заработок</span>
+            </button>
+            <button class="nav-item active" data-screen="berloga" aria-label="Берлога">
+                <span class="nav-emoji">🏔️</span>
+                <span class="nav-label">Берлога</span>
+            </button>
+            <button class="nav-item" data-screen="profile" aria-label="Профиль">
+                <span class="nav-emoji">👤</span>
+                <span class="nav-label">Профиль</span>
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        (function() {
+            const state = {
+                balance: 0,
+                ice: 0,
+                xp: 1175,
+                xpMax: 24000,
+            };
+
+            const balanceValue = document.getElementById('balance-value');
+            const iceValue = document.getElementById('ice-value');
+            const xpFill = document.getElementById('xp-fill');
+            const xpText = document.getElementById('xp-text');
+            const navItems = document.querySelectorAll('.nav-item');
+
+            function formatNumber(num) {
+                if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+                if (num >= 1000) return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                return num.toString();
+            }
+
+            function updateBalance() {
+                balanceValue.textContent = formatNumber(state.balance);
+                iceValue.textContent = formatNumber(state.ice);
+            }
+
+            function updateXP() {
+                const percent = Math.min((state.xp / state.xpMax) * 100, 100);
+                xpFill.style.width = percent + '%';
+                xpText.textContent = formatNumber(state.xp) + ' / ' + formatNumber(state.xpMax);
+            }
+
+            // На этой странице все вкладки ведут обратно на index.html
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (this.dataset.screen === 'berloga') {
+                        window.location.href = 'index.html';
+                    } else {
+                        window.location.href = 'index.html#' + this.dataset.screen;
+                    }
+                });
+                item.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    if (this.dataset.screen === 'berloga') {
+                        window.location.href = 'index.html';
+                    } else {
+                        window.location.href = 'index.html#' + this.dataset.screen;
+                    }
+                }, { passive: false });
+            });
+
+            function init() {
+                updateBalance();
+                updateXP();
+            }
+
+            init();
+
+            function handleSafeArea() {
+                const bottomNav = document.getElementById('bottom-nav');
+                const safeBottom = getComputedStyle(document.documentElement)
+                    .getPropertyValue('env(safe-area-inset-bottom)');
+                if (safeBottom && safeBottom !== '0px') {
+                    bottomNav.style.paddingBottom = safeBottom;
+                }
+            }
+
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', handleSafeArea);
+            }
+            handleSafeArea();
+
+            document.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+        })();
+    </script>
+</body>
+</html>
