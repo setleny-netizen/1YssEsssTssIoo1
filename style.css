@@ -461,25 +461,38 @@ body {
 /* ====== ICE GENERATOR PAGE ====== */
 #screen-ice {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
     width: 100%;
     height: 100%;
     max-width: 420px;
+    gap: 8px;
     overflow: hidden;
     min-height: 0;
 }
 
-.ice-page-image {
+/* --- Hero: image + title --- */
+.ice-hero {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+}
+
+.ice-image-wrap {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    height: 100%;
     overflow: hidden;
 }
 
-.ice-page-image img {
+.ice-image-wrap img {
     max-width: 100%;
     max-height: 100%;
     width: auto;
@@ -489,6 +502,420 @@ body {
     pointer-events: none;
     -webkit-user-drag: none;
     user-drag: none;
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 0 24px rgba(74, 122, 158, 0.35));
+}
+
+/* холодное свечение вокруг установки */
+.ice-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 70%;
+    height: 70%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(74, 122, 158, 0.35) 0%, rgba(36, 59, 85, 0.15) 45%, transparent 70%);
+    filter: blur(20px);
+    z-index: 1;
+    pointer-events: none;
+    animation: ice-glow-pulse 3.5s ease-in-out infinite;
+}
+
+@keyframes ice-glow-pulse {
+    0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+    50%      { opacity: 1;   transform: translate(-50%, -50%) scale(1.08); }
+}
+
+.ice-hero-info {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 0 8px;
+}
+
+.ice-hero-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.ice-hero-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: #7DDFA0;
+    text-transform: uppercase;
+}
+
+.ice-hero-status.full {
+    color: #FFB547;
+}
+
+.ice-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #7DDFA0;
+    box-shadow: 0 0 8px rgba(125, 223, 160, 0.9);
+    animation: ice-dot-pulse 1.6s ease-in-out infinite;
+}
+
+.ice-hero-status.full .ice-status-dot {
+    background: #FFB547;
+    box-shadow: 0 0 8px rgba(255, 181, 71, 0.9);
+    animation: none;
+}
+
+@keyframes ice-dot-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(0.85); }
+}
+
+/* --- Info row: production + next ice --- */
+.ice-info-row {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.ice-info-cell {
+    flex: 1;
+    min-width: 0;
+    background: var(--bg-card);
+    border: 1px solid rgba(201, 162, 39, 0.12);
+    border-radius: 10px;
+    padding: 6px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: center;
+    text-align: center;
+}
+
+.ice-info-label {
+    font-size: 8px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+.ice-info-value {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--accent-blue-light);
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+/* --- Storage card --- */
+.ice-storage-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(74, 122, 158, 0.35);
+    border-radius: 12px;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(74, 122, 158, 0.05);
+}
+
+.ice-storage-header {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.ice-storage-emoji {
+    font-size: 13px;
+    line-height: 1;
+}
+
+.ice-storage-title {
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--text-muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.ice-storage-count {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 6px;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: 0.5px;
+}
+
+.ice-storage-count #ice-stored {
+    color: var(--accent-blue-light);
+    text-shadow: 0 0 12px rgba(74, 122, 158, 0.5);
+}
+
+.ice-storage-sep {
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.ice-storage-count #ice-capacity {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.ice-storage-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(242, 239, 230, 0.06);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+}
+
+.ice-storage-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #243B55, #4A7A9E);
+    border-radius: 3px;
+    transition: width 0.6s ease;
+}
+
+.ice-storage-bar-fill.full {
+    background: linear-gradient(90deg, #B8753D, #FFB547);
+}
+
+/* --- Collect button --- */
+.ice-collect-btn {
+    appearance: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-family: inherit;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #243B55, #4A7A9E);
+    color: #F2EFE6;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 14px rgba(74, 122, 158, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition: transform 0.12s ease, box-shadow 0.2s ease, background 0.2s ease;
+    flex-shrink: 0;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+}
+
+.ice-collect-btn:active:not(.disabled) {
+    transform: scale(0.97);
+    box-shadow: 0 2px 8px rgba(74, 122, 158, 0.3);
+}
+
+.ice-collect-btn.disabled,
+.ice-collect-btn:disabled {
+    background: var(--bg-card);
+    color: var(--text-muted);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    cursor: not-allowed;
+    letter-spacing: 1.5px;
+}
+
+.ice-collect-emoji {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.ice-collect-text {
+    flex: 0 0 auto;
+}
+
+.ice-collect-amount {
+    font-size: 14px;
+    font-weight: 900;
+    color: #D4AF37;
+    min-width: 20px;
+    text-align: right;
+}
+
+.ice-collect-btn.disabled .ice-collect-amount,
+.ice-collect-btn:disabled .ice-collect-amount {
+    color: var(--text-muted);
+}
+
+/* --- Upgrade button --- */
+.ice-upgrade-btn {
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+    font-family: inherit;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: var(--bg-card);
+    border: 1px solid rgba(201, 162, 39, 0.3);
+    color: var(--text-primary);
+    transition: transform 0.12s ease, border-color 0.2s ease, background 0.2s ease;
+    flex-shrink: 0;
+    text-align: left;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.ice-upgrade-btn:active:not(:disabled) {
+    transform: scale(0.98);
+    background: var(--bg-secondary);
+}
+
+.ice-upgrade-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.ice-upgrade-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+}
+
+.ice-upgrade-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--accent-orange-light);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.ice-upgrade-arrow {
+    font-size: 13px;
+    line-height: 1;
+}
+
+.ice-upgrade-desc {
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.ice-upgrade-cost {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--accent-orange-light);
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
+}
+
+/* Пульсация при недостатке денег */
+.ice-upgrade-btn.shake {
+    animation: ice-shake 0.4s ease;
+    border-color: #B8753D;
+}
+
+@keyframes ice-shake {
+    0%, 100% { transform: translateX(0); }
+    20%      { transform: translateX(-4px); }
+    40%      { transform: translateX(4px); }
+    60%      { transform: translateX(-3px); }
+    80%      { transform: translateX(3px); }
+}
+
+/* --- Floating +N --- */
+.ice-float {
+    position: fixed;
+    pointer-events: none;
+    font-size: 18px;
+    font-weight: 900;
+    color: #7DD8FF;
+    text-shadow: 0 0 12px rgba(125, 216, 255, 0.9), 0 2px 6px rgba(0, 0, 0, 0.6);
+    z-index: 9999;
+    transform: translate(-50%, 0);
+    animation: ice-float-up 1.1s ease-out forwards;
+}
+
+@keyframes ice-float-up {
+    0%   { opacity: 0; transform: translate(-50%, 10px) scale(0.9); }
+    20%  { opacity: 1; transform: translate(-50%, -6px) scale(1.1); }
+    100% { opacity: 0; transform: translate(-50%, -70px) scale(0.95); }
+}
+
+/* Пульсация бейджа льда в топе */
+.balance-badge.ice.bump .balance-value {
+    transform: scale(1.25);
+    color: #7DD8FF;
+}
+
+.balance-badge .balance-value {
+    transition: transform 0.25s ease, color 0.25s ease;
+}
+
+/* --- Адаптация под низкие экраны --- */
+@media (max-height: 700px) {
+    .ice-hero-title { font-size: 12px; letter-spacing: 1.6px; }
+    .ice-storage-count { font-size: 16px; }
+    .ice-storage-count #ice-capacity { font-size: 13px; }
+    .ice-collect-btn { padding: 10px 14px; font-size: 12px; }
+    .ice-info-value { font-size: 11px; }
+    .ice-info-cell { padding: 5px 8px; }
+}
+
+@media (max-height: 600px) {
+    #screen-ice { gap: 5px; }
+    .ice-hero { gap: 3px; }
+    .ice-hero-title { font-size: 11px; letter-spacing: 1.2px; }
+    .ice-hero-status { font-size: 9px; }
+    .ice-info-cell { padding: 4px 6px; }
+    .ice-info-label { font-size: 7px; }
+    .ice-info-value { font-size: 10px; }
+    .ice-storage-card { padding: 6px 10px; gap: 4px; }
+    .ice-storage-count { font-size: 15px; }
+    .ice-storage-count #ice-capacity { font-size: 12px; }
+    .ice-storage-bar { height: 5px; }
+    .ice-collect-btn { padding: 9px 12px; font-size: 11px; letter-spacing: 1px; }
+    .ice-upgrade-btn { padding: 8px 12px; }
+    .ice-upgrade-title { font-size: 10px; }
+    .ice-upgrade-desc { font-size: 8px; }
+    .ice-upgrade-cost { font-size: 11px; }
+}
+
+@media (max-width: 360px) {
+    .ice-hero-title { font-size: 11px; letter-spacing: 1.2px; }
+    .ice-info-value { font-size: 11px; }
+    .ice-collect-amount { font-size: 13px; }
 }
 
 /* ====== BOTTOM NAV ====== */
