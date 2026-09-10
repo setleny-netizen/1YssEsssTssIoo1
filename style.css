@@ -183,10 +183,16 @@ body {
     font-weight: 700;
     color: var(--accent-orange-light);
     letter-spacing: 0.5px;
+    transition: transform 0.25s ease, color 0.25s ease;
 }
 
 .balance-badge.ice .balance-value {
     color: var(--accent-blue-light);
+}
+
+.balance-badge.ice.bump .balance-value {
+    transform: scale(1.25);
+    color: #7DD8FF;
 }
 
 .xp-row {
@@ -219,7 +225,7 @@ body {
     background: var(--gradient-accent);
     border-radius: 2px;
     transition: width 0.5s ease;
-    width: 4.9%;
+    width: 0%;
 }
 
 .xp-text {
@@ -255,7 +261,6 @@ body {
     min-height: 0;
 }
 
-/* ====== TOP BLOCK: image with stats overlay ====== */
 .berloga-top-block {
     flex: 1 1 0;
     min-height: 0;
@@ -281,7 +286,6 @@ body {
     background: #0A0A0A;
 }
 
-/* Stats overlay on image */
 .stats-row {
     position: absolute;
     bottom: 0;
@@ -322,19 +326,11 @@ body {
     letter-spacing: 0.3px;
 }
 
-.stat-block.energy .stat-value {
-    color: var(--accent-orange-light);
-}
+.stat-block.energy .stat-value { color: var(--accent-orange-light); }
+.stat-block.frost .stat-value { color: var(--accent-blue-light); }
+.stat-block.paw .stat-value { color: var(--accent-brown); }
 
-.stat-block.frost .stat-value {
-    color: var(--accent-blue-light);
-}
-
-.stat-block.paw .stat-value {
-    color: var(--accent-brown);
-}
-
-/* ====== BOTTOM BLOCK: buttons + ice generator ====== */
+/* ====== BOTTOM BLOCK: buttons ====== */
 .berloga-buttons-block {
     flex: 1 1 0;
     min-height: 0;
@@ -396,7 +392,6 @@ body {
     max-width: 100%;
 }
 
-/* ====== ICE GENERATOR BUTTON ====== */
 .ice-generator {
     grid-column: 1 / -1;
     appearance: none;
@@ -458,6 +453,40 @@ body {
     letter-spacing: 0.3px;
 }
 
+/* ====== QUICK RACE BUTTON (на экране Заработок) ====== */
+.quick-race-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 12px 18px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #C9A227, #A88920);
+    color: #0A0A0A;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(201, 162, 39, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    transition: transform 0.12s ease, box-shadow 0.2s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    width: 100%;
+}
+
+.quick-race-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 8px rgba(201, 162, 39, 0.3);
+}
+
+.quick-race-emoji {
+    font-size: 18px;
+    line-height: 1;
+}
+
 /* ====== ICE GENERATOR PAGE ====== */
 #screen-ice {
     display: flex;
@@ -470,7 +499,6 @@ body {
     min-height: 0;
 }
 
-/* --- Hero: image + title --- */
 .ice-hero {
     flex: 1 1 auto;
     min-height: 0;
@@ -507,7 +535,6 @@ body {
     filter: drop-shadow(0 0 24px rgba(74, 122, 158, 0.35));
 }
 
-/* холодное свечение вокруг установки */
 .ice-glow {
     position: absolute;
     top: 50%;
@@ -556,9 +583,7 @@ body {
     text-transform: uppercase;
 }
 
-.ice-hero-status.full {
-    color: #FFB547;
-}
+.ice-hero-status.full { color: #FFB547; }
 
 .ice-status-dot {
     width: 7px;
@@ -580,7 +605,6 @@ body {
     50%      { opacity: 0.5; transform: scale(0.85); }
 }
 
-/* --- Info row: production + next ice --- */
 .ice-info-row {
     display: flex;
     gap: 6px;
@@ -620,7 +644,6 @@ body {
     max-width: 100%;
 }
 
-/* --- Storage card --- */
 .ice-storage-card {
     background: var(--bg-card);
     border: 1px solid rgba(74, 122, 158, 0.35);
@@ -700,7 +723,6 @@ body {
     background: linear-gradient(90deg, #B8753D, #FFB547);
 }
 
-/* --- Collect button --- */
 .ice-collect-btn {
     appearance: none;
     border: none;
@@ -739,17 +761,9 @@ body {
     color: var(--text-muted);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
     cursor: not-allowed;
-    letter-spacing: 1.5px;
 }
 
-.ice-collect-emoji {
-    font-size: 16px;
-    line-height: 1;
-}
-
-.ice-collect-text {
-    flex: 0 0 auto;
-}
+.ice-collect-emoji { font-size: 16px; line-height: 1; }
 
 .ice-collect-amount {
     font-size: 14px;
@@ -764,7 +778,6 @@ body {
     color: var(--text-muted);
 }
 
-/* --- Upgrade button --- */
 .ice-upgrade-btn {
     appearance: none;
     outline: none;
@@ -816,10 +829,7 @@ body {
     text-transform: uppercase;
 }
 
-.ice-upgrade-arrow {
-    font-size: 13px;
-    line-height: 1;
-}
+.ice-upgrade-arrow { font-size: 13px; line-height: 1; }
 
 .ice-upgrade-desc {
     font-size: 9px;
@@ -840,7 +850,6 @@ body {
     flex-shrink: 0;
 }
 
-/* Пульсация при недостатке денег */
 .ice-upgrade-btn.shake {
     animation: ice-shake 0.4s ease;
     border-color: #B8753D;
@@ -854,7 +863,6 @@ body {
     80%      { transform: translateX(3px); }
 }
 
-/* --- Floating +N --- */
 .ice-float {
     position: fixed;
     pointer-events: none;
@@ -873,49 +881,245 @@ body {
     100% { opacity: 0; transform: translate(-50%, -70px) scale(0.95); }
 }
 
-/* Пульсация бейджа льда в топе */
-.balance-badge.ice.bump .balance-value {
-    transform: scale(1.25);
-    color: #7DD8FF;
+/* ====== RACE PAGE ====== */
+#screen-race {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    max-width: 420px;
+    gap: 8px;
+    overflow: hidden;
+    min-height: 0;
 }
 
-.balance-badge .balance-value {
-    transition: transform 0.25s ease, color 0.25s ease;
+/* Racers cards */
+.race-racers {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 6px;
+    flex-shrink: 0;
 }
 
-/* --- Адаптация под низкие экраны --- */
-@media (max-height: 700px) {
-    .ice-hero-title { font-size: 12px; letter-spacing: 1.6px; }
-    .ice-storage-count { font-size: 16px; }
-    .ice-storage-count #ice-capacity { font-size: 13px; }
-    .ice-collect-btn { padding: 10px 14px; font-size: 12px; }
-    .ice-info-value { font-size: 11px; }
-    .ice-info-cell { padding: 5px 8px; }
+.racer-card {
+    flex: 1;
+    min-width: 0;
+    background: var(--bg-card);
+    border-radius: 12px;
+    border: 1px solid rgba(201, 162, 39, 0.15);
+    padding: 6px 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
-@media (max-height: 600px) {
-    #screen-ice { gap: 5px; }
-    .ice-hero { gap: 3px; }
-    .ice-hero-title { font-size: 11px; letter-spacing: 1.2px; }
-    .ice-hero-status { font-size: 9px; }
-    .ice-info-cell { padding: 4px 6px; }
-    .ice-info-label { font-size: 7px; }
-    .ice-info-value { font-size: 10px; }
-    .ice-storage-card { padding: 6px 10px; gap: 4px; }
-    .ice-storage-count { font-size: 15px; }
-    .ice-storage-count #ice-capacity { font-size: 12px; }
-    .ice-storage-bar { height: 5px; }
-    .ice-collect-btn { padding: 9px 12px; font-size: 11px; letter-spacing: 1px; }
-    .ice-upgrade-btn { padding: 8px 12px; }
-    .ice-upgrade-title { font-size: 10px; }
-    .ice-upgrade-desc { font-size: 8px; }
-    .ice-upgrade-cost { font-size: 11px; }
+.racer-card.racer-me {
+    border-color: rgba(201, 162, 39, 0.4);
 }
 
-@media (max-width: 360px) {
-    .ice-hero-title { font-size: 11px; letter-spacing: 1.2px; }
-    .ice-info-value { font-size: 11px; }
-    .ice-collect-amount { font-size: 13px; }
+.racer-card.racer-npc {
+    border-color: rgba(74, 122, 158, 0.4);
+    justify-content: flex-end;
+}
+
+.racer-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background: var(--bg-secondary);
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.racer-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+    -webkit-user-drag: none;
+    user-drag: none;
+}
+
+.racer-info {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.racer-info-right {
+    align-items: flex-end;
+    text-align: right;
+}
+
+.racer-title {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.racer-sled {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.racer-speed {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent-orange-light);
+    letter-spacing: 0.3px;
+}
+
+.racer-card.racer-npc .racer-speed {
+    color: var(--accent-blue-light);
+}
+
+.racer-vs {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--accent-orange-light);
+    letter-spacing: 1px;
+    padding: 0 2px;
+}
+
+/* Track */
+.race-track {
+    position: relative;
+    flex: 1 1 0;
+    min-height: 0;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background: var(--bg-card);
+    border: 1px solid rgba(74, 122, 158, 0.3);
+}
+
+.race-track-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    pointer-events: none;
+    -webkit-user-drag: none;
+    user-drag: none;
+    display: block;
+}
+
+.race-runner {
+    position: absolute;
+    width: 34px;
+    height: 34px;
+    transform: translate(-50%, -50%);
+    transition: left 0.08s linear;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.race-runner img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    pointer-events: none;
+    -webkit-user-drag: none;
+    user-drag: none;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.7));
+}
+
+/* Позиции по вертикали: НПС сверху, я снизу */
+.race-runner-npc {
+    top: 32%;
+}
+
+.race-runner-me {
+    top: 68%;
+}
+
+/* Result message */
+.race-result {
+    flex-shrink: 0;
+    text-align: center;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    border: 1px solid;
+    background: var(--bg-card);
+}
+
+.race-result.win {
+    color: #7DDFA0;
+    border-color: rgba(125, 223, 160, 0.5);
+    box-shadow: 0 0 20px rgba(125, 223, 160, 0.2);
+}
+
+.race-result.lose {
+    color: #FF8B7D;
+    border-color: rgba(255, 139, 125, 0.5);
+    box-shadow: 0 0 20px rgba(255, 139, 125, 0.15);
+}
+
+/* Start button */
+.race-start-btn {
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+    font-family: inherit;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #C9A227, #A88920);
+    color: #0A0A0A;
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 14px rgba(201, 162, 39, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    transition: transform 0.12s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    flex-shrink: 0;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.race-start-btn:active:not(:disabled) {
+    transform: scale(0.97);
+    box-shadow: 0 2px 8px rgba(201, 162, 39, 0.3);
+}
+
+.race-start-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.race-start-emoji {
+    font-size: 18px;
+    line-height: 1;
 }
 
 /* ====== BOTTOM NAV ====== */
@@ -1014,43 +1218,24 @@ body {
         --font-size-xl: 16px;
         --font-size-xxl: 18px;
     }
-    .avatar {
-        width: 28px;
-        height: 28px;
-    }
-    .avatar-inner {
-        font-size: 16px;
-    }
-    .nav-item .nav-emoji {
-        font-size: 16px;
-    }
-    .nav-item .nav-label {
-        font-size: 6px;
-    }
-    .berloga-btn .btn-emoji {
-        font-size: 26px;
-    }
-    .berloga-btn .btn-label {
-        font-size: 10px;
-    }
-    .stat-block {
-        padding: 4px 6px;
-        gap: 4px;
-    }
-    .stat-block .stat-emoji {
-        font-size: 13px;
-    }
-    .stats-row {
-        padding: 6px;
-        gap: 4px;
-    }
-    .balance-badge {
-        padding: 4px 8px 4px 6px;
-        gap: 3px;
-    }
-    .balance-badge .wallet-icon {
-        font-size: 12px;
-    }
+    .avatar { width: 28px; height: 28px; }
+    .avatar-inner { font-size: 16px; }
+    .nav-item .nav-emoji { font-size: 16px; }
+    .nav-item .nav-label { font-size: 6px; }
+    .berloga-btn .btn-emoji { font-size: 26px; }
+    .berloga-btn .btn-label { font-size: 10px; }
+    .stat-block { padding: 4px 6px; gap: 4px; }
+    .stat-block .stat-emoji { font-size: 13px; }
+    .stats-row { padding: 6px; gap: 4px; }
+    .balance-badge { padding: 4px 8px 4px 6px; gap: 3px; }
+    .balance-badge .wallet-icon { font-size: 12px; }
+
+    .racer-avatar { width: 32px; height: 32px; }
+    .racer-sled { font-size: 11px; }
+    .racer-speed { font-size: 9px; }
+    .racer-vs { font-size: 11px; }
+    .race-runner { width: 28px; height: 28px; }
+    .race-start-btn { font-size: 13px; padding: 10px 14px; }
 }
 
 @media (max-height: 700px) {
@@ -1058,20 +1243,21 @@ body {
         --top-panel-height: 62px;
         --bottom-nav-height: 54px;
     }
-    .berloga-buttons-grid {
-        gap: 5px;
-    }
-    .berloga-btn {
-        border-radius: 10px;
-        gap: 3px;
-        padding: 4px;
-    }
-    .berloga-btn .btn-emoji {
-        font-size: 26px;
-    }
-    .berloga-btn .btn-label {
-        font-size: 9px;
-    }
+    .berloga-buttons-grid { gap: 5px; }
+    .berloga-btn { border-radius: 10px; gap: 3px; padding: 4px; }
+    .berloga-btn .btn-emoji { font-size: 26px; }
+    .berloga-btn .btn-label { font-size: 9px; }
+
+    .ice-hero-title { font-size: 12px; letter-spacing: 1.6px; }
+    .ice-storage-count { font-size: 16px; }
+    .ice-storage-count #ice-capacity { font-size: 13px; }
+    .ice-collect-btn { padding: 10px 14px; font-size: 12px; }
+    .ice-info-value { font-size: 11px; }
+    .ice-info-cell { padding: 5px 8px; }
+
+    .racer-card { padding: 5px 6px; gap: 6px; }
+    .racer-avatar { width: 34px; height: 34px; }
+    .race-runner { width: 30px; height: 30px; }
 }
 
 @media (max-height: 600px) {
@@ -1079,45 +1265,46 @@ body {
         --top-panel-height: 56px;
         --bottom-nav-height: 46px;
     }
-    .avatar {
-        width: 24px;
-        height: 24px;
-    }
-    .avatar-inner {
-        font-size: 14px;
-    }
-    .berloga-buttons-grid {
-        gap: 4px;
-    }
-    .berloga-btn {
-        border-radius: 8px;
-        gap: 2px;
-        padding: 3px;
-    }
-    .berloga-btn .btn-emoji {
-        font-size: 22px;
-    }
-    .berloga-btn .btn-label {
-        font-size: 8px;
-    }
-    .stat-block {
-        padding: 3px 4px;
-        gap: 3px;
-    }
-    .stat-block .stat-emoji {
-        font-size: 12px;
-    }
-    .stats-row {
-        padding: 5px;
-        gap: 3px;
-    }
-    .stat-value {
-        font-size: 9px;
-    }
+    .avatar { width: 24px; height: 24px; }
+    .avatar-inner { font-size: 14px; }
+    .berloga-buttons-grid { gap: 4px; }
+    .berloga-btn { border-radius: 8px; gap: 2px; padding: 3px; }
+    .berloga-btn .btn-emoji { font-size: 22px; }
+    .berloga-btn .btn-label { font-size: 8px; }
+    .stat-block { padding: 3px 4px; gap: 3px; }
+    .stat-block .stat-emoji { font-size: 12px; }
+    .stats-row { padding: 5px; gap: 3px; }
+    .stat-value { font-size: 9px; }
+
+    #screen-ice { gap: 5px; }
+    .ice-hero { gap: 3px; }
+    .ice-hero-title { font-size: 11px; letter-spacing: 1.2px; }
+    .ice-hero-status { font-size: 9px; }
+    .ice-info-cell { padding: 4px 6px; }
+    .ice-info-label { font-size: 7px; }
+    .ice-info-value { font-size: 10px; }
+    .ice-storage-card { padding: 6px 10px; gap: 4px; }
+    .ice-storage-count { font-size: 15px; }
+    .ice-storage-count #ice-capacity { font-size: 12px; }
+    .ice-storage-bar { height: 5px; }
+    .ice-collect-btn { padding: 9px 12px; font-size: 11px; letter-spacing: 1px; }
+    .ice-upgrade-btn { padding: 8px 12px; }
+    .ice-upgrade-title { font-size: 10px; }
+    .ice-upgrade-desc { font-size: 8px; }
+    .ice-upgrade-cost { font-size: 11px; }
+
+    #screen-race { gap: 5px; }
+    .race-racers { gap: 4px; }
+    .racer-card { padding: 4px 5px; gap: 5px; }
+    .racer-avatar { width: 28px; height: 28px; }
+    .racer-title { font-size: 8px; }
+    .racer-sled { font-size: 10px; }
+    .racer-speed { font-size: 9px; }
+    .race-runner { width: 24px; height: 24px; }
+    .race-result { font-size: 11px; padding: 6px 10px; }
+    .race-start-btn { padding: 9px 14px; font-size: 12px; letter-spacing: 1.5px; }
 }
 
 @media (min-width: 500px) {
-    #content {
-        padding: 12px 16px;
-    }
+    #content { padding: 12px 16px; }
 }
