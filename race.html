@@ -139,7 +139,7 @@
 
             // Позиции на трассе (в % от ширины)
             const START_X = 12;
-            const END_X = 88;
+            const END_X = 94;
 
             // ====== УРОВНИ ======
             function cumulativeXp(level) {
@@ -199,11 +199,12 @@
             // ====== СОХРАНЕНИЕ ======
             function savePlayer() {
                 try {
-                    localStorage.setItem(PLAYER_KEY, JSON.stringify({
-                        wallet: state.wallet,
-                        ice: state.ice,
-                        totalXp: state.totalXp,
-                    }));
+                    const raw = localStorage.getItem(PLAYER_KEY);
+                    const existing = raw ? JSON.parse(raw) : {};
+                    existing.wallet = state.wallet;
+                    existing.ice = state.ice;
+                    existing.totalXp = state.totalXp;
+                    localStorage.setItem(PLAYER_KEY, JSON.stringify(existing));
                 } catch (e) {}
             }
 
