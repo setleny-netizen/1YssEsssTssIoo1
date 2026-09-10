@@ -16,8 +16,8 @@
                         <div class="avatar-inner">🐻</div>
                     </div>
                     <div class="player-name-level">
-                        <div class="player-name">Игрок</div>
-                        <div class="player-level">Уровень 5</div>
+                        <div class="player-name" id="player-name">Игрок</div>
+                        <div class="player-level" id="player-level">Уровень 1</div>
                     </div>
                 </div>
                 <div class="balance-badge-group">
@@ -36,7 +36,7 @@
                 <div class="xp-bar">
                     <div class="xp-bar-fill" id="xp-fill"></div>
                 </div>
-                <span class="xp-text" id="xp-text">1 175 / 24 000</span>
+                <span class="xp-text" id="xp-text">0 / 100</span>
             </div>
         </header>
 
@@ -103,7 +103,7 @@
                         </div>
                         <div class="ice-upgrade-desc" id="ice-upgrade-desc">Ледогенератор II · +10 🧊 / час · 1 000</div>
                     </div>
-                    <div class="ice-upgrade-cost" id="ice-upgrade-cost">2 500 💰</div>
+                    <div class="ice-upgrade-cost" id="ice-upgrade-cost">2 500 💵</div>
                 </button>
 
             </div>
@@ -136,8 +136,8 @@
 
     <script>
         (function() {
-            const STORAGE_KEY = 'lokhmaty_ice_generator_v1';
-            const WALLET_KEY = 'lokhmaty_wallet_v1';
+            const PLAYER_KEY = 'lokhmaty_player_v1';
+            const GEN_KEY = 'lokhmaty_ice_gen_v1';
 
             // ====== КОНФИГ УРОВНЕЙ ======
             const LEVELS = {
@@ -157,18 +157,46 @@
                 },
             };
 
-            // ====== СОСТОЯНИЕ ======
-            const state = {
+            // ====== УРОВНИ ИГРОКА ======
+            function cumulativeXp(level) {
+                let total = 0;
+                for (let i = 1; i < level; i++) total += i * 100;
+                return total;
+            }
+
+            function getLevelInfo(totalXp) {
+                let level = 1;
+                while (cumulativeXp(level + 1) <= totalXp) level++;
+                const base = cumulativeXp(level);
+                const next = cumulativeXp(level + 1);
+                return {
+                    level,
+                    currentInLevel: totalXp - base,
+                    needForLevel: next - base,
+                };
+            }
+
+            // ====== СОСТОЯНИЕ ИГРОКА ======
+            const player = {
+                wallet: 0,
+                ice: 0,
+                totalXp: 0,
+            };
+
+            // ====== СОСТОЯНИЕ ГЕНЕРАТОРА ======
+            const gen = {
                 level: 1,
                 storedIce: 0,
                 lastTick: Date.now(),
-                wallet: 0,
-                iceBalance: 0,
-                xp: 1175,
-                xpMax: 24000,
             };
 
             // ====== DOM ======
+            const balanceValue = document.getElementById('balance-value');
+            const iceValue = document.getElementById('ice-value');
+            const xpFill = document.getElementById('xp-fill');
+            const xpText = document.getElementById('xp-text');
+            const playerLevelEl = document.getElementById('player-level');
+
             const levelTitle = document.getElementById('ice-level-title');
             const statusEl = document.getElementById('ice-status');
             const productionEl = document.getElementById('ice-production');
@@ -182,10 +210,6 @@
             const upgradeDesc = document.getElementById('ice-upgrade-desc');
             const upgradeCost = document.getElementById('ice-upgrade-cost');
 
-            const balanceValue = document.getElementById('balance-value');
-            const iceValue = document.getElementById('ice-value');
-            const xpFill = document.getElementById('xp-fill');
-            const xpText = document.getElementById('xp-text');
             const navItems = document.querySelectorAll('.nav-item');
 
             // ====== ФОРМАТ ======
@@ -204,62 +228,70 @@
                 return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
             }
 
-            // ====== СОХРАНЕНИЕ / ЗАГРУЗКА ======
-            function saveState() {
+            // ====== СОХРАНЕНИЕ ======
+            function savePlayer() {
                 try {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                        level: state.level,
-                        storedIce: state.storedIce,
-                        lastTick: state.lastTick,
-                    }));
-                    localStorage.setItem(WALLET_KEY, JSON.stringify({
-                        wallet: state.wallet,
-                        iceBalance: state.iceBalance,
+                    const raw = localStorage.getItem(PLAYER_KEY);
+                    const existing = raw ? JSON.parse(raw) : {};
+                    existing.wallet = player.wallet;
+                    existing.ice = player.ice;
+                    existing.totalXp = player.totalXp;
+                    localStorage.setItem(PLAYER_KEY, JSON.stringify(existing));
+                } catch (e) {}
+            }
+
+            function loadPlayer() {
+                try {
+                    const raw = localStorage.getItem(PLAYER_KEY);
+                    if (raw) {
+                        const p = JSON.parse(raw);
+                        if (typeof p.wallet === 'number') player.wallet = p.wallet;
+                        if (typeof p.ice === 'number') player.ice = p.ice;
+                        if (typeof p.totalXp === 'number') player.totalXp = p.totalXp;
+                    }
+                } catch (e) {}
+            }
+
+            function saveGen() {
+                try {
+                    localStorage.setItem(GEN_KEY, JSON.stringify({
+                        level: gen.level,
+                        storedIce: gen.storedIce,
+                        lastTick: gen.lastTick,
                     }));
                 } catch (e) {}
             }
 
-            function loadState() {
+            function loadGen() {
                 try {
-                    const saved = localStorage.getItem(STORAGE_KEY);
-                    if (saved) {
-                        const p = JSON.parse(saved);
-                        if (typeof p.level === 'number' && LEVELS[p.level]) state.level = p.level;
-                        if (typeof p.storedIce === 'number') state.storedIce = p.storedIce;
-                        if (typeof p.lastTick === 'number') state.lastTick = p.lastTick;
-                    }
-                    const w = localStorage.getItem(WALLET_KEY);
-                    if (w) {
-                        const p = JSON.parse(w);
-                        if (typeof p.wallet === 'number') state.wallet = p.wallet;
-                        if (typeof p.iceBalance === 'number') state.iceBalance = p.iceBalance;
+                    const raw = localStorage.getItem(GEN_KEY);
+                    if (raw) {
+                        const p = JSON.parse(raw);
+                        if (typeof p.level === 'number' && LEVELS[p.level]) gen.level = p.level;
+                        if (typeof p.storedIce === 'number') gen.storedIce = p.storedIce;
+                        if (typeof p.lastTick === 'number') gen.lastTick = p.lastTick;
                     }
                 } catch (e) {}
             }
 
             // ====== AFK-ЛОГИКА ======
             function getConfig() {
-                return LEVELS[state.level];
+                return LEVELS[gen.level];
             }
 
             function secondsPerIce() {
-                const cfg = getConfig();
-                return 3600 / cfg.productionPerHour;
+                return 3600 / getConfig().productionPerHour;
             }
 
-            // Пересчитывает накопленный лёд за прошедшее время (AFK)
             function recalculate() {
                 const now = Date.now();
                 const cfg = getConfig();
                 const sp = secondsPerIce();
-                const elapsedSec = (now - state.lastTick) / 1000;
-
-                const spaceLeft = cfg.capacity - state.storedIce;
+                const elapsedSec = (now - gen.lastTick) / 1000;
+                const spaceLeft = cfg.capacity - gen.storedIce;
 
                 if (spaceLeft <= 0) {
-                    // Хранилище переполнено — просто обновляем время тика,
-                    // чтобы не копить "долг" на будущее
-                    state.lastTick = now;
+                    gen.lastTick = now;
                     return;
                 }
 
@@ -267,25 +299,26 @@
                 if (canProduce <= 0) return;
 
                 const add = Math.min(canProduce, spaceLeft);
-                state.storedIce += add;
-                // Сдвигаем lastTick ровно на add * sp, чтобы сохранить точность
-                state.lastTick += add * sp * 1000;
+                gen.storedIce += add;
+                gen.lastTick += add * sp * 1000;
 
-                // Если упёрлись в потолок — синхронизируем время
-                if (state.storedIce >= cfg.capacity) {
-                    state.lastTick = now;
+                if (gen.storedIce >= cfg.capacity) {
+                    gen.lastTick = now;
                 }
 
-                saveState();
+                saveGen();
             }
 
             // ====== ОТРИСОВКА ======
             function renderTop() {
-                balanceValue.textContent = formatNumber(state.wallet);
-                iceValue.textContent = formatNumber(state.iceBalance);
-                const percent = Math.min((state.xp / state.xpMax) * 100, 100);
+                balanceValue.textContent = formatNumber(player.wallet);
+                iceValue.textContent = formatNumber(player.ice);
+
+                const info = getLevelInfo(player.totalXp);
+                const percent = Math.min((info.currentInLevel / info.needForLevel) * 100, 100);
                 xpFill.style.width = percent + '%';
-                xpText.textContent = formatNumber(state.xp) + ' / ' + formatNumber(state.xpMax);
+                xpText.textContent = formatNumber(info.currentInLevel) + ' / ' + formatNumber(info.needForLevel);
+                playerLevelEl.textContent = 'Уровень ' + info.level;
             }
 
             function renderGenerator() {
@@ -294,32 +327,28 @@
                 levelTitle.textContent = cfg.name;
                 productionEl.textContent = '+' + cfg.productionPerHour + ' 🧊 / час';
                 capacityEl.textContent = formatNumber(cfg.capacity);
-                storedEl.textContent = formatNumber(state.storedIce);
+                storedEl.textContent = formatNumber(gen.storedIce);
 
-                // Статус
-                const isFull = state.storedIce >= cfg.capacity;
+                const isFull = gen.storedIce >= cfg.capacity;
                 statusEl.classList.toggle('full', isFull);
                 statusEl.querySelector('.ice-status-text').textContent =
                     isFull ? 'ХРАНИЛИЩЕ ЗАПОЛНЕНО' : 'РАБОТАЕТ';
 
-                // Прогресс-бар
-                const percent = Math.min((state.storedIce / cfg.capacity) * 100, 100);
+                const percent = Math.min((gen.storedIce / cfg.capacity) * 100, 100);
                 storageFill.style.width = percent + '%';
                 storageFill.classList.toggle('full', isFull);
 
-                // Кнопка «Забрать»
-                const canCollect = state.storedIce > 0;
+                const canCollect = gen.storedIce > 0;
                 collectBtn.disabled = !canCollect;
                 collectBtn.classList.toggle('disabled', !canCollect);
-                collectAmount.textContent = formatNumber(state.storedIce);
+                collectAmount.textContent = formatNumber(gen.storedIce);
 
-                // Кнопка «Улучшить»
                 if (cfg.nextLevel) {
                     const next = LEVELS[cfg.nextLevel];
                     upgradeDesc.textContent =
                         next.name + ' · +' + next.productionPerHour + ' 🧊 / час · ' +
                         formatNumber(next.capacity);
-                    upgradeCost.textContent = formatNumber(cfg.upgradeCost) + ' 💰';
+                    upgradeCost.textContent = formatNumber(cfg.upgradeCost) + ' 💵';
                     upgradeBtn.disabled = false;
                     upgradeBtn.style.display = '';
                 } else {
@@ -330,35 +359,34 @@
 
             function renderNextTimer() {
                 const cfg = getConfig();
-                if (state.storedIce >= cfg.capacity) {
+                if (gen.storedIce >= cfg.capacity) {
                     nextTimerEl.textContent = '--:--';
                     return;
                 }
                 const sp = secondsPerIce();
-                const elapsed = (Date.now() - state.lastTick) / 1000;
+                const elapsed = (Date.now() - gen.lastTick) / 1000;
                 const nextIn = sp - (elapsed % sp);
                 nextTimerEl.textContent = formatTimer(nextIn);
             }
 
             // ====== ДЕЙСТВИЯ ======
             function collect() {
-                if (state.storedIce <= 0) return;
-                const amount = state.storedIce;
-                state.storedIce = 0;
-                state.iceBalance += amount;
-                state.lastTick = Date.now();
+                if (gen.storedIce <= 0) return;
+                const amount = gen.storedIce;
+                gen.storedIce = 0;
+                player.ice += amount;
+                gen.lastTick = Date.now();
 
-                // Анимация всплывающего +N
                 spawnFloatText('+' + formatNumber(amount) + ' 🧊', collectBtn);
 
-                // Небольшая пульсация верхнего бейджа
                 const iceBadge = iceValue.closest('.balance-badge');
                 if (iceBadge) {
                     iceBadge.classList.add('bump');
                     setTimeout(() => iceBadge.classList.remove('bump'), 300);
                 }
 
-                saveState();
+                savePlayer();
+                saveGen();
                 renderTop();
                 renderGenerator();
             }
@@ -366,15 +394,15 @@
             function upgrade() {
                 const cfg = getConfig();
                 if (!cfg.nextLevel) return;
-                if (state.wallet < cfg.upgradeCost) {
-                    // Недостаточно — визуальный сигнал
+                if (player.wallet < cfg.upgradeCost) {
                     upgradeBtn.classList.add('shake');
                     setTimeout(() => upgradeBtn.classList.remove('shake'), 400);
                     return;
                 }
-                state.wallet -= cfg.upgradeCost;
-                state.level = cfg.nextLevel;
-                saveState();
+                player.wallet -= cfg.upgradeCost;
+                gen.level = cfg.nextLevel;
+                savePlayer();
+                saveGen();
                 renderTop();
                 renderGenerator();
             }
@@ -394,7 +422,12 @@
             navItems.forEach(item => {
                 const go = function(e) {
                     e.preventDefault();
-                    if (this.dataset.screen === 'berloga') {
+                    recalculate();
+                    saveGen();
+                    savePlayer();
+                    if (this.dataset.screen === 'earn') {
+                        window.location.href = 'index.html#earn';
+                    } else if (this.dataset.screen === 'berloga') {
                         window.location.href = 'index.html';
                     } else {
                         window.location.href = 'index.html#' + this.dataset.screen;
@@ -421,37 +454,37 @@
             }, { passive: false });
 
             // ====== ИНИЦИАЛИЗАЦИЯ ======
-            loadState();
+            loadPlayer();
+            loadGen();
             recalculate();
             renderTop();
             renderGenerator();
             renderNextTimer();
 
             // ====== ТАЙМЕРЫ ======
-            // Пересчёт AFK — раз в 5 секунд
             setInterval(function() {
                 recalculate();
                 renderGenerator();
             }, 5000);
 
-            // Тикер обратного отсчёта — каждую секунду
             setInterval(function() {
                 renderNextTimer();
-                // на случай если лёд докопится между большими тиками
                 recalculate();
-                const stored = Math.floor(state.storedIce);
+                const stored = Math.floor(gen.storedIce);
                 if (stored !== parseInt(storedEl.textContent.replace(/\s/g, ''), 10)) {
                     renderGenerator();
                 }
             }, 1000);
 
-            // Сохранение при уходе
+            // Обновление при возврате
             document.addEventListener('visibilitychange', function() {
                 if (document.visibilityState === 'hidden') {
                     recalculate();
-                    saveState();
+                    saveGen();
+                    savePlayer();
                 } else {
-                    loadState();
+                    loadPlayer();
+                    loadGen();
                     recalculate();
                     renderTop();
                     renderGenerator();
@@ -460,7 +493,8 @@
 
             window.addEventListener('beforeunload', function() {
                 recalculate();
-                saveState();
+                saveGen();
+                savePlayer();
             });
 
             // ====== SAFE AREA ======
