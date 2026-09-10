@@ -1,1 +1,382 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Быстрый заезд — Лохматый клуб</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- TOP PANEL -->
+        <header id="top-panel">
+            <div class="top-row">
+                <div class="player-info">
+                    <div class="avatar">
+                        <div class="avatar-inner">🐻</div>
+                    </div>
+                    <div class="player-name-level">
+                        <div class="player-name" id="player-name">Игрок</div>
+                        <div class="player-level" id="player-level">Уровень 1</div>
+                    </div>
+                </div>
+                <div class="balance-badge-group">
+                    <div class="balance-badge">
+                        <span class="wallet-icon">💵</span>
+                        <span class="balance-value" id="balance-value">0</span>
+                    </div>
+                    <div class="balance-badge ice">
+                        <span class="wallet-icon">🧊</span>
+                        <span class="balance-value" id="ice-value">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="xp-row">
+                <span class="xp-label">XP</span>
+                <div class="xp-bar">
+                    <div class="xp-bar-fill" id="xp-fill"></div>
+                </div>
+                <span class="xp-text" id="xp-text">0 / 100</span>
+            </div>
+        </header>
 
+        <!-- CONTENT AREA -->
+        <main id="content">
+            <div id="screen-race" class="screen-content">
+
+                <!-- RACER CARDS -->
+                <div class="race-racers">
+                    <div class="racer-card racer-me">
+                        <div class="racer-avatar">
+                            <img src="https://cdn.pixabay.com/photo/2026/09/10/20/27/20-27-55-61_1280.png" alt="Я" draggable="false">
+                        </div>
+                        <div class="racer-info">
+                            <div class="racer-title">Я</div>
+                            <div class="racer-sled">Вихрь</div>
+                            <div class="racer-speed"><span id="my-speed">80</span> км/ч</div>
+                        </div>
+                    </div>
+
+                    <div class="racer-vs">VS</div>
+
+                    <div class="racer-card racer-npc">
+                        <div class="racer-info racer-info-right">
+                            <div class="racer-title">НПС</div>
+                            <div class="racer-sled" id="npc-sled">— — —</div>
+                            <div class="racer-speed"><span id="npc-speed">??</span> км/ч</div>
+                        </div>
+                        <div class="racer-avatar">
+                            <img src="https://cdn.pixabay.com/photo/2026/09/10/20/27/20-27-56-577_1280.png" alt="НПС" draggable="false">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TRACK -->
+                <div class="race-track" id="race-track">
+                    <img class="race-track-bg" src="https://cdn.pixabay.com/photo/2026/09/10/19/57/19-57-46-407_1280.png" alt="Трасса" draggable="false">
+
+                    <div class="race-runner race-runner-npc" id="runner-npc">
+                        <img src="https://cdn.pixabay.com/photo/2026/09/10/20/27/20-27-56-577_1280.png" alt="" draggable="false">
+                    </div>
+
+                    <div class="race-runner race-runner-me" id="runner-me">
+                        <img src="https://cdn.pixabay.com/photo/2026/09/10/20/27/20-27-55-61_1280.png" alt="" draggable="false">
+                    </div>
+                </div>
+
+                <!-- RESULT MESSAGE -->
+                <div class="race-result hidden" id="race-result"></div>
+
+                <!-- START BUTTON -->
+                <button class="race-start-btn" id="race-start-btn">
+                    <span class="race-start-emoji">🏁</span>
+                    <span class="race-start-text" id="race-start-text">СТАРТ</span>
+                </button>
+
+            </div>
+        </main>
+
+        <!-- BOTTOM NAV -->
+        <nav id="bottom-nav">
+            <button class="nav-item" data-screen="invest" aria-label="Инвестиции">
+                <span class="nav-emoji">📈</span>
+                <span class="nav-label">Инвест</span>
+            </button>
+            <button class="nav-item" data-screen="business" aria-label="Бизнес">
+                <span class="nav-emoji">💼</span>
+                <span class="nav-label">Бизнес</span>
+            </button>
+            <button class="nav-item active" data-screen="earn" aria-label="Заработок">
+                <span class="nav-emoji">💵</span>
+                <span class="nav-label">Заработок</span>
+            </button>
+            <button class="nav-item" data-screen="berloga" aria-label="Берлога">
+                <span class="nav-emoji">🏔️</span>
+                <span class="nav-label">Берлога</span>
+            </button>
+            <button class="nav-item" data-screen="profile" aria-label="Профиль">
+                <span class="nav-emoji">👤</span>
+                <span class="nav-label">Профиль</span>
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        (function() {
+            const PLAYER_KEY = 'lokhmaty_player_v1';
+
+            // ====== КОНСТАНТЫ ГОНКИ ======
+            const MY_SPEED = 80;              // км/ч (фиксированная скорость игрока)
+            const RACE_DURATION = 5000;       // мс — длительность анимации
+            const WIN_CHANCE = 0.78;          // 78% шанс победы
+            const REWARD_WIN_WALLET = 100;    // валюта за победу
+            const REWARD_WIN_XP = 3;          // опыт за победу
+            const REWARD_LOSE_XP = 1;         // опыт за проигрыш
+
+            const NPC_NAMES = ['Мороз', 'Пурга', 'Метель', 'Вьюга', 'Снеговик', 'Ледокол', 'Сугроб'];
+
+            // Позиции на трассе (в % от ширины контейнера)
+            const START_X = 7;
+            const END_X = 80;
+
+            // ====== ЛОГИКА УРОВНЕЙ (та же, что и в index.html) ======
+            function cumulativeXp(level) {
+                let total = 0;
+                for (let i = 1; i < level; i++) total += i * 100;
+                return total;
+            }
+
+            function getLevelInfo(totalXp) {
+                let level = 1;
+                while (cumulativeXp(level + 1) <= totalXp) level++;
+                const base = cumulativeXp(level);
+                const next = cumulativeXp(level + 1);
+                return {
+                    level,
+                    currentInLevel: totalXp - base,
+                    needForLevel: next - base,
+                };
+            }
+
+            // ====== СОСТОЯНИЕ ======
+            const state = {
+                wallet: 0,
+                ice: 0,
+                totalXp: 0,
+                racing: false,
+            };
+
+            // ====== DOM ======
+            const balanceValue = document.getElementById('balance-value');
+            const iceValue = document.getElementById('ice-value');
+            const xpFill = document.getElementById('xp-fill');
+            const xpText = document.getElementById('xp-text');
+            const playerLevelEl = document.getElementById('player-level');
+
+            const mySpeedEl = document.getElementById('my-speed');
+            const npcSpeedEl = document.getElementById('npc-speed');
+            const npcSledEl = document.getElementById('npc-sled');
+
+            const runnerMe = document.getElementById('runner-me');
+            const runnerNpc = document.getElementById('runner-npc');
+
+            const startBtn = document.getElementById('race-start-btn');
+            const startText = document.getElementById('race-start-text');
+            const resultEl = document.getElementById('race-result');
+
+            const navItems = document.querySelectorAll('.nav-item');
+
+            // ====== ФОРМАТ ======
+            function formatNumber(num) {
+                num = Math.floor(num);
+                if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+                if (num >= 1000) return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                return num.toString();
+            }
+
+            // ====== СОХРАНЕНИЕ / ЗАГРУЗКА ======
+            function savePlayer() {
+                try {
+                    localStorage.setItem(PLAYER_KEY, JSON.stringify({
+                        wallet: state.wallet,
+                        ice: state.ice,
+                        totalXp: state.totalXp,
+                    }));
+                } catch (e) {}
+            }
+
+            function loadPlayer() {
+                try {
+                    const raw = localStorage.getItem(PLAYER_KEY);
+                    if (raw) {
+                        const p = JSON.parse(raw);
+                        if (typeof p.wallet === 'number') state.wallet = p.wallet;
+                        if (typeof p.ice === 'number') state.ice = p.ice;
+                        if (typeof p.totalXp === 'number') state.totalXp = p.totalXp;
+                    }
+                } catch (e) {}
+            }
+
+            // ====== ОТРИСОВКА ВЕРХА ======
+            function renderTop() {
+                balanceValue.textContent = formatNumber(state.wallet);
+                iceValue.textContent = formatNumber(state.ice);
+
+                const info = getLevelInfo(state.totalXp);
+                const percent = Math.min((info.currentInLevel / info.needForLevel) * 100, 100);
+                xpFill.style.width = percent + '%';
+                xpText.textContent = formatNumber(info.currentInLevel) + ' / ' + formatNumber(info.needForLevel);
+                playerLevelEl.textContent = 'Уровень ' + info.level;
+            }
+
+            // ====== СБРОС РАННЕРОВ НА СТАРТ ======
+            function resetRunners() {
+                runnerMe.style.left = START_X + '%';
+                runnerNpc.style.left = START_X + '%';
+            }
+
+            // ====== ЗАПУСК ГОНКИ ======
+            function startRace() {
+                if (state.racing) return;
+                state.racing = true;
+
+                // Скрываем прошлый результат
+                resultEl.classList.add('hidden');
+                resultEl.classList.remove('win', 'lose');
+
+                // Сброс позиций
+                resetRunners();
+
+                // Кнопка на время гонки неактивна
+                startBtn.disabled = true;
+                startText.textContent = 'В ГОНКЕ...';
+
+                // Имя НПС
+                const npcName = NPC_NAMES[Math.floor(Math.random() * NPC_NAMES.length)];
+                npcSledEl.textContent = npcName;
+
+                // Сначала решаем исход (78%)
+                const playerWins = Math.random() < WIN_CHANCE;
+
+                // Скорость НПС в зависимости от исхода
+                let npcSpeed;
+                if (playerWins) {
+                    // Меньше 80 → игрок побеждает
+                    npcSpeed = 60 + Math.floor(Math.random() * 20); // 60..79
+                } else {
+                    // Больше 80 → игрок проигрывает
+                    npcSpeed = 81 + Math.floor(Math.random() * 20); // 81..100
+                }
+
+                // Показываем скорость НПС
+                npcSpeedEl.textContent = npcSpeed;
+
+                // Расчёт анимации
+                const maxSpeed = Math.max(MY_SPEED, npcSpeed);
+                const myFinalProgress = MY_SPEED / maxSpeed;   // доля от 1
+                const npcFinalProgress = npcSpeed / maxSpeed;
+
+                const range = END_X - START_X;
+                const startTime = performance.now();
+
+                function tick(now) {
+                    const elapsed = now - startTime;
+                    const t = Math.min(elapsed / RACE_DURATION, 1);
+
+                    const myLeft = START_X + (t * myFinalProgress) * range;
+                    const npcLeft = START_X + (t * npcFinalProgress) * range;
+
+                    runnerMe.style.left = myLeft + '%';
+                    runnerNpc.style.left = npcLeft + '%';
+
+                    if (t < 1) {
+                        requestAnimationFrame(tick);
+                    } else {
+                        finishRace(playerWins);
+                    }
+                }
+                requestAnimationFrame(tick);
+            }
+
+            // ====== ФИНИШ ======
+            function finishRace(playerWins) {
+                let message;
+
+                if (playerWins) {
+                    state.wallet += REWARD_WIN_WALLET;
+                    state.totalXp += REWARD_WIN_XP;
+                    message = '🏆 ПОБЕДА! +' + REWARD_WIN_WALLET + ' 💵 · +' + REWARD_WIN_XP + ' XP';
+                    resultEl.classList.add('win');
+                } else {
+                    state.totalXp += REWARD_LOSE_XP;
+                    message = '❄️ Проигрыш... +' + REWARD_LOSE_XP + ' XP';
+                    resultEl.classList.add('lose');
+                }
+
+                resultEl.textContent = message;
+                resultEl.classList.remove('hidden');
+
+                savePlayer();
+                renderTop();
+
+                state.racing = false;
+                startBtn.disabled = false;
+                startText.textContent = 'ЕЩЁ РАЗ';
+            }
+
+            // ====== НАВИГАЦИЯ ======
+            navItems.forEach(item => {
+                const go = function(e) {
+                    e.preventDefault();
+                    if (state.racing) return; // не уходим во время гонки
+                    if (this.dataset.screen === 'earn') {
+                        window.location.href = 'index.html#earn';
+                    } else if (this.dataset.screen === 'berloga') {
+                        window.location.href = 'index.html';
+                    } else {
+                        window.location.href = 'index.html#' + this.dataset.screen;
+                    }
+                };
+                item.addEventListener('click', go);
+                item.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    go.call(this, e);
+                }, { passive: false });
+            });
+
+            // ====== ОБРАБОТЧИК СТАРТА ======
+            startBtn.addEventListener('click', startRace);
+            startBtn.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                startRace();
+            }, { passive: false });
+
+            // ====== ИНИЦИАЛИЗАЦИЯ ======
+            function init() {
+                loadPlayer();
+                renderTop();
+                resetRunners();
+            }
+            init();
+
+            // ====== SAFE AREA ======
+            function handleSafeArea() {
+                const bottomNav = document.getElementById('bottom-nav');
+                const safeBottom = getComputedStyle(document.documentElement)
+                    .getPropertyValue('env(safe-area-inset-bottom)');
+                if (safeBottom && safeBottom !== '0px') {
+                    bottomNav.style.paddingBottom = safeBottom;
+                }
+            }
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', handleSafeArea);
+            }
+            handleSafeArea();
+
+            document.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+        })();
+    </script>
+</body>
+</html>
