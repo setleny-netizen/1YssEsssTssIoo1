@@ -43,9 +43,69 @@
         <!-- CONTENT AREA -->
         <main id="content">
             <div id="screen-ice" class="screen-content">
-                <div class="ice-page-image">
-                    <img src="https://cdn.pixabay.com/photo/2026/09/10/15/30/15-30-22-199_1280.png" alt="Ледогенератор" draggable="false" loading="eager">
+
+                <!-- IMAGE + TITLE -->
+                <div class="ice-hero">
+                    <div class="ice-image-wrap">
+                        <div class="ice-glow"></div>
+                        <img src="https://cdn.pixabay.com/photo/2026/09/10/15/30/15-30-22-199_1280.png" alt="Ледогенератор" draggable="false" loading="eager">
+                    </div>
+                    <div class="ice-hero-info">
+                        <div class="ice-hero-title" id="ice-level-title">ЛЕДОГЕНЕРАТОР I</div>
+                        <div class="ice-hero-status" id="ice-status">
+                            <span class="ice-status-dot"></span>
+                            <span class="ice-status-text">РАБОТАЕТ</span>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- PRODUCTION + NEXT ICE -->
+                <div class="ice-info-row">
+                    <div class="ice-info-cell">
+                        <div class="ice-info-label">Производство</div>
+                        <div class="ice-info-value" id="ice-production">+5 🧊 / час</div>
+                    </div>
+                    <div class="ice-info-cell">
+                        <div class="ice-info-label">Следующий лёд</div>
+                        <div class="ice-info-value" id="ice-next-timer">--:--</div>
+                    </div>
+                </div>
+
+                <!-- STORAGE -->
+                <div class="ice-storage-card">
+                    <div class="ice-storage-header">
+                        <span class="ice-storage-emoji">🧊</span>
+                        <span class="ice-storage-title">НАКОПЛЕНО</span>
+                    </div>
+                    <div class="ice-storage-count">
+                        <span id="ice-stored">0</span>
+                        <span class="ice-storage-sep">/</span>
+                        <span id="ice-capacity">500</span>
+                    </div>
+                    <div class="ice-storage-bar">
+                        <div class="ice-storage-bar-fill" id="ice-storage-fill"></div>
+                    </div>
+                </div>
+
+                <!-- COLLECT BUTTON -->
+                <button class="ice-collect-btn" id="ice-collect-btn" disabled>
+                    <span class="ice-collect-emoji">🧊</span>
+                    <span class="ice-collect-text">ЗАБРАТЬ</span>
+                    <span class="ice-collect-amount" id="ice-collect-amount">0</span>
+                </button>
+
+                <!-- UPGRADE BUTTON -->
+                <button class="ice-upgrade-btn" id="ice-upgrade-btn">
+                    <div class="ice-upgrade-left">
+                        <div class="ice-upgrade-title">
+                            <span class="ice-upgrade-arrow">⬆️</span>
+                            <span>УЛУЧШИТЬ</span>
+                        </div>
+                        <div class="ice-upgrade-desc" id="ice-upgrade-desc">Ледогенератор II · +10 🧊 / час · 1 000</div>
+                    </div>
+                    <div class="ice-upgrade-cost" id="ice-upgrade-cost">2 500 💰</div>
+                </button>
+
             </div>
         </main>
 
@@ -76,12 +136,51 @@
 
     <script>
         (function() {
+            const STORAGE_KEY = 'lokhmaty_ice_generator_v1';
+            const WALLET_KEY = 'lokhmaty_wallet_v1';
+
+            // ====== КОНФИГ УРОВНЕЙ ======
+            const LEVELS = {
+                1: {
+                    name: 'ЛЕДОГЕНЕРАТОР I',
+                    productionPerHour: 5,
+                    capacity: 500,
+                    upgradeCost: 2500,
+                    nextLevel: 2,
+                },
+                2: {
+                    name: 'ЛЕДОГЕНЕРАТОР II',
+                    productionPerHour: 10,
+                    capacity: 1000,
+                    upgradeCost: null,
+                    nextLevel: null,
+                },
+            };
+
+            // ====== СОСТОЯНИЕ ======
             const state = {
-                balance: 0,
-                ice: 0,
+                level: 1,
+                storedIce: 0,
+                lastTick: Date.now(),
+                wallet: 0,
+                iceBalance: 0,
                 xp: 1175,
                 xpMax: 24000,
             };
+
+            // ====== DOM ======
+            const levelTitle = document.getElementById('ice-level-title');
+            const statusEl = document.getElementById('ice-status');
+            const productionEl = document.getElementById('ice-production');
+            const nextTimerEl = document.getElementById('ice-next-timer');
+            const storedEl = document.getElementById('ice-stored');
+            const capacityEl = document.getElementById('ice-capacity');
+            const storageFill = document.getElementById('ice-storage-fill');
+            const collectBtn = document.getElementById('ice-collect-btn');
+            const collectAmount = document.getElementById('ice-collect-amount');
+            const upgradeBtn = document.getElementById('ice-upgrade-btn');
+            const upgradeDesc = document.getElementById('ice-upgrade-desc');
+            const upgradeCost = document.getElementById('ice-upgrade-cost');
 
             const balanceValue = document.getElementById('balance-value');
             const iceValue = document.getElementById('ice-value');
@@ -89,24 +188,209 @@
             const xpText = document.getElementById('xp-text');
             const navItems = document.querySelectorAll('.nav-item');
 
+            // ====== ФОРМАТ ======
             function formatNumber(num) {
+                num = Math.floor(num);
                 if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
                 if (num >= 1000) return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
                 return num.toString();
             }
 
-            function updateBalance() {
-                balanceValue.textContent = formatNumber(state.balance);
-                iceValue.textContent = formatNumber(state.ice);
+            function formatTimer(seconds) {
+                if (seconds == null || seconds < 0) return '--:--';
+                seconds = Math.max(0, Math.floor(seconds));
+                const m = Math.floor(seconds / 60);
+                const s = seconds % 60;
+                return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
             }
 
-            function updateXP() {
+            // ====== СОХРАНЕНИЕ / ЗАГРУЗКА ======
+            function saveState() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                        level: state.level,
+                        storedIce: state.storedIce,
+                        lastTick: state.lastTick,
+                    }));
+                    localStorage.setItem(WALLET_KEY, JSON.stringify({
+                        wallet: state.wallet,
+                        iceBalance: state.iceBalance,
+                    }));
+                } catch (e) {}
+            }
+
+            function loadState() {
+                try {
+                    const saved = localStorage.getItem(STORAGE_KEY);
+                    if (saved) {
+                        const p = JSON.parse(saved);
+                        if (typeof p.level === 'number' && LEVELS[p.level]) state.level = p.level;
+                        if (typeof p.storedIce === 'number') state.storedIce = p.storedIce;
+                        if (typeof p.lastTick === 'number') state.lastTick = p.lastTick;
+                    }
+                    const w = localStorage.getItem(WALLET_KEY);
+                    if (w) {
+                        const p = JSON.parse(w);
+                        if (typeof p.wallet === 'number') state.wallet = p.wallet;
+                        if (typeof p.iceBalance === 'number') state.iceBalance = p.iceBalance;
+                    }
+                } catch (e) {}
+            }
+
+            // ====== AFK-ЛОГИКА ======
+            function getConfig() {
+                return LEVELS[state.level];
+            }
+
+            function secondsPerIce() {
+                const cfg = getConfig();
+                return 3600 / cfg.productionPerHour;
+            }
+
+            // Пересчитывает накопленный лёд за прошедшее время (AFK)
+            function recalculate() {
+                const now = Date.now();
+                const cfg = getConfig();
+                const sp = secondsPerIce();
+                const elapsedSec = (now - state.lastTick) / 1000;
+
+                const spaceLeft = cfg.capacity - state.storedIce;
+
+                if (spaceLeft <= 0) {
+                    // Хранилище переполнено — просто обновляем время тика,
+                    // чтобы не копить "долг" на будущее
+                    state.lastTick = now;
+                    return;
+                }
+
+                const canProduce = Math.floor(elapsedSec / sp);
+                if (canProduce <= 0) return;
+
+                const add = Math.min(canProduce, spaceLeft);
+                state.storedIce += add;
+                // Сдвигаем lastTick ровно на add * sp, чтобы сохранить точность
+                state.lastTick += add * sp * 1000;
+
+                // Если упёрлись в потолок — синхронизируем время
+                if (state.storedIce >= cfg.capacity) {
+                    state.lastTick = now;
+                }
+
+                saveState();
+            }
+
+            // ====== ОТРИСОВКА ======
+            function renderTop() {
+                balanceValue.textContent = formatNumber(state.wallet);
+                iceValue.textContent = formatNumber(state.iceBalance);
                 const percent = Math.min((state.xp / state.xpMax) * 100, 100);
                 xpFill.style.width = percent + '%';
                 xpText.textContent = formatNumber(state.xp) + ' / ' + formatNumber(state.xpMax);
             }
 
-            // Навигация — возврат на index.html
+            function renderGenerator() {
+                const cfg = getConfig();
+
+                levelTitle.textContent = cfg.name;
+                productionEl.textContent = '+' + cfg.productionPerHour + ' 🧊 / час';
+                capacityEl.textContent = formatNumber(cfg.capacity);
+                storedEl.textContent = formatNumber(state.storedIce);
+
+                // Статус
+                const isFull = state.storedIce >= cfg.capacity;
+                statusEl.classList.toggle('full', isFull);
+                statusEl.querySelector('.ice-status-text').textContent =
+                    isFull ? 'ХРАНИЛИЩЕ ЗАПОЛНЕНО' : 'РАБОТАЕТ';
+
+                // Прогресс-бар
+                const percent = Math.min((state.storedIce / cfg.capacity) * 100, 100);
+                storageFill.style.width = percent + '%';
+                storageFill.classList.toggle('full', isFull);
+
+                // Кнопка «Забрать»
+                const canCollect = state.storedIce > 0;
+                collectBtn.disabled = !canCollect;
+                collectBtn.classList.toggle('disabled', !canCollect);
+                collectAmount.textContent = formatNumber(state.storedIce);
+
+                // Кнопка «Улучшить»
+                if (cfg.nextLevel) {
+                    const next = LEVELS[cfg.nextLevel];
+                    upgradeDesc.textContent =
+                        next.name + ' · +' + next.productionPerHour + ' 🧊 / час · ' +
+                        formatNumber(next.capacity);
+                    upgradeCost.textContent = formatNumber(cfg.upgradeCost) + ' 💰';
+                    upgradeBtn.disabled = false;
+                    upgradeBtn.style.display = '';
+                } else {
+                    upgradeBtn.disabled = true;
+                    upgradeBtn.style.display = 'none';
+                }
+            }
+
+            function renderNextTimer() {
+                const cfg = getConfig();
+                if (state.storedIce >= cfg.capacity) {
+                    nextTimerEl.textContent = '--:--';
+                    return;
+                }
+                const sp = secondsPerIce();
+                const elapsed = (Date.now() - state.lastTick) / 1000;
+                const nextIn = sp - (elapsed % sp);
+                nextTimerEl.textContent = formatTimer(nextIn);
+            }
+
+            // ====== ДЕЙСТВИЯ ======
+            function collect() {
+                if (state.storedIce <= 0) return;
+                const amount = state.storedIce;
+                state.storedIce = 0;
+                state.iceBalance += amount;
+                state.lastTick = Date.now();
+
+                // Анимация всплывающего +N
+                spawnFloatText('+' + formatNumber(amount) + ' 🧊', collectBtn);
+
+                // Небольшая пульсация верхнего бейджа
+                const iceBadge = iceValue.closest('.balance-badge');
+                if (iceBadge) {
+                    iceBadge.classList.add('bump');
+                    setTimeout(() => iceBadge.classList.remove('bump'), 300);
+                }
+
+                saveState();
+                renderTop();
+                renderGenerator();
+            }
+
+            function upgrade() {
+                const cfg = getConfig();
+                if (!cfg.nextLevel) return;
+                if (state.wallet < cfg.upgradeCost) {
+                    // Недостаточно — визуальный сигнал
+                    upgradeBtn.classList.add('shake');
+                    setTimeout(() => upgradeBtn.classList.remove('shake'), 400);
+                    return;
+                }
+                state.wallet -= cfg.upgradeCost;
+                state.level = cfg.nextLevel;
+                saveState();
+                renderTop();
+                renderGenerator();
+            }
+
+            function spawnFloatText(text, anchor) {
+                const rect = anchor.getBoundingClientRect();
+                const el = document.createElement('div');
+                el.className = 'ice-float';
+                el.textContent = text;
+                el.style.left = (rect.left + rect.width / 2) + 'px';
+                el.style.top = (rect.top + 10) + 'px';
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 1100);
+            }
+
+            // ====== НАВИГАЦИЯ ======
             navItems.forEach(item => {
                 const go = function(e) {
                     e.preventDefault();
@@ -123,13 +407,63 @@
                 }, { passive: false });
             });
 
-            function init() {
-                updateBalance();
-                updateXP();
-            }
+            // ====== ОБРАБОТЧИКИ ======
+            collectBtn.addEventListener('click', collect);
+            collectBtn.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                collect();
+            }, { passive: false });
 
-            init();
+            upgradeBtn.addEventListener('click', upgrade);
+            upgradeBtn.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                upgrade();
+            }, { passive: false });
 
+            // ====== ИНИЦИАЛИЗАЦИЯ ======
+            loadState();
+            recalculate();
+            renderTop();
+            renderGenerator();
+            renderNextTimer();
+
+            // ====== ТАЙМЕРЫ ======
+            // Пересчёт AFK — раз в 5 секунд
+            setInterval(function() {
+                recalculate();
+                renderGenerator();
+            }, 5000);
+
+            // Тикер обратного отсчёта — каждую секунду
+            setInterval(function() {
+                renderNextTimer();
+                // на случай если лёд докопится между большими тиками
+                recalculate();
+                const stored = Math.floor(state.storedIce);
+                if (stored !== parseInt(storedEl.textContent.replace(/\s/g, ''), 10)) {
+                    renderGenerator();
+                }
+            }, 1000);
+
+            // Сохранение при уходе
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'hidden') {
+                    recalculate();
+                    saveState();
+                } else {
+                    loadState();
+                    recalculate();
+                    renderTop();
+                    renderGenerator();
+                }
+            });
+
+            window.addEventListener('beforeunload', function() {
+                recalculate();
+                saveState();
+            });
+
+            // ====== SAFE AREA ======
             function handleSafeArea() {
                 const bottomNav = document.getElementById('bottom-nav');
                 const safeBottom = getComputedStyle(document.documentElement)
@@ -138,7 +472,6 @@
                     bottomNav.style.paddingBottom = safeBottom;
                 }
             }
-
             if (window.visualViewport) {
                 window.visualViewport.addEventListener('resize', handleSafeArea);
             }
