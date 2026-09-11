@@ -114,12 +114,12 @@
                 </a>
             </div>
 
-            <!-- Бизнес -->
+            <!-- Бизнес (заглушка, не используется — ушли на business.html) -->
             <div id="screen-business" class="screen-content screen-placeholder hidden">
                 <div class="placeholder-card">
                     <div class="icon">💼</div>
                     <div class="title">Бизнес</div>
-                    <div class="subtitle">Раздел в разработке.<br>Здесь будет твой бизнес-центр.</div>
+                    <div class="subtitle">Загрузка...</div>
                 </div>
             </div>
 
@@ -271,6 +271,13 @@
             navItems.forEach(item => {
                 const go = function(e) {
                     e.preventDefault();
+
+                    // Бизнес — отдельная страница
+                    if (this.dataset.screen === 'business') {
+                        window.location.href = 'business.html';
+                        return;
+                    }
+
                     switchScreen(this.dataset.screen);
                     history.replaceState(null, '', '#' + this.dataset.screen);
                 };
@@ -287,7 +294,7 @@
                 renderTop();
 
                 const hash = window.location.hash.replace('#', '');
-                const valid = ['berloga', 'earn', 'business', 'invest', 'profile'];
+                const valid = ['berloga', 'earn', 'invest', 'profile'];
                 if (hash && valid.includes(hash)) {
                     switchScreen(hash);
                 } else {
@@ -296,7 +303,7 @@
             }
             init();
 
-            // Перечитывание при возврате на страницу
+            // Перечитывание при возврате
             document.addEventListener('visibilitychange', function() {
                 if (document.visibilityState === 'visible') {
                     loadPlayer();
