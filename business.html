@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Бизнес — Лохматый клуб</title>
-    <link rel="stylesheet" href="style.css?v=3">
+    <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
     <div id="app">
@@ -61,9 +61,7 @@
                     <div class="biz-my-count" id="biz-my-count">0 / 3</div>
                 </div>
 
-                <div class="biz-companies" id="biz-companies">
-                    <!-- сюда будут добавляться фирмы когда появятся -->
-                </div>
+                <div class="biz-companies" id="biz-companies"></div>
 
             </div>
         </main>
@@ -91,13 +89,117 @@
                 <span class="nav-label">Профиль</span>
             </button>
         </nav>
+
+        <!-- ====== MODAL: BUSINESS CATALOG ====== -->
+        <div class="modal-overlay hidden" id="modal-catalog">
+            <div class="modal-sheet">
+                <div class="modal-header">
+                    <div class="modal-title">Открыть бизнес</div>
+                    <button class="modal-close" data-close="modal-catalog">✕</button>
+                </div>
+                <div class="modal-body" id="catalog-list"></div>
+            </div>
+        </div>
+
+        <!-- ====== MODAL: SLOTS ====== -->
+        <div class="modal-overlay hidden" id="modal-slots">
+            <div class="modal-sheet">
+                <div class="modal-header">
+                    <div class="modal-title">Слоты для бизнеса</div>
+                    <button class="modal-close" data-close="modal-slots">✕</button>
+                </div>
+                <div class="modal-body">
+                    <div class="slot-info">
+                        <div class="slot-info-row">
+                            <span>Занято слотов</span>
+                            <strong id="slot-used">0 / 3</strong>
+                        </div>
+                        <div class="slot-info-row">
+                            <span>Следующий слот</span>
+                            <strong id="slot-next-price">10 000 💵</strong>
+                        </div>
+                    </div>
+                    <button class="slot-buy-btn" id="slot-buy-btn">Купить слот</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
         (function() {
             const PLAYER_KEY = 'lokhmaty_player_v1';
+            const BIZ_KEY = 'lokhmaty_business_v1';
 
-            // ====== УРОВНИ ======
+            // ====== КОНФИГ БИЗНЕСОВ ======
+            const BUSINESSES = {
+                shawarma: {
+                    id: 'shawarma',
+                    name: 'Шаурмичная',
+                    emoji: '🌯',
+                    type: 'Общепит',
+                    price: 5000,
+                    income: 50,
+                    maxLevel: 5,
+                    upgradeMult: 2.5,
+                    incomeMult: 1.8,
+                },
+                taxi: {
+                    id: 'taxi',
+                    name: 'Таксопарк',
+                    emoji: '🚖',
+                    type: 'Транспорт',
+                    price: 25000,
+                    income: 200,
+                    maxLevel: 5,
+                    upgradeMult: 2.5,
+                    incomeMult: 1.9,
+                },
+                hotel: {
+                    id: 'hotel',
+                    name: 'Отель',
+                    emoji: '🏨',
+                    type: 'Недвижимость',
+                    price: 150000,
+                    income: 1200,
+                    maxLevel: 5,
+                    upgradeMult: 2.5,
+                    incomeMult: 2.0,
+                },
+                oil: {
+                    id: 'oil',
+                    name: 'Нефтевышка',
+                    emoji: '🛢️',
+                    type: 'Промышленность',
+                    price: 800000,
+                    income: 6000,
+                    maxLevel: 5,
+                    upgradeMult: 2.5,
+                    incomeMult: 2.1,
+                },
+                it: {
+                    id: 'it',
+                    name: 'IT-Корпорация',
+                    emoji: '💻',
+                    type: 'Технологии',
+                    price: 5000000,
+                    income: 35000,
+                    maxLevel: 5,
+                    upgradeMult: 2.5,
+                    incomeMult: 2.2,
+                },
+            };
+
+            // ====== КОНФИГ СЛОТОВ ======
+            const BASE_SLOTS = 3;
+            function slotPrice(currentSlots) {
+                // 4-й слот: 10к, 5-й: 50к, 6-й: 250к, 7-й: 1.25M, ...
+                const extra = currentSlots - BASE_SLOTS;
+                return 10000 * Math.pow(5, extra);
+            }
+            const MAX_SLOTS = 10;
+
+            // ====== УРОВНИ ИГРОКА ======
             function cumulativeXp(level) {
                 let total = 0;
                 for (let i = 1; i < level; i++) total += i * 100;
@@ -117,10 +219,15 @@
             }
 
             // ====== СОСТОЯНИЕ ======
-            const state = {
+            const player = {
                 wallet: 0,
                 ice: 0,
                 totalXp: 0,
+            };
+
+            const biz = {
+                slots: BASE_SLOTS,
+                owned: {}, // { id: { level: 1 } }
             };
 
             // ====== DOM ======
@@ -129,61 +236,289 @@
             const xpFill = document.getElementById('xp-fill');
             const xpText = document.getElementById('xp-text');
             const playerLevelEl = document.getElementById('player-level');
+
             const bizIncomeEl = document.getElementById('biz-income');
+            const bizMyCountEl = document.getElementById('biz-my-count');
+            const bizCompaniesEl = document.getElementById('biz-companies');
+
+            const modalCatalog = document.getElementById('modal-catalog');
+            const modalSlots = document.getElementById('modal-slots');
+            const catalogList = document.getElementById('catalog-list');
+
+            const slotUsedEl = document.getElementById('slot-used');
+            const slotNextPriceEl = document.getElementById('slot-next-price');
+            const slotBuyBtn = document.getElementById('slot-buy-btn');
 
             const navItems = document.querySelectorAll('.nav-item');
 
             // ====== ФОРМАТ ======
             function formatNumber(num) {
                 num = Math.floor(num);
+                if (num >= 1000000000) return (num / 1000000000).toFixed(1) + 'B';
                 if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
                 if (num >= 1000) return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
                 return num.toString();
             }
 
             function formatMoney(num) {
-                const n = num.toFixed(2).replace('.', ',');
-                const [int, dec] = n.split(',');
-                const withSpaces = int.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-                return '$ ' + withSpaces + ',' + dec;
+                const n = Math.floor(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                return '$ ' + n + ',00';
             }
 
-            // ====== ЗАГРУЗКА ======
-            function loadPlayer() {
+            // ====== СОХРАНЕНИЕ ======
+            function savePlayer() {
                 try {
-                    const raw = localStorage.getItem(PLAYER_KEY);
-                    if (raw) {
-                        const p = JSON.parse(raw);
-                        if (typeof p.wallet === 'number') state.wallet = p.wallet;
-                        if (typeof p.ice === 'number') state.ice = p.ice;
-                        if (typeof p.totalXp === 'number') state.totalXp = p.totalXp;
+                    localStorage.setItem(PLAYER_KEY, JSON.stringify({
+                        wallet: player.wallet,
+                        ice: player.ice,
+                        totalXp: player.totalXp,
+                    }));
+                } catch (e) {}
+            }
+
+            function saveBiz() {
+                try {
+                    localStorage.setItem(BIZ_KEY, JSON.stringify({
+                        slots: biz.slots,
+                        owned: biz.owned,
+                    }));
+                } catch (e) {}
+            }
+
+            function loadAll() {
+                try {
+                    const rawP = localStorage.getItem(PLAYER_KEY);
+                    if (rawP) {
+                        const p = JSON.parse(rawP);
+                        if (typeof p.wallet === 'number') player.wallet = p.wallet;
+                        if (typeof p.ice === 'number') player.ice = p.ice;
+                        if (typeof p.totalXp === 'number') player.totalXp = p.totalXp;
+                    }
+                    const rawB = localStorage.getItem(BIZ_KEY);
+                    if (rawB) {
+                        const b = JSON.parse(rawB);
+                        if (typeof b.slots === 'number') biz.slots = b.slots;
+                        if (b.owned && typeof b.owned === 'object') biz.owned = b.owned;
                     }
                 } catch (e) {}
             }
 
-            // ====== ОТРИСОВКА ======
-            function renderTop() {
-                balanceValue.textContent = formatNumber(state.wallet);
-                iceValue.textContent = formatNumber(state.ice);
+            // ====== РАСЧЁТЫ ======
+            function ownedCount() {
+                return Object.keys(biz.owned).length;
+            }
 
-                const info = getLevelInfo(state.totalXp);
+            function incomePerHour() {
+                let total = 0;
+                for (const id in biz.owned) {
+                    const cfg = BUSINESSES[id];
+                    if (!cfg) continue;
+                    const lvl = biz.owned[id].level || 1;
+                    total += cfg.income * Math.pow(cfg.incomeMult, lvl - 1);
+                }
+                return total;
+            }
+
+            function upgradePrice(id) {
+                const cfg = BUSINESSES[id];
+                const lvl = biz.owned[id]?.level || 1;
+                return Math.floor(cfg.price * Math.pow(cfg.upgradeMult, lvl));
+            }
+
+            // ====== ОТРИСОВКА ТОПА ======
+            function renderTop() {
+                balanceValue.textContent = formatNumber(player.wallet);
+                iceValue.textContent = formatNumber(player.ice);
+
+                const info = getLevelInfo(player.totalXp);
                 const percent = Math.min((info.currentInLevel / info.needForLevel) * 100, 100);
                 xpFill.style.width = percent + '%';
                 xpText.textContent = formatNumber(info.currentInLevel) + ' / ' + formatNumber(info.needForLevel);
                 playerLevelEl.textContent = 'Уровень ' + info.level;
             }
 
+            // ====== ОТРИСОВКА БИЗНЕСА ======
             function renderBusiness() {
-                // Суммарный доход в час (пока 0, потом можно считать по фирмам)
-                const totalIncome = 0;
-                bizIncomeEl.textContent = formatMoney(totalIncome);
+                bizIncomeEl.textContent = formatMoney(incomePerHour());
+                bizMyCountEl.textContent = ownedCount() + ' / ' + biz.slots;
+
+                // Мои фирмы
+                bizCompaniesEl.innerHTML = '';
+                const owned = Object.keys(biz.owned);
+
+                if (owned.length === 0) {
+                    const empty = document.createElement('div');
+                    empty.className = 'biz-empty';
+                    empty.innerHTML = '<div class="biz-empty-emoji">💼</div><div>У тебя пока нет фирм</div><div class="biz-empty-hint">Нажми «Открыть бизнес» чтобы купить первую</div>';
+                    bizCompaniesEl.appendChild(empty);
+                } else {
+                    owned.forEach(id => {
+                        const card = createOwnedCard(id);
+                        bizCompaniesEl.appendChild(card);
+                    });
+                }
             }
+
+            function createOwnedCard(id) {
+                const cfg = BUSINESSES[id];
+                const lvl = biz.owned[id].level || 1;
+                const income = Math.floor(cfg.income * Math.pow(cfg.incomeMult, lvl - 1));
+
+                const card = document.createElement('div');
+                card.className = 'biz-card';
+                card.innerHTML =
+                    '<div class="biz-card-icon">' + cfg.emoji + '</div>' +
+                    '<div class="biz-card-info">' +
+                        '<div class="biz-card-name">' + cfg.name + '</div>' +
+                        '<div class="biz-card-type">' + cfg.type + '</div>' +
+                        '<div class="biz-card-level">Уровень ' + lvl + ' / ' + cfg.maxLevel + '</div>' +
+                    '</div>' +
+                    '<div class="biz-card-right">' +
+                        '<div class="biz-card-income">' + formatMoney(income) + '</div>' +
+                        '<div class="biz-card-income-label">в час</div>' +
+                    '</div>';
+                return card;
+            }
+
+            // ====== КАТАЛОГ ======
+            function renderCatalog() {
+                catalogList.innerHTML = '';
+                const freeSlots = biz.slots - ownedCount();
+
+                Object.values(BUSINESSES).forEach(cfg => {
+                    const owned = !!biz.owned[cfg.id];
+                    const canBuy = !owned && player.wallet >= cfg.price && freeSlots > 0;
+
+                    const card = document.createElement('div');
+                    card.className = 'cat-card' + (owned ? ' owned' : '');
+
+                    let btnText;
+                    let btnClass = 'cat-buy-btn';
+                    if (owned) {
+                        btnText = '✓ Куплено';
+                        btnClass += ' owned';
+                    } else if (freeSlots <= 0) {
+                        btnText = 'Нет слотов';
+                        btnClass += ' disabled';
+                    } else if (player.wallet < cfg.price) {
+                        btnText = 'Купить · ' + formatNumber(cfg.price) + ' 💵';
+                        btnClass += ' disabled';
+                    } else {
+                        btnText = 'Купить · ' + formatNumber(cfg.price) + ' 💵';
+                    }
+
+                    card.innerHTML =
+                        '<div class="cat-icon">' + cfg.emoji + '</div>' +
+                        '<div class="cat-info">' +
+                            '<div class="cat-name">' + cfg.name + '</div>' +
+                            '<div class="cat-type">' + cfg.type + '</div>' +
+                            '<div class="cat-income">' + formatMoney(cfg.income) + ' <span>в час</span></div>' +
+                        '</div>' +
+                        '<button class="' + btnClass + '" data-buy="' + cfg.id + '">' + btnText + '</button>';
+
+                    catalogList.appendChild(card);
+                });
+            }
+
+            // ====== ДЕЙСТВИЯ ======
+            function buyBusiness(id) {
+                const cfg = BUSINESSES[id];
+                if (!cfg) return;
+                if (biz.owned[id]) return;
+                if (player.wallet < cfg.price) return;
+                if (biz.slots - ownedCount() <= 0) return;
+
+                player.wallet -= cfg.price;
+                biz.owned[id] = { level: 1 };
+
+                savePlayer();
+                saveBiz();
+                renderTop();
+                renderBusiness();
+                renderCatalog();
+            }
+
+            function buySlot() {
+                if (biz.slots >= MAX_SLOTS) return;
+                const price = slotPrice(biz.slots);
+                if (player.wallet < price) {
+                    slotBuyBtn.classList.add('shake');
+                    setTimeout(() => slotBuyBtn.classList.remove('shake'), 400);
+                    return;
+                }
+                player.wallet -= price;
+                biz.slots += 1;
+                savePlayer();
+                saveBiz();
+                renderTop();
+                renderBusiness();
+                renderSlots();
+            }
+
+            // ====== РЕНДЕР СЛОТОВ ======
+            function renderSlots() {
+                slotUsedEl.textContent = ownedCount() + ' / ' + biz.slots;
+                if (biz.slots >= MAX_SLOTS) {
+                    slotNextPriceEl.textContent = 'МАКС';
+                    slotBuyBtn.disabled = true;
+                    slotBuyBtn.textContent = 'Максимум слотов';
+                } else {
+                    const price = slotPrice(biz.slots);
+                    slotNextPriceEl.textContent = formatNumber(price) + ' 💵';
+                    slotBuyBtn.disabled = player.wallet < price;
+                    slotBuyBtn.textContent = 'Купить слот · ' + formatNumber(price) + ' 💵';
+                }
+            }
+
+            // ====== МОДАЛКИ ======
+            function openModal(id) {
+                document.getElementById(id).classList.remove('hidden');
+            }
+
+            function closeModal(id) {
+                document.getElementById(id).classList.add('hidden');
+            }
+
+            document.getElementById('biz-open-btn').addEventListener('click', function() {
+                renderCatalog();
+                openModal('modal-catalog');
+            });
+
+            document.getElementById('biz-slot-btn').addEventListener('click', function() {
+                renderSlots();
+                openModal('modal-slots');
+            });
+
+            document.querySelectorAll('[data-close]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    closeModal(this.dataset.close);
+                });
+            });
+
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.add('hidden');
+                    }
+                });
+            });
+
+            // Покупка бизнеса (делегирование)
+            catalogList.addEventListener('click', function(e) {
+                const btn = e.target.closest('[data-buy]');
+                if (!btn) return;
+                if (btn.classList.contains('disabled') || btn.classList.contains('owned')) return;
+                buyBusiness(btn.dataset.buy);
+            });
+
+            // Покупка слота
+            slotBuyBtn.addEventListener('click', buySlot);
 
             // ====== НАВИГАЦИЯ ======
             navItems.forEach(item => {
                 const go = function(e) {
                     e.preventDefault();
-                    if (this.dataset.screen === 'business') return; // уже здесь
+                    if (this.dataset.screen === 'business') return;
                     if (this.dataset.screen === 'berloga') {
                         window.location.href = 'index.html';
                     } else if (this.dataset.screen === 'earn') {
@@ -201,17 +536,9 @@
                 }, { passive: false });
             });
 
-            // ====== КНОПКИ (пока заглушки) ======
-            document.getElementById('biz-slot-btn').addEventListener('click', function() {
-                // Пока ничего
-            });
-            document.getElementById('biz-open-btn').addEventListener('click', function() {
-                // Пока ничего
-            });
-
             // ====== ИНИЦИАЛИЗАЦИЯ ======
             function init() {
-                loadPlayer();
+                loadAll();
                 renderTop();
                 renderBusiness();
             }
