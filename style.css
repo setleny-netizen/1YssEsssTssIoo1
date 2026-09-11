@@ -526,6 +526,151 @@ body {
     line-height: 1;
 }
 
+/* ====== BUSINESS SCREEN ====== */
+.business-screen {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    max-width: 420px;
+    padding: 4px 8px;
+    gap: 10px;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.biz-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 2px 4px;
+    flex-shrink: 0;
+}
+
+.biz-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.biz-slot-btn {
+    appearance: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: rgba(74, 122, 158, 0.15);
+    border: 1px solid rgba(74, 122, 158, 0.4);
+    color: var(--accent-blue-light);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+    white-space: nowrap;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.biz-slot-btn:active {
+    transform: scale(0.96);
+    background: rgba(74, 122, 158, 0.25);
+}
+
+.biz-income-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(201, 162, 39, 0.15);
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.biz-income-value {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.1;
+}
+
+.biz-income-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #7DDFA0;
+    letter-spacing: 0.3px;
+}
+
+.biz-open-btn {
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+    font-family: inherit;
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: none;
+    background: var(--gradient-accent);
+    color: #0A0A0A;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 14px rgba(201, 162, 39, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    transition: transform 0.12s ease, box-shadow 0.2s ease;
+    flex-shrink: 0;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.biz-open-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 8px rgba(201, 162, 39, 0.25);
+}
+
+.biz-my-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 2px 4px;
+    flex-shrink: 0;
+}
+
+.biz-my-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: 0.5px;
+}
+
+.biz-my-count {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+}
+
+.biz-companies {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+}
+
 /* ====== ICE GENERATOR PAGE ====== */
 #screen-ice {
     display: flex;
@@ -1040,7 +1185,7 @@ body {
     padding: 0 2px;
 }
 
-/* ====== TRACK — размер задаёт сама картинка ====== */
+/* ====== TRACK ====== */
 .race-track {
     position: relative;
     width: 100%;
@@ -1090,11 +1235,11 @@ body {
 }
 
 .race-runner-npc {
-    top: 38%;
+    top: 33%;
 }
 
 .race-runner-me {
-    top: 55%;
+    top: 67%;
 }
 
 .race-result {
@@ -1278,6 +1423,10 @@ body {
     .race-start-btn { font-size: 13px; padding: 10px 14px; }
 
     .earn-title { font-size: 20px; }
+
+    .biz-title { font-size: 20px; }
+    .biz-income-value { font-size: 22px; }
+    .biz-slot-btn { font-size: 10px; padding: 5px 10px; }
 }
 
 @media (max-height: 700px) {
@@ -1349,6 +1498,12 @@ body {
     .earn-title { font-size: 18px; letter-spacing: 1.5px; }
     .earn-subtitle { font-size: 10px; }
     .quick-race-btn { padding: 11px 14px; font-size: 13px; }
+
+    .biz-title { font-size: 18px; }
+    .biz-income-value { font-size: 22px; }
+    .biz-income-card { padding: 10px 12px; }
+    .biz-open-btn { padding: 11px 16px; font-size: 13px; }
+    .biz-my-title { font-size: 14px; }
 }
 
 @media (min-width: 500px) {
