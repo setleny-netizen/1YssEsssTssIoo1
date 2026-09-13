@@ -17,7 +17,7 @@
                     </div>
                     <div class="player-name-level">
                         <div class="player-name" id="player-name">Игрок</div>
-                        <div class="player-level" id="player-level">Уровень 5</div>
+                        <div class="player-level" id="player-level">Уровень 1</div>
                     </div>
                 </div>
                 <div class="balance-badge-group">
@@ -265,14 +265,16 @@
                 const go = function(e) {
                     e.preventDefault();
 
+                    const screen = this.dataset.screen;
+
                     // Бизнес — отдельная страница
-                    if (this.dataset.screen === 'business') {
+                    if (screen === 'business') {
                         window.location.href = 'business.html';
                         return;
                     }
 
-                    switchScreen(this.dataset.screen);
-                    history.replaceState(null, '', '#' + this.dataset.screen);
+                    switchScreen(screen);
+                    history.replaceState(null, '', '#' + screen);
                 };
                 item.addEventListener('click', go);
                 item.addEventListener('touchstart', function(e) {
