@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Бизнес — Лохматый клуб</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
     <div id="app">
@@ -90,7 +90,7 @@
             </button>
         </nav>
 
-        <!-- ====== MODAL: BUSINESS CATALOG ====== -->
+        <!-- MODAL: CATALOG -->
         <div class="modal-overlay hidden" id="modal-catalog">
             <div class="modal-sheet">
                 <div class="modal-header">
@@ -101,7 +101,7 @@
             </div>
         </div>
 
-        <!-- ====== MODAL: SLOTS ====== -->
+        <!-- MODAL: SLOTS -->
         <div class="modal-overlay hidden" id="modal-slots">
             <div class="modal-sheet">
                 <div class="modal-header">
@@ -124,110 +124,83 @@
             </div>
         </div>
 
+        <!-- MODAL: UPGRADE -->
+        <div class="modal-overlay hidden" id="modal-upgrade">
+            <div class="modal-sheet">
+                <div class="modal-header">
+                    <div class="modal-title" id="upg-title">Фирма</div>
+                    <button class="modal-close" data-close="modal-upgrade">✕</button>
+                </div>
+                <div class="modal-body" id="upg-body"></div>
+            </div>
+        </div>
+
     </div>
 
     <script>
         (function() {
             const PLAYER_KEY = 'lokhmaty_player_v1';
-            const BIZ_KEY = 'lokhmaty_business_v1';
+            const BIZ_KEY = 'lokhmaty_business_v2';
 
             // ====== КОНФИГ БИЗНЕСОВ ======
             const BUSINESSES = {
                 shawarma: {
-                    id: 'shawarma',
-                    name: 'Шаурмичная',
-                    emoji: '🌯',
-                    type: 'Общепит',
-                    price: 5000,
-                    income: 50000,
-                    maxLevel: 5,
-                    upgradeMult: 2.5,
-                    incomeMult: 1.8,
+                    id: 'shawarma', name: 'Шаурмичная', emoji: '🌯', type: 'Общепит',
+                    price: 5000, income: 50, maxLevel: 10,
+                    upgradeCostMult: 2.2, incomeMult: 1.7,
                 },
                 taxi: {
-                    id: 'taxi',
-                    name: 'Таксопарк',
-                    emoji: '🚖',
-                    type: 'Транспорт',
-                    price: 25000,
-                    income: 200,
-                    maxLevel: 5,
-                    upgradeMult: 2.5,
-                    incomeMult: 1.9,
+                    id: 'taxi', name: 'Таксопарк', emoji: '🚖', type: 'Транспорт',
+                    price: 25000, income: 200, maxLevel: 10,
+                    upgradeCostMult: 2.2, incomeMult: 1.75,
                 },
                 hotel: {
-                    id: 'hotel',
-                    name: 'Отель',
-                    emoji: '🏨',
-                    type: 'Недвижимость',
-                    price: 150000,
-                    income: 1200,
-                    maxLevel: 5,
-                    upgradeMult: 2.5,
-                    incomeMult: 2.0,
+                    id: 'hotel', name: 'Отель', emoji: '🏨', type: 'Недвижимость',
+                    price: 150000, income: 1200, maxLevel: 10,
+                    upgradeCostMult: 2.2, incomeMult: 1.8,
                 },
                 oil: {
-                    id: 'oil',
-                    name: 'Нефтевышка',
-                    emoji: '🛢️',
-                    type: 'Промышленность',
-                    price: 800000,
-                    income: 6000,
-                    maxLevel: 5,
-                    upgradeMult: 2.5,
-                    incomeMult: 2.1,
+                    id: 'oil', name: 'Нефтевышка', emoji: '🛢️', type: 'Промышленность',
+                    price: 800000, income: 6000, maxLevel: 10,
+                    upgradeCostMult: 2.2, incomeMult: 1.85,
                 },
                 it: {
-                    id: 'it',
-                    name: 'IT-Корпорация',
-                    emoji: '💻',
-                    type: 'Технологии',
-                    price: 5000000,
-                    income: 35000,
-                    maxLevel: 5,
-                    upgradeMult: 2.5,
-                    incomeMult: 2.2,
+                    id: 'it', name: 'IT-Корпорация', emoji: '💻', type: 'Технологии',
+                    price: 5000000, income: 35000, maxLevel: 10,
+                    upgradeCostMult: 2.2, incomeMult: 1.9,
                 },
             };
 
-            // ====== КОНФИГ СЛОТОВ ======
+            // ====== СЛОТЫ ======
             const BASE_SLOTS = 3;
+            const MAX_SLOTS = 10;
             function slotPrice(currentSlots) {
-                // 4-й слот: 10к, 5-й: 50к, 6-й: 250к, 7-й: 1.25M, ...
                 const extra = currentSlots - BASE_SLOTS;
                 return 10000 * Math.pow(5, extra);
             }
-            const MAX_SLOTS = 10;
 
-            // ====== УРОВНИ ИГРОКА ======
+            // ====== AFK ======
+            const MAX_ACCUM_HOURS = 4;  // лимит накопления — 4 часа
+
+            // ====== УРОВНИ ======
             function cumulativeXp(level) {
                 let total = 0;
                 for (let i = 1; i < level; i++) total += i * 100;
                 return total;
             }
-
             function getLevelInfo(totalXp) {
                 let level = 1;
                 while (cumulativeXp(level + 1) <= totalXp) level++;
                 const base = cumulativeXp(level);
                 const next = cumulativeXp(level + 1);
-                return {
-                    level,
-                    currentInLevel: totalXp - base,
-                    needForLevel: next - base,
-                };
+                return { level, currentInLevel: totalXp - base, needForLevel: next - base };
             }
 
             // ====== СОСТОЯНИЕ ======
-            const player = {
-                wallet: 0,
-                ice: 0,
-                totalXp: 0,
-            };
-
+            const player = { wallet: 0, ice: 0, totalXp: 0 };
             const biz = {
                 slots: BASE_SLOTS,
-                owned: {}, // { id: { level: 1 } }
+                owned: {}, // { id: { level, pending, lastUpdate } }
             };
 
             // ====== DOM ======
@@ -243,13 +216,19 @@
 
             const modalCatalog = document.getElementById('modal-catalog');
             const modalSlots = document.getElementById('modal-slots');
+            const modalUpgrade = document.getElementById('modal-upgrade');
             const catalogList = document.getElementById('catalog-list');
 
             const slotUsedEl = document.getElementById('slot-used');
             const slotNextPriceEl = document.getElementById('slot-next-price');
             const slotBuyBtn = document.getElementById('slot-buy-btn');
 
+            const upgTitleEl = document.getElementById('upg-title');
+            const upgBodyEl = document.getElementById('upg-body');
+
             const navItems = document.querySelectorAll('.nav-item');
+
+            let currentUpgradeId = null;
 
             // ====== ФОРМАТ ======
             function formatNumber(num) {
@@ -259,32 +238,35 @@
                 if (num >= 1000) return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
                 return num.toString();
             }
-
             function formatMoney(num) {
                 const n = Math.floor(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
                 return '$ ' + n + ',00';
+            }
+            function formatTimer(seconds) {
+                if (seconds == null || seconds < 0) return '--:--';
+                seconds = Math.max(0, Math.floor(seconds));
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                if (h > 0) return h + 'ч ' + String(m).padStart(2, '0') + 'м';
+                return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
             }
 
             // ====== СОХРАНЕНИЕ ======
             function savePlayer() {
                 try {
                     localStorage.setItem(PLAYER_KEY, JSON.stringify({
-                        wallet: player.wallet,
-                        ice: player.ice,
-                        totalXp: player.totalXp,
+                        wallet: player.wallet, ice: player.ice, totalXp: player.totalXp,
                     }));
                 } catch (e) {}
             }
-
             function saveBiz() {
                 try {
                     localStorage.setItem(BIZ_KEY, JSON.stringify({
-                        slots: biz.slots,
-                        owned: biz.owned,
+                        slots: biz.slots, owned: biz.owned,
                     }));
                 } catch (e) {}
             }
-
             function loadAll() {
                 try {
                     const rawP = localStorage.getItem(PLAYER_KEY);
@@ -304,32 +286,47 @@
             }
 
             // ====== РАСЧЁТЫ ======
-            function ownedCount() {
-                return Object.keys(biz.owned).length;
+            function ownedCount() { return Object.keys(biz.owned).length; }
+
+            function incomeOf(id) {
+                const cfg = BUSINESSES[id];
+                const lvl = biz.owned[id]?.level || 1;
+                return cfg.income * Math.pow(cfg.incomeMult, lvl - 1);
             }
 
             function incomePerHour() {
                 let total = 0;
-                for (const id in biz.owned) {
-                    const cfg = BUSINESSES[id];
-                    if (!cfg) continue;
-                    const lvl = biz.owned[id].level || 1;
-                    total += cfg.income * Math.pow(cfg.incomeMult, lvl - 1);
-                }
+                for (const id in biz.owned) total += incomeOf(id);
                 return total;
             }
 
             function upgradePrice(id) {
                 const cfg = BUSINESSES[id];
                 const lvl = biz.owned[id]?.level || 1;
-                return Math.floor(cfg.price * Math.pow(cfg.upgradeMult, lvl));
+                return Math.floor(cfg.price * Math.pow(cfg.upgradeCostMult, lvl) * 0.5);
+            }
+
+            // Обновить накопление фирмы (AFK)
+            function tickFirm(id) {
+                const data = biz.owned[id];
+                if (!data) return;
+                const now = Date.now();
+                const elapsedSec = (now - data.lastUpdate) / 1000;
+                const incomePerSec = incomeOf(id) / 3600;
+                const maxAccum = incomeOf(id) * MAX_ACCUM_HOURS;
+
+                data.pending = Math.min(data.pending + incomePerSec * elapsedSec, maxAccum);
+                data.lastUpdate = now;
+            }
+
+            function tickAllFirms() {
+                for (const id in biz.owned) tickFirm(id);
             }
 
             // ====== ОТРИСОВКА ТОПА ======
             function renderTop() {
                 balanceValue.textContent = formatNumber(player.wallet);
                 iceValue.textContent = formatNumber(player.ice);
-
                 const info = getLevelInfo(player.totalXp);
                 const percent = Math.min((info.currentInLevel / info.needForLevel) * 100, 100);
                 xpFill.style.width = percent + '%';
@@ -337,12 +334,11 @@
                 playerLevelEl.textContent = 'Уровень ' + info.level;
             }
 
-            // ====== ОТРИСОВКА БИЗНЕСА ======
+            // ====== ОТРИСОВКА ФИРМ ======
             function renderBusiness() {
                 bizIncomeEl.textContent = formatMoney(incomePerHour());
                 bizMyCountEl.textContent = ownedCount() + ' / ' + biz.slots;
 
-                // Мои фирмы
                 bizCompaniesEl.innerHTML = '';
                 const owned = Object.keys(biz.owned);
 
@@ -351,32 +347,37 @@
                     empty.className = 'biz-empty';
                     empty.innerHTML = '<div class="biz-empty-emoji">💼</div><div>У тебя пока нет фирм</div><div class="biz-empty-hint">Нажми «Открыть бизнес» чтобы купить первую</div>';
                     bizCompaniesEl.appendChild(empty);
-                } else {
-                    owned.forEach(id => {
-                        const card = createOwnedCard(id);
-                        bizCompaniesEl.appendChild(card);
-                    });
+                    return;
                 }
+
+                owned.forEach(id => bizCompaniesEl.appendChild(createOwnedCard(id)));
             }
 
             function createOwnedCard(id) {
                 const cfg = BUSINESSES[id];
-                const lvl = biz.owned[id].level || 1;
-                const income = Math.floor(cfg.income * Math.pow(cfg.incomeMult, lvl - 1));
+                const data = biz.owned[id];
+                const income = incomeOf(id);
+                const maxAccum = income * MAX_ACCUM_HOURS;
+                const pending = Math.floor(data.pending);
+                const filled = data.pending >= maxAccum;
+                const timeToFull = filled ? 0 : (maxAccum - data.pending) / (income / 3600);
 
                 const card = document.createElement('div');
                 card.className = 'biz-card';
+                card.dataset.id = id;
                 card.innerHTML =
                     '<div class="biz-card-icon">' + cfg.emoji + '</div>' +
                     '<div class="biz-card-info">' +
                         '<div class="biz-card-name">' + cfg.name + '</div>' +
-                        '<div class="biz-card-type">' + cfg.type + '</div>' +
-                        '<div class="biz-card-level">Уровень ' + lvl + ' / ' + cfg.maxLevel + '</div>' +
+                        '<div class="biz-card-type">Ур. ' + data.level + ' / ' + cfg.maxLevel + ' · ' + formatMoney(income) + '/час</div>' +
+                        '<div class="biz-card-pending">' +
+                            '<span class="biz-pending-val">' + formatMoney(pending) + '</span>' +
+                            '<span class="biz-pending-timer">' + (filled ? 'ЗАПОЛНЕНО' : 'через ' + formatTimer(timeToFull)) + '</span>' +
+                        '</div>' +
                     '</div>' +
-                    '<div class="biz-card-right">' +
-                        '<div class="biz-card-income">' + formatMoney(income) + '</div>' +
-                        '<div class="biz-card-income-label">в час</div>' +
-                    '</div>';
+                    '<button class="biz-collect-btn" data-collect="' + id + '"' + (pending <= 0 ? ' disabled' : '') + '>' +
+                        (pending > 0 ? 'Собрать' : '—') +
+                    '</button>';
                 return card;
             }
 
@@ -392,8 +393,7 @@
                     const card = document.createElement('div');
                     card.className = 'cat-card' + (owned ? ' owned' : '');
 
-                    let btnText;
-                    let btnClass = 'cat-buy-btn';
+                    let btnText, btnClass = 'cat-buy-btn';
                     if (owned) {
                         btnText = '✓ Куплено';
                         btnClass += ' owned';
@@ -420,22 +420,83 @@
                 });
             }
 
+            // ====== МОДАЛКА АПГРЕЙДА ======
+            function renderUpgrade(id) {
+                const cfg = BUSINESSES[id];
+                const data = biz.owned[id];
+                if (!data) return;
+
+                const lvl = data.level;
+                const nextLvl = lvl + 1;
+                const isMax = lvl >= cfg.maxLevel;
+                const curIncome = incomeOf(id);
+                const nextIncome = isMax ? curIncome : cfg.income * Math.pow(cfg.incomeMult, nextLvl - 1);
+                const price = isMax ? 0 : upgradePrice(id);
+                const canUpgrade = !isMax && player.wallet >= price;
+
+                upgTitleEl.textContent = cfg.emoji + ' ' + cfg.name;
+
+                let html = '';
+                html += '<div class="upg-hero">';
+                html += '<div class="upg-icon">' + cfg.emoji + '</div>';
+                html += '<div class="upg-level">Уровень ' + lvl + ' / ' + cfg.maxLevel + '</div>';
+                html += '</div>';
+
+                html += '<div class="upg-stats">';
+                html += '<div class="upg-stat"><span>Доход сейчас</span><strong>' + formatMoney(curIncome) + '/час</strong></div>';
+                if (!isMax) {
+                    html += '<div class="upg-stat next"><span>Доход после</span><strong>' + formatMoney(nextIncome) + '/час</strong></div>';
+                }
+                html += '</div>';
+
+                if (isMax) {
+                    html += '<div class="upg-max">Максимальный уровень</div>';
+                } else {
+                    html += '<button class="upg-buy-btn' + (canUpgrade ? '' : ' disabled') + '" id="upg-buy-btn"' + (canUpgrade ? '' : ' disabled') + '>Улучшить · ' + formatNumber(price) + ' 💵</button>';
+                }
+
+                upgBodyEl.innerHTML = html;
+
+                if (!isMax) {
+                    const btn = document.getElementById('upg-buy-btn');
+                    btn.addEventListener('click', function() {
+                        if (!canUpgrade) {
+                            this.classList.add('shake');
+                            setTimeout(() => this.classList.remove('shake'), 400);
+                            return;
+                        }
+                        tickFirm(id);
+                        player.wallet -= price;
+                        biz.owned[id].level = nextLvl;
+                        savePlayer(); saveBiz();
+                        renderTop(); renderBusiness();
+                        renderUpgrade(id);
+                    });
+                }
+            }
+
+            function openUpgrade(id) {
+                if (!biz.owned[id]) return;
+                currentUpgradeId = id;
+                renderUpgrade(id);
+                openModal('modal-upgrade');
+            }
+
             // ====== ДЕЙСТВИЯ ======
             function buyBusiness(id) {
                 const cfg = BUSINESSES[id];
-                if (!cfg) return;
-                if (biz.owned[id]) return;
+                if (!cfg || biz.owned[id]) return;
                 if (player.wallet < cfg.price) return;
                 if (biz.slots - ownedCount() <= 0) return;
 
                 player.wallet -= cfg.price;
-                biz.owned[id] = { level: 1 };
-
-                savePlayer();
-                saveBiz();
-                renderTop();
-                renderBusiness();
-                renderCatalog();
+                biz.owned[id] = {
+                    level: 1,
+                    pending: 0,
+                    lastUpdate: Date.now(),
+                };
+                savePlayer(); saveBiz();
+                renderTop(); renderBusiness(); renderCatalog();
             }
 
             function buySlot() {
@@ -448,12 +509,73 @@
                 }
                 player.wallet -= price;
                 biz.slots += 1;
-                savePlayer();
-                saveBiz();
-                renderTop();
-                renderBusiness();
-                renderSlots();
+                savePlayer(); saveBiz();
+                renderTop(); renderBusiness(); renderSlots();
             }
+
+            function collect(id) {
+                const data = biz.owned[id];
+                if (!data) return;
+                tickFirm(id);
+                const amount = Math.floor(data.pending);
+                if (amount <= 0) return;
+                data.pending -= amount;
+                player.wallet += amount;
+                savePlayer(); saveBiz();
+                renderTop(); renderBusiness();
+
+                // всплывающая цифра
+                const card = bizCompaniesEl.querySelector('[data-id="' + id + '"]');
+                if (card) {
+                    const rect = card.getBoundingClientRect();
+                    const el = document.createElement('div');
+                    el.className = 'biz-float';
+                    el.textContent = '+' + formatNumber(amount) + ' 💵';
+                    el.style.left = (rect.left + rect.width / 2) + 'px';
+                    el.style.top = (rect.top + 20) + 'px';
+                    document.body.appendChild(el);
+                    setTimeout(() => el.remove(), 1100);
+                }
+            }
+
+            // ====== МОДАЛКИ ======
+            function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+            function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+            document.getElementById('biz-open-btn').addEventListener('click', function() {
+                renderCatalog(); openModal('modal-catalog');
+            });
+            document.getElementById('biz-slot-btn').addEventListener('click', function() {
+                renderSlots(); openModal('modal-slots');
+            });
+            document.querySelectorAll('[data-close]').forEach(btn => {
+                btn.addEventListener('click', function() { closeModal(this.dataset.close); });
+            });
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === this) this.classList.add('hidden');
+                });
+            });
+
+            catalogList.addEventListener('click', function(e) {
+                const btn = e.target.closest('[data-buy]');
+                if (!btn) return;
+                if (btn.classList.contains('disabled') || btn.classList.contains('owned')) return;
+                buyBusiness(btn.dataset.buy);
+            });
+
+            slotBuyBtn.addEventListener('click', buySlot);
+
+            // Клик по карточке фирмы (кроме кнопки «Собрать») — апгрейд
+            bizCompaniesEl.addEventListener('click', function(e) {
+                const collectBtn = e.target.closest('[data-collect]');
+                if (collectBtn) {
+                    if (!collectBtn.disabled) collect(collectBtn.dataset.collect);
+                    return;
+                }
+                const card = e.target.closest('.biz-card');
+                if (card) openUpgrade(card.dataset.id);
+            });
 
             // ====== РЕНДЕР СЛОТОВ ======
             function renderSlots() {
@@ -470,54 +592,12 @@
                 }
             }
 
-            // ====== МОДАЛКИ ======
-            function openModal(id) {
-                document.getElementById(id).classList.remove('hidden');
-            }
-
-            function closeModal(id) {
-                document.getElementById(id).classList.add('hidden');
-            }
-
-            document.getElementById('biz-open-btn').addEventListener('click', function() {
-                renderCatalog();
-                openModal('modal-catalog');
-            });
-
-            document.getElementById('biz-slot-btn').addEventListener('click', function() {
-                renderSlots();
-                openModal('modal-slots');
-            });
-
-            document.querySelectorAll('[data-close]').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    closeModal(this.dataset.close);
-                });
-            });
-
-            document.querySelectorAll('.modal-overlay').forEach(overlay => {
-                overlay.addEventListener('click', function(e) {
-                    if (e.target === this) {
-                        this.classList.add('hidden');
-                    }
-                });
-            });
-
-            // Покупка бизнеса (делегирование)
-            catalogList.addEventListener('click', function(e) {
-                const btn = e.target.closest('[data-buy]');
-                if (!btn) return;
-                if (btn.classList.contains('disabled') || btn.classList.contains('owned')) return;
-                buyBusiness(btn.dataset.buy);
-            });
-
-            // Покупка слота
-            slotBuyBtn.addEventListener('click', buySlot);
-
             // ====== НАВИГАЦИЯ ======
             navItems.forEach(item => {
                 const go = function(e) {
                     e.preventDefault();
+                    tickAllFirms();
+                    saveBiz(); savePlayer();
                     if (this.dataset.screen === 'business') return;
                     if (this.dataset.screen === 'berloga') {
                         window.location.href = 'index.html';
@@ -539,10 +619,42 @@
             // ====== ИНИЦИАЛИЗАЦИЯ ======
             function init() {
                 loadAll();
+                tickAllFirms();
+                saveBiz();
                 renderTop();
                 renderBusiness();
             }
             init();
+
+            // Тикер: каждую секунду обновляет накопление
+            setInterval(function() {
+                tickAllFirms();
+                renderBusiness();
+                saveBiz();
+            }, 1000);
+
+            // Сохранение раз в 10 сек
+            setInterval(function() {
+                tickAllFirms();
+                saveBiz(); savePlayer();
+            }, 10000);
+
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'hidden') {
+                    tickAllFirms();
+                    saveBiz(); savePlayer();
+                } else {
+                    loadAll();
+                    tickAllFirms();
+                    renderTop();
+                    renderBusiness();
+                }
+            });
+
+            window.addEventListener('beforeunload', function() {
+                tickAllFirms();
+                saveBiz(); savePlayer();
+            });
 
             // ====== SAFE AREA ======
             function handleSafeArea() {
