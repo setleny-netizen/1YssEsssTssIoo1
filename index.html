@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Лохматый клуб</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
     <div id="app">
@@ -114,7 +114,7 @@
                 </a>
             </div>
 
-            <!-- Бизнес (заглушка, не используется — ушли на business.html) -->
+            <!-- Бизнес (заглушка) -->
             <div id="screen-business" class="screen-content screen-placeholder hidden">
                 <div class="placeholder-card">
                     <div class="icon">💼</div>
@@ -171,7 +171,6 @@
         (function() {
             const PLAYER_KEY = 'lokhmaty_player_v1';
 
-            // ====== СОСТОЯНИЕ ======
             const state = {
                 wallet: 0,
                 ice: 0,
@@ -179,7 +178,6 @@
                 activeScreen: 'berloga',
             };
 
-            // ====== ЛОГИКА УРОВНЕЙ ======
             function cumulativeXp(level) {
                 let total = 0;
                 for (let i = 1; i < level; i++) total += i * 100;
@@ -198,7 +196,6 @@
                 };
             }
 
-            // ====== DOM ======
             const balanceValue = document.getElementById('balance-value');
             const iceValue = document.getElementById('ice-value');
             const xpFill = document.getElementById('xp-fill');
@@ -213,7 +210,6 @@
                 profile: document.getElementById('screen-profile'),
             };
 
-            // ====== ФОРМАТ ======
             function formatNumber(num) {
                 num = Math.floor(num);
                 if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -221,7 +217,6 @@
                 return num.toString();
             }
 
-            // ====== СОХРАНЕНИЕ / ЗАГРУЗКА ======
             function savePlayer() {
                 try {
                     localStorage.setItem(PLAYER_KEY, JSON.stringify({
@@ -244,7 +239,6 @@
                 } catch (e) {}
             }
 
-            // ====== ОТРИСОВКА ======
             function renderTop() {
                 balanceValue.textContent = formatNumber(state.wallet);
                 iceValue.textContent = formatNumber(state.ice);
@@ -256,7 +250,6 @@
                 playerLevelEl.textContent = 'Уровень ' + info.level;
             }
 
-            // ====== НАВИГАЦИЯ ======
             function switchScreen(screenId) {
                 state.activeScreen = screenId;
 
@@ -288,7 +281,6 @@
                 }, { passive: false });
             });
 
-            // ====== ИНИЦИАЛИЗАЦИЯ ======
             function init() {
                 loadPlayer();
                 renderTop();
@@ -303,7 +295,6 @@
             }
             init();
 
-            // Перечитывание при возврате
             document.addEventListener('visibilitychange', function() {
                 if (document.visibilityState === 'visible') {
                     loadPlayer();
@@ -316,7 +307,6 @@
                 renderTop();
             });
 
-            // ====== SAFE AREA ======
             function handleSafeArea() {
                 const bottomNav = document.getElementById('bottom-nav');
                 const safeBottom = getComputedStyle(document.documentElement)
