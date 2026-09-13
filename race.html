@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Быстрый заезд — Лохматый клуб</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
     <div id="app">
@@ -74,7 +74,7 @@
                 <!-- TRACK -->
                 <div class="race-track">
                     <div class="race-track-inner">
-                        <img class="race-track-bg" src="https://cdn.pixabay.com/photo/2026/09/13/17/14/17-14-44-886_1280.png" alt="Трасса" draggable="false">
+                        <img class="race-track-bg" src="https://cdn.pixabay.com/photo/2026/09/10/19/57/19-57-46-407_1280.png" alt="Трасса" draggable="false">
 
                         <div class="race-runner race-runner-npc" id="runner-npc">
                             <img src="https://cdn.pixabay.com/photo/2026/09/10/20/54/20-54-13-256_1280.png" alt="" draggable="false">
@@ -127,21 +127,18 @@
         (function() {
             const PLAYER_KEY = 'lokhmaty_player_v1';
 
-            // ====== КОНСТАНТЫ ГОНКИ ======
             const MY_SPEED = 80;
             const RACE_DURATION = 5000;
-            const WIN_CHANCE = 0.99;
-            const REWARD_WIN_WALLET = 1000000000;
+            const WIN_CHANCE = 0.78;
+            const REWARD_WIN_WALLET = 100;
             const REWARD_WIN_XP = 3;
             const REWARD_LOSE_XP = 1;
 
             const NPC_NAMES = ['Мороз', 'Пурга', 'Метель', 'Вьюга', 'Снеговик', 'Ледокол', 'Сугроб'];
 
-            // Позиции на трассе (в % от ширины)
             const START_X = 0;
             const END_X = 95;
 
-            // ====== УРОВНИ ======
             function cumulativeXp(level) {
                 let total = 0;
                 for (let i = 1; i < level; i++) total += i * 100;
@@ -160,7 +157,6 @@
                 };
             }
 
-            // ====== СОСТОЯНИЕ ======
             const state = {
                 wallet: 0,
                 ice: 0,
@@ -168,7 +164,6 @@
                 racing: false,
             };
 
-            // ====== DOM ======
             const balanceValue = document.getElementById('balance-value');
             const iceValue = document.getElementById('ice-value');
             const xpFill = document.getElementById('xp-fill');
@@ -188,7 +183,6 @@
 
             const navItems = document.querySelectorAll('.nav-item');
 
-            // ====== ФОРМАТ ======
             function formatNumber(num) {
                 num = Math.floor(num);
                 if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -196,7 +190,6 @@
                 return num.toString();
             }
 
-            // ====== СОХРАНЕНИЕ ======
             function savePlayer() {
                 try {
                     const raw = localStorage.getItem(PLAYER_KEY);
@@ -220,7 +213,6 @@
                 } catch (e) {}
             }
 
-            // ====== ОТРИСОВКА ======
             function renderTop() {
                 balanceValue.textContent = formatNumber(state.wallet);
                 iceValue.textContent = formatNumber(state.ice);
@@ -232,13 +224,11 @@
                 playerLevelEl.textContent = 'Уровень ' + info.level;
             }
 
-            // ====== СБРОС ======
             function resetRunners() {
                 runnerMe.style.left = START_X + '%';
                 runnerNpc.style.left = START_X + '%';
             }
 
-            // ====== ЗАПУСК ======
             function startRace() {
                 if (state.racing) return;
                 state.racing = true;
@@ -291,7 +281,6 @@
                 requestAnimationFrame(tick);
             }
 
-            // ====== ФИНИШ ======
             function finishRace(playerWins) {
                 let message;
 
@@ -322,12 +311,29 @@
                 const go = function(e) {
                     e.preventDefault();
                     if (state.racing) return;
-                    if (this.dataset.screen === 'earn') {
+
+                    const screen = this.dataset.screen;
+
+                    // Бизнес — отдельная страница
+                    if (screen === 'business') {
+                        window.location.href = 'business.html';
+                        return;
+                    }
+                    if (screen === 'earn') {
                         window.location.href = 'index.html#earn';
-                    } else if (this.dataset.screen === 'berloga') {
+                        return;
+                    }
+                    if (screen === 'berloga') {
                         window.location.href = 'index.html';
-                    } else {
-                        window.location.href = 'index.html#' + this.dataset.screen;
+                        return;
+                    }
+                    if (screen === 'invest') {
+                        window.location.href = 'index.html#invest';
+                        return;
+                    }
+                    if (screen === 'profile') {
+                        window.location.href = 'index.html#profile';
+                        return;
                     }
                 };
                 item.addEventListener('click', go);
@@ -337,14 +343,12 @@
                 }, { passive: false });
             });
 
-            // ====== СТАРТ ======
             startBtn.addEventListener('click', startRace);
             startBtn.addEventListener('touchstart', function(e) {
                 e.preventDefault();
                 startRace();
             }, { passive: false });
 
-            // ====== ИНИЦИАЛИЗАЦИЯ ======
             function init() {
                 loadPlayer();
                 renderTop();
@@ -352,7 +356,13 @@
             }
             init();
 
-            // ====== SAFE AREA ======
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'visible') {
+                    loadPlayer();
+                    renderTop();
+                }
+            });
+
             function handleSafeArea() {
                 const bottomNav = document.getElementById('bottom-nav');
                 const safeBottom = getComputedStyle(document.documentElement)
