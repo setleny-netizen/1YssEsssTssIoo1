@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Быстрый заезд — Лохматый клуб</title>
-    <link rel="stylesheet" href="style.css?v=7">
+    <link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
     <div id="app">
@@ -40,7 +40,7 @@
         <main id="content">
             <div id="screen-race" class="screen-content">
 
-                <!-- TOPBAR: заголовок + лёд -->
+                <!-- TOPBAR -->
                 <div class="race-topbar">
                     <div class="race-title">Быстрый заезд</div>
                     <div class="race-ice-badge">
@@ -79,7 +79,7 @@
                 <!-- TRACK -->
                 <div class="race-track">
                     <div class="race-track-inner">
-                        <img class="race-track-bg" src="https://cdn.pixabay.com/photo/2026/09/10/19/57/19-57-46-407_1280.png" alt="Трасса" draggable="false">
+                        <img class="race-track-bg" src="https://cdn.pixabay.com/photo/2026/09/13/17/14/17-14-44-886_1280.png" alt="Трасса" draggable="false">
 
                         <div class="race-runner race-runner-npc" id="runner-npc">
                             <img src="https://cdn.pixabay.com/photo/2026/09/10/20/54/20-54-13-256_1280.png" alt="" draggable="false">
@@ -91,15 +91,17 @@
                     </div>
                 </div>
 
+                <!-- RESULT (появляется под картой, не двигает кнопку) -->
+                <div class="race-result-wrap">
+                    <div class="race-result hidden" id="race-result"></div>
+                </div>
+
                 <!-- START BUTTON -->
                 <button class="race-start-btn" id="race-start-btn">
                     <span class="race-start-emoji">🏁</span>
                     <span class="race-start-text" id="race-start-text">СТАРТ</span>
                     <span class="race-start-cost" id="race-start-cost">· 1 🧊</span>
                 </button>
-
-                <!-- RESULT MESSAGE -->
-                <div class="race-result hidden" id="race-result"></div>
 
             </div>
         </main>
@@ -191,11 +193,10 @@
 
             const navItems = document.querySelectorAll('.nav-item');
 
+            // Полный формат без сокращений
             function formatNumber(num) {
                 num = Math.floor(num);
-                if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-                if (num >= 1000) return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-                return num.toString();
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
             }
 
             function savePlayer() {
@@ -240,13 +241,11 @@
                 startCost.textContent = '· ' + RACE_COST_ICE + ' 🧊';
             }
 
-            // Мгновенный сброс саней на старт (без анимации отмотки)
             function resetRunners() {
                 runnerMe.style.transition = 'none';
                 runnerNpc.style.transition = 'none';
                 runnerMe.style.left = START_X + '%';
                 runnerNpc.style.left = START_X + '%';
-                // форсируем reflow, чтобы браузер применил reset
                 void runnerMe.offsetWidth;
                 void runnerNpc.offsetWidth;
                 runnerMe.style.transition = '';
@@ -262,7 +261,6 @@
                     return;
                 }
 
-                // Списываем лёд
                 state.ice -= RACE_COST_ICE;
                 savePlayer();
                 renderTop();
@@ -272,7 +270,6 @@
                 resultEl.classList.add('hidden');
                 resultEl.classList.remove('win', 'lose');
 
-                // Мгновенный сброс саней на старт
                 resetRunners();
 
                 startBtn.disabled = true;
@@ -347,7 +344,6 @@
                 startCost.textContent = '· ' + RACE_COST_ICE + ' 🧊';
             }
 
-            // ====== НАВИГАЦИЯ ======
             navItems.forEach(item => {
                 const go = function(e) {
                     e.preventDefault();
