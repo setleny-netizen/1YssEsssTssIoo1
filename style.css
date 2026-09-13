@@ -1742,8 +1742,8 @@ body {
     filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8));
 }
 
-.race-runner-npc { top: 33%; }
-.race-runner-me { top: 67%; }
+.race-runner-npc { top: 38%; }
+.race-runner-me { top: 52%; }
 
 .race-start-btn {
     appearance: none;
