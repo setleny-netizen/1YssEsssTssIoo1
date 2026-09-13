@@ -98,7 +98,7 @@
                         </div>
                         <div class="ice-upgrade-desc" id="ice-upgrade-desc">Ледогенератор II · +10 🧊 / час · 1 000</div>
                     </div>
-                    <div class="ice-upgrade-cost" id="ice-upgrade-cost">2 500 💵</div>
+                    <div class="ice-upgrade-cost" id="ice-upgrade-cost">$ 2 500</div>
                 </button>
 
             </div>
@@ -198,12 +198,20 @@
 
             const navItems = document.querySelectorAll('.nav-item');
 
+            // ====== ФОРМАТЫ ======
+            // Компактный (для верхней панели)
             function formatNumber(num) {
                 num = Math.floor(num);
                 if (num >= 1000000000) return (num / 1000000000).toFixed(1) + 'B';
                 if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
                 if (num >= 1000) return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
                 return num.toString();
+            }
+
+            // Полный — для цен ("$ 2 500")
+            function formatMoney(num) {
+                const n = Math.floor(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                return '$ ' + n;
             }
 
             function formatTimer(seconds) {
@@ -335,7 +343,7 @@
                     upgradeDesc.textContent =
                         next.name + ' · +' + formatNumber(next.productionPerHour) + ' 🧊 / час · ' +
                         formatNumber(next.capacity);
-                    upgradeCost.textContent = formatNumber(cfg.upgradeCost) + ' 💵';
+                    upgradeCost.textContent = formatMoney(cfg.upgradeCost);
                     upgradeBtn.disabled = false;
                     upgradeBtn.style.display = '';
                 } else {
@@ -404,13 +412,15 @@
                 setTimeout(() => el.remove(), 1100);
             }
 
-            // ====== НАВИГАЦИЯ (с поддержкой business.html) ======
+            // ====== НАВИГАЦИЯ ======
             navItems.forEach(item => {
                 const go = function(e) {
                     e.preventDefault();
 
+                    const screen = this.dataset.screen;
+
                     // Бизнес — отдельная страница
-                    if (this.dataset.screen === 'business') {
+                    if (screen === 'business') {
                         recalculate();
                         saveGen();
                         savePlayer();
@@ -421,14 +431,22 @@
                     recalculate();
                     saveGen();
                     savePlayer();
-                    if (this.dataset.screen === 'earn') {
+
+                    if (screen === 'earn') {
                         window.location.href = 'index.html#earn';
-                    } else if (this.dataset.screen === 'berloga') {
+                        return;
+                    }
+                    if (screen === 'berloga') {
                         window.location.href = 'index.html';
-                    } else if (this.dataset.screen === 'invest') {
+                        return;
+                    }
+                    if (screen === 'invest') {
                         window.location.href = 'index.html#invest';
-                    } else if (this.dataset.screen === 'profile') {
+                        return;
+                    }
+                    if (screen === 'profile') {
                         window.location.href = 'index.html#profile';
+                        return;
                     }
                 };
                 item.addEventListener('click', go);
