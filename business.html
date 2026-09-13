@@ -116,7 +116,7 @@
                         </div>
                         <div class="slot-info-row">
                             <span>Следующий слот</span>
-                            <strong id="slot-next-price">10 000 💵</strong>
+                            <strong id="slot-next-price">$ 10 000</strong>
                         </div>
                     </div>
                     <button class="slot-buy-btn" id="slot-buy-btn">Купить слот</button>
@@ -222,8 +222,8 @@
 
             const navItems = document.querySelectorAll('.nav-item');
 
-            let currentUpgradeId = null;
-
+            // ====== ФОРМАТЫ ======
+            // Компактный (для верхней панели)
             function formatNumber(num) {
                 num = Math.floor(num);
                 if (num >= 1000000000) return (num / 1000000000).toFixed(1) + 'B';
@@ -232,7 +232,7 @@
                 return num.toString();
             }
 
-            // БЕЗ КОПЕЕК
+            // Полный (для денег внутри бизнеса) — "$ 5 000 000"
             function formatMoney(num) {
                 const n = Math.floor(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
                 return '$ ' + n;
@@ -327,6 +327,7 @@
             }
 
             function renderBusiness() {
+                // Доход в час — полный формат
                 bizIncomeEl.textContent = formatMoney(incomePerHour());
                 bizMyCountEl.textContent = ownedCount() + ' / ' + biz.slots;
 
@@ -378,7 +379,6 @@
 
                 Object.values(BUSINESSES).forEach(cfg => {
                     const owned = !!biz.owned[cfg.id];
-                    const canBuy = !owned && player.wallet >= cfg.price && freeSlots > 0;
 
                     const card = document.createElement('div');
                     card.className = 'cat-card' + (owned ? ' owned' : '');
@@ -391,10 +391,10 @@
                         btnText = 'Нет слотов';
                         btnClass += ' disabled';
                     } else if (player.wallet < cfg.price) {
-                        btnText = 'Купить · ' + formatNumber(cfg.price) + ' 💵';
+                        btnText = 'Купить · ' + formatMoney(cfg.price);
                         btnClass += ' disabled';
                     } else {
-                        btnText = 'Купить · ' + formatNumber(cfg.price) + ' 💵';
+                        btnText = 'Купить · ' + formatMoney(cfg.price);
                     }
 
                     card.innerHTML =
@@ -441,7 +441,7 @@
                 if (isMax) {
                     html += '<div class="upg-max">Максимальный уровень</div>';
                 } else {
-                    html += '<button class="upg-buy-btn' + (canUpgrade ? '' : ' disabled') + '" id="upg-buy-btn"' + (canUpgrade ? '' : ' disabled') + '>Улучшить · ' + formatNumber(price) + ' 💵</button>';
+                    html += '<button class="upg-buy-btn' + (canUpgrade ? '' : ' disabled') + '" id="upg-buy-btn"' + (canUpgrade ? '' : ' disabled') + '>Улучшить · ' + formatMoney(price) + '</button>';
                 }
 
                 upgBodyEl.innerHTML = html;
@@ -466,7 +466,6 @@
 
             function openUpgrade(id) {
                 if (!biz.owned[id]) return;
-                currentUpgradeId = id;
                 renderUpgrade(id);
                 openModal('modal-upgrade');
             }
@@ -517,7 +516,7 @@
                     const rect = card.getBoundingClientRect();
                     const el = document.createElement('div');
                     el.className = 'biz-float';
-                    el.textContent = '+' + formatNumber(amount) + ' 💵';
+                    el.textContent = '+' + formatMoney(amount);
                     el.style.left = (rect.left + rect.width / 2) + 'px';
                     el.style.top = (rect.top + 20) + 'px';
                     document.body.appendChild(el);
@@ -570,26 +569,37 @@
                     slotBuyBtn.textContent = 'Максимум слотов';
                 } else {
                     const price = slotPrice(biz.slots);
-                    slotNextPriceEl.textContent = formatNumber(price) + ' 💵';
+                    slotNextPriceEl.textContent = formatMoney(price);
                     slotBuyBtn.disabled = player.wallet < price;
-                    slotBuyBtn.textContent = 'Купить слот · ' + formatNumber(price) + ' 💵';
+                    slotBuyBtn.textContent = 'Купить слот · ' + formatMoney(price);
                 }
             }
 
+            // ====== НАВИГАЦИЯ ======
             navItems.forEach(item => {
                 const go = function(e) {
                     e.preventDefault();
                     tickAllFirms();
                     saveBiz(); savePlayer();
-                    if (this.dataset.screen === 'business') return;
-                    if (this.dataset.screen === 'berloga') {
+
+                    const screen = this.dataset.screen;
+                    if (screen === 'business') return;
+
+                    if (screen === 'berloga') {
                         window.location.href = 'index.html';
-                    } else if (this.dataset.screen === 'earn') {
+                        return;
+                    }
+                    if (screen === 'earn') {
                         window.location.href = 'index.html#earn';
-                    } else if (this.dataset.screen === 'invest') {
+                        return;
+                    }
+                    if (screen === 'invest') {
                         window.location.href = 'index.html#invest';
-                    } else if (this.dataset.screen === 'profile') {
+                        return;
+                    }
+                    if (screen === 'profile') {
                         window.location.href = 'index.html#profile';
+                        return;
                     }
                 };
                 item.addEventListener('click', go);
