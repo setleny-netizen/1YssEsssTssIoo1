@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Быстрый заезд — Лохматый клуб</title>
-    <link rel="stylesheet" href="style.css?v=5">
+    <link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
     <div id="app">
@@ -24,10 +24,6 @@
                     <div class="balance-badge">
                         <span class="wallet-icon">💵</span>
                         <span class="balance-value" id="balance-value">0</span>
-                    </div>
-                    <div class="balance-badge ice">
-                        <span class="wallet-icon">🧊</span>
-                        <span class="balance-value" id="ice-value">0</span>
                     </div>
                 </div>
             </div>
@@ -74,7 +70,7 @@
                 <!-- TRACK -->
                 <div class="race-track">
                     <div class="race-track-inner">
-                        <img class="race-track-bg" src="https://cdn.pixabay.com/photo/2026/09/13/17/14/17-14-44-886_1280.png" alt="Трасса" draggable="false">
+                        <img class="race-track-bg" src="https://cdn.pixabay.com/photo/2026/09/10/19/57/19-57-46-407_1280.png" alt="Трасса" draggable="false">
 
                         <div class="race-runner race-runner-npc" id="runner-npc">
                             <img src="https://cdn.pixabay.com/photo/2026/09/10/20/54/20-54-13-256_1280.png" alt="" draggable="false">
@@ -90,6 +86,7 @@
                 <button class="race-start-btn" id="race-start-btn">
                     <span class="race-start-emoji">🏁</span>
                     <span class="race-start-text" id="race-start-text">СТАРТ</span>
+                    <span class="race-start-cost" id="race-start-cost">· 1 🧊</span>
                 </button>
 
                 <!-- RESULT MESSAGE -->
@@ -133,6 +130,7 @@
             const REWARD_WIN_WALLET = 100;
             const REWARD_WIN_XP = 3;
             const REWARD_LOSE_XP = 1;
+            const RACE_COST_ICE = 1;
 
             const NPC_NAMES = ['Мороз', 'Пурга', 'Метель', 'Вьюга', 'Снеговик', 'Ледокол', 'Сугроб'];
 
@@ -165,7 +163,6 @@
             };
 
             const balanceValue = document.getElementById('balance-value');
-            const iceValue = document.getElementById('ice-value');
             const xpFill = document.getElementById('xp-fill');
             const xpText = document.getElementById('xp-text');
             const playerLevelEl = document.getElementById('player-level');
@@ -179,13 +176,16 @@
 
             const startBtn = document.getElementById('race-start-btn');
             const startText = document.getElementById('race-start-text');
+            const startCost = document.getElementById('race-start-cost');
             const resultEl = document.getElementById('race-result');
 
             const navItems = document.querySelectorAll('.nav-item');
 
             function formatNumber(num) {
                 num = Math.floor(num);
-                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+                if (num >= 1000) return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                return num.toString();
             }
 
             function savePlayer() {
@@ -213,13 +213,27 @@
 
             function renderTop() {
                 balanceValue.textContent = formatNumber(state.wallet);
-                iceValue.textContent = formatNumber(state.ice);
 
                 const info = getLevelInfo(state.totalXp);
                 const percent = Math.min((info.currentInLevel / info.needForLevel) * 100, 100);
                 xpFill.style.width = percent + '%';
                 xpText.textContent = formatNumber(info.currentInLevel) + ' / ' + formatNumber(info.needForLevel);
                 playerLevelEl.textContent = 'Уровень ' + info.level;
+            }
+
+            function updateStartButton() {
+                if (state.racing) return;
+
+                const hasIce = state.ice >= RACE_COST_ICE;
+
+                if (startText.textContent === 'ЕЩЁ РАЗ') {
+                    // Не трогаем текст после гонки
+                } else {
+                    startText.textContent = hasIce ? 'СТАРТ' : 'НУЖЕН ЛЁД';
+                }
+
+                startBtn.disabled = !hasIce;
+                startCost.textContent = '· ' + RACE_COST_ICE + ' 🧊';
             }
 
             function resetRunners() {
@@ -229,6 +243,18 @@
 
             function startRace() {
                 if (state.racing) return;
+
+                if (state.ice < RACE_COST_ICE) {
+                    startBtn.classList.add('shake');
+                    setTimeout(() => startBtn.classList.remove('shake'), 400);
+                    return;
+                }
+
+                // Списываем лёд
+                state.ice -= RACE_COST_ICE;
+                savePlayer();
+                renderTop();
+
                 state.racing = true;
 
                 resultEl.classList.add('hidden');
@@ -238,6 +264,7 @@
 
                 startBtn.disabled = true;
                 startText.textContent = 'В ГОНКЕ...';
+                startCost.textContent = '';
 
                 const npcName = NPC_NAMES[Math.floor(Math.random() * NPC_NAMES.length)];
                 npcSledEl.textContent = npcName;
@@ -300,8 +327,12 @@
                 renderTop();
 
                 state.racing = false;
-                startBtn.disabled = false;
-                startText.textContent = 'ЕЩЁ РАЗ';
+
+                // Проверяем, хватает ли льда на следующий заезд
+                const hasIce = state.ice >= RACE_COST_ICE;
+                startBtn.disabled = !hasIce;
+                startText.textContent = hasIce ? 'ЕЩЁ РАЗ' : 'НУЖЕН ЛЁД';
+                startCost.textContent = '· ' + RACE_COST_ICE + ' 🧊';
             }
 
             // ====== НАВИГАЦИЯ ======
@@ -312,7 +343,6 @@
 
                     const screen = this.dataset.screen;
 
-                    // Бизнес — отдельная страница
                     if (screen === 'business') {
                         window.location.href = 'business.html';
                         return;
@@ -351,6 +381,7 @@
                 loadPlayer();
                 renderTop();
                 resetRunners();
+                updateStartButton();
             }
             init();
 
@@ -358,7 +389,14 @@
                 if (document.visibilityState === 'visible') {
                     loadPlayer();
                     renderTop();
+                    if (!state.racing) updateStartButton();
                 }
+            });
+
+            window.addEventListener('focus', function() {
+                loadPlayer();
+                renderTop();
+                if (!state.racing) updateStartButton();
             });
 
             function handleSafeArea() {
