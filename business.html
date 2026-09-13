@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Бизнес — Лохматый клуб</title>
-    <link rel="stylesheet" href="style.css?v=7">
+    <link rel="stylesheet" href="style.css?v=9">
 </head>
 <body>
     <div id="app">
@@ -136,7 +136,7 @@
     <script>
         (function() {
             const PLAYER_KEY = 'lokhmaty_player_v1';
-            const BIZ_KEY = 'lokhmaty_business_v2';
+            const BIZ_KEY = 'lokhmaty_business_v3';
 
             const BUSINESSES = {
                 shawarma: {
@@ -173,8 +173,6 @@
                 return 10000 * Math.pow(5, extra);
             }
 
-            const MAX_ACCUM_HOURS = 4;
-
             function cumulativeXp(level) {
                 let total = 0;
                 for (let i = 1; i < level; i++) total += i * 100;
@@ -191,7 +189,7 @@
             const player = { wallet: 0, ice: 0, totalXp: 0 };
             const biz = {
                 slots: BASE_SLOTS,
-                owned: {},
+                owned: {}, // { id: { level, lastUpdate } }
             };
 
             const balanceValue = document.getElementById('balance-value');
@@ -225,16 +223,6 @@
             function formatMoney(num) {
                 const n = Math.floor(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
                 return '$ ' + n;
-            }
-
-            function formatTimer(seconds) {
-                if (seconds == null || seconds < 0) return '--:--';
-                seconds = Math.max(0, Math.floor(seconds));
-                const h = Math.floor(seconds / 3600);
-                const m = Math.floor((seconds % 3600) / 60);
-                const s = seconds % 60;
-                if (h > 0) return h + 'ч ' + String(m).padStart(2, '0') + 'м';
-                return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
             }
 
             function savePlayer() {
@@ -289,15 +277,18 @@
                 return Math.floor(cfg.price * Math.pow(cfg.upgradeCostMult, lvl) * 0.5);
             }
 
+            // Тик фирмы: начисляет доход прямо в кошелёк игрока
             function tickFirm(id) {
                 const data = biz.owned[id];
                 if (!data) return;
                 const now = Date.now();
-                const elapsedSec = (now - data.lastUpdate) / 1000;
-                const incomePerSec = incomeOf(id) / 3600;
-                const maxAccum = incomeOf(id) * MAX_ACCUM_HOURS;
+                if (!data.lastUpdate) data.lastUpdate = now;
 
-                data.pending = Math.min(data.pending + incomePerSec * elapsedSec, maxAccum);
+                const elapsedSec = (now - data.lastUpdate) / 1000;
+                if (elapsedSec <= 0) return;
+
+                const incomePerSec = incomeOf(id) / 3600;
+                player.wallet += incomePerSec * elapsedSec;
                 data.lastUpdate = now;
             }
 
@@ -336,10 +327,6 @@
                 const cfg = BUSINESSES[id];
                 const data = biz.owned[id];
                 const income = incomeOf(id);
-                const maxAccum = income * MAX_ACCUM_HOURS;
-                const pending = Math.floor(data.pending);
-                const filled = data.pending >= maxAccum;
-                const timeToFull = filled ? 0 : (maxAccum - data.pending) / (income / 3600);
 
                 const card = document.createElement('div');
                 card.className = 'biz-card';
@@ -348,15 +335,12 @@
                     '<div class="biz-card-icon">' + cfg.emoji + '</div>' +
                     '<div class="biz-card-info">' +
                         '<div class="biz-card-name">' + cfg.name + '</div>' +
-                        '<div class="biz-card-type">Ур. ' + data.level + ' / ' + cfg.maxLevel + ' · ' + formatMoney(income) + '/час</div>' +
-                        '<div class="biz-card-pending">' +
-                            '<span class="biz-pending-val">' + formatMoney(pending) + '</span>' +
-                            '<span class="biz-pending-timer">' + (filled ? 'ЗАПОЛНЕНО' : 'через ' + formatTimer(timeToFull)) + '</span>' +
-                        '</div>' +
+                        '<div class="biz-card-type">Ур. ' + data.level + ' / ' + cfg.maxLevel + ' · ' + cfg.type + '</div>' +
                     '</div>' +
-                    '<button class="biz-collect-btn" data-collect="' + id + '"' + (pending <= 0 ? ' disabled' : '') + '>' +
-                        (pending > 0 ? 'Собрать' : '—') +
-                    '</button>';
+                    '<div class="biz-card-right">' +
+                        '<div class="biz-card-income">' + formatMoney(income) + '</div>' +
+                        '<div class="biz-card-income-label">в час</div>' +
+                    '</div>';
                 return card;
             }
 
@@ -466,7 +450,6 @@
                 player.wallet -= cfg.price;
                 biz.owned[id] = {
                     level: 1,
-                    pending: 0,
                     lastUpdate: Date.now(),
                 };
                 savePlayer(); saveBiz();
@@ -485,30 +468,6 @@
                 biz.slots += 1;
                 savePlayer(); saveBiz();
                 renderTop(); renderBusiness(); renderSlots();
-            }
-
-            function collect(id) {
-                const data = biz.owned[id];
-                if (!data) return;
-                tickFirm(id);
-                const amount = Math.floor(data.pending);
-                if (amount <= 0) return;
-                data.pending -= amount;
-                player.wallet += amount;
-                savePlayer(); saveBiz();
-                renderTop(); renderBusiness();
-
-                const card = bizCompaniesEl.querySelector('[data-id="' + id + '"]');
-                if (card) {
-                    const rect = card.getBoundingClientRect();
-                    const el = document.createElement('div');
-                    el.className = 'biz-float';
-                    el.textContent = '+' + formatMoney(amount);
-                    el.style.left = (rect.left + rect.width / 2) + 'px';
-                    el.style.top = (rect.top + 20) + 'px';
-                    document.body.appendChild(el);
-                    setTimeout(() => el.remove(), 1100);
-                }
             }
 
             function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
@@ -539,11 +498,6 @@
             slotBuyBtn.addEventListener('click', buySlot);
 
             bizCompaniesEl.addEventListener('click', function(e) {
-                const collectBtn = e.target.closest('[data-collect]');
-                if (collectBtn) {
-                    if (!collectBtn.disabled) collect(collectBtn.dataset.collect);
-                    return;
-                }
                 const card = e.target.closest('.biz-card');
                 if (card) openUpgrade(card.dataset.id);
             });
@@ -604,16 +558,14 @@
             }
             init();
 
+            // Обновление баланса и карточек каждую секунду
             setInterval(function() {
                 tickAllFirms();
+                renderTop();
                 renderBusiness();
                 saveBiz();
+                savePlayer();
             }, 1000);
-
-            setInterval(function() {
-                tickAllFirms();
-                saveBiz(); savePlayer();
-            }, 10000);
 
             document.addEventListener('visibilitychange', function() {
                 if (document.visibilityState === 'hidden') {
