@@ -701,6 +701,7 @@ body {
     opacity: 0.7;
 }
 
+/* Карточка фирмы — БЕЗ кнопки «Собрать» */
 .biz-card {
     background: var(--bg-card);
     border: 1px solid rgba(201, 162, 39, 0.15);
@@ -757,74 +758,25 @@ body {
     letter-spacing: 0.3px;
 }
 
-.biz-card-pending {
+.biz-card-right {
     display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 3px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+    flex-shrink: 0;
 }
 
-.biz-pending-val {
-    font-size: 12px;
+.biz-card-income {
+    font-size: 13px;
     font-weight: 800;
     color: #7DDFA0;
-    letter-spacing: 0.2px;
+    white-space: nowrap;
 }
 
-.biz-pending-timer {
+.biz-card-income-label {
     font-size: 9px;
     color: var(--text-muted);
     letter-spacing: 0.3px;
-}
-
-.biz-collect-btn {
-    appearance: none;
-    cursor: pointer;
-    font-family: inherit;
-    padding: 8px 12px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, #7DDFA0, #4FB47C);
-    color: #0A2A1A;
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: 0.3px;
-    border: none;
-    white-space: nowrap;
-    transition: all 0.15s ease;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-    flex-shrink: 0;
-    min-width: 84px;
-    text-align: center;
-}
-
-.biz-collect-btn:active:not(:disabled) { transform: scale(0.94); }
-
-.biz-collect-btn:disabled {
-    background: var(--bg-secondary);
-    color: var(--text-muted);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    cursor: not-allowed;
-    min-width: 60px;
-}
-
-.biz-float {
-    position: fixed;
-    pointer-events: none;
-    font-size: 17px;
-    font-weight: 900;
-    color: #7DDFA0;
-    text-shadow: 0 0 12px rgba(125, 223, 160, 0.9), 0 2px 6px rgba(0, 0, 0, 0.6);
-    z-index: 9999;
-    transform: translate(-50%, 0);
-    animation: biz-float-up 1.1s ease-out forwards;
-}
-
-@keyframes biz-float-up {
-    0%   { opacity: 0; transform: translate(-50%, 10px) scale(0.9); }
-    20%  { opacity: 1; transform: translate(-50%, -6px) scale(1.1); }
-    100% { opacity: 0; transform: translate(-50%, -70px) scale(0.95); }
 }
 
 /* ====== MODAL OVERLAY ====== */
@@ -1742,7 +1694,6 @@ body {
     padding: 0 2px;
 }
 
-/* Track */
 .race-track {
     position: relative;
     width: 100%;
@@ -1791,10 +1742,9 @@ body {
     filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8));
 }
 
-.race-runner-npc { top: 38%; }
-.race-runner-me { top: 52%; }
+.race-runner-npc { top: 33%; }
+.race-runner-me { top: 67%; }
 
-/* Кнопка СТАРТ — прямо под картой */
 .race-start-btn {
     appearance: none;
     outline: none;
@@ -1845,7 +1795,6 @@ body {
     color: var(--text-muted);
 }
 
-/* Результат — появляется ниже кнопки, ничего не сдвигает */
 .race-result {
     flex-shrink: 0;
     text-align: center;
@@ -1998,15 +1947,10 @@ body {
     }
 
     .biz-card {
-        grid-template-columns: 40px 1fr;
+        grid-template-columns: 40px 1fr auto;
         gap: 8px;
     }
     .biz-card-icon { width: 40px; height: 40px; font-size: 20px; }
-    .biz-collect-btn {
-        grid-column: 1 / -1;
-        width: 100%;
-        min-width: 0;
-    }
 }
 
 @media (max-height: 700px) {
