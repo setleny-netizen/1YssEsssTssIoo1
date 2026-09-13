@@ -50,7 +50,7 @@
                 </div>
 
                 <div class="biz-income-card">
-                    <div class="biz-income-value" id="biz-income">$ 0,00</div>
+                    <div class="biz-income-value" id="biz-income">$ 0</div>
                     <div class="biz-income-label">Суммарный доход в час</div>
                 </div>
 
@@ -142,7 +142,6 @@
             const PLAYER_KEY = 'lokhmaty_player_v1';
             const BIZ_KEY = 'lokhmaty_business_v2';
 
-            // ====== КОНФИГ БИЗНЕСОВ ======
             const BUSINESSES = {
                 shawarma: {
                     id: 'shawarma', name: 'Шаурмичная', emoji: '🌯', type: 'Общепит',
@@ -171,7 +170,6 @@
                 },
             };
 
-            // ====== СЛОТЫ ======
             const BASE_SLOTS = 3;
             const MAX_SLOTS = 10;
             function slotPrice(currentSlots) {
@@ -179,10 +177,8 @@
                 return 10000 * Math.pow(5, extra);
             }
 
-            // ====== AFK ======
-            const MAX_ACCUM_HOURS = 4;  // лимит накопления — 4 часа
+            const MAX_ACCUM_HOURS = 4;
 
-            // ====== УРОВНИ ======
             function cumulativeXp(level) {
                 let total = 0;
                 for (let i = 1; i < level; i++) total += i * 100;
@@ -196,14 +192,12 @@
                 return { level, currentInLevel: totalXp - base, needForLevel: next - base };
             }
 
-            // ====== СОСТОЯНИЕ ======
             const player = { wallet: 0, ice: 0, totalXp: 0 };
             const biz = {
                 slots: BASE_SLOTS,
-                owned: {}, // { id: { level, pending, lastUpdate } }
+                owned: {},
             };
 
-            // ====== DOM ======
             const balanceValue = document.getElementById('balance-value');
             const iceValue = document.getElementById('ice-value');
             const xpFill = document.getElementById('xp-fill');
@@ -230,7 +224,6 @@
 
             let currentUpgradeId = null;
 
-            // ====== ФОРМАТ ======
             function formatNumber(num) {
                 num = Math.floor(num);
                 if (num >= 1000000000) return (num / 1000000000).toFixed(1) + 'B';
@@ -238,10 +231,13 @@
                 if (num >= 1000) return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
                 return num.toString();
             }
+
+            // БЕЗ КОПЕЕК
             function formatMoney(num) {
                 const n = Math.floor(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-                return '$ ' + n + ',00';
+                return '$ ' + n;
             }
+
             function formatTimer(seconds) {
                 if (seconds == null || seconds < 0) return '--:--';
                 seconds = Math.max(0, Math.floor(seconds));
@@ -252,7 +248,6 @@
                 return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
             }
 
-            // ====== СОХРАНЕНИЕ ======
             function savePlayer() {
                 try {
                     localStorage.setItem(PLAYER_KEY, JSON.stringify({
@@ -285,7 +280,6 @@
                 } catch (e) {}
             }
 
-            // ====== РАСЧЁТЫ ======
             function ownedCount() { return Object.keys(biz.owned).length; }
 
             function incomeOf(id) {
@@ -306,7 +300,6 @@
                 return Math.floor(cfg.price * Math.pow(cfg.upgradeCostMult, lvl) * 0.5);
             }
 
-            // Обновить накопление фирмы (AFK)
             function tickFirm(id) {
                 const data = biz.owned[id];
                 if (!data) return;
@@ -323,7 +316,6 @@
                 for (const id in biz.owned) tickFirm(id);
             }
 
-            // ====== ОТРИСОВКА ТОПА ======
             function renderTop() {
                 balanceValue.textContent = formatNumber(player.wallet);
                 iceValue.textContent = formatNumber(player.ice);
@@ -334,7 +326,6 @@
                 playerLevelEl.textContent = 'Уровень ' + info.level;
             }
 
-            // ====== ОТРИСОВКА ФИРМ ======
             function renderBusiness() {
                 bizIncomeEl.textContent = formatMoney(incomePerHour());
                 bizMyCountEl.textContent = ownedCount() + ' / ' + biz.slots;
@@ -381,7 +372,6 @@
                 return card;
             }
 
-            // ====== КАТАЛОГ ======
             function renderCatalog() {
                 catalogList.innerHTML = '';
                 const freeSlots = biz.slots - ownedCount();
@@ -420,7 +410,6 @@
                 });
             }
 
-            // ====== МОДАЛКА АПГРЕЙДА ======
             function renderUpgrade(id) {
                 const cfg = BUSINESSES[id];
                 const data = biz.owned[id];
@@ -482,7 +471,6 @@
                 openModal('modal-upgrade');
             }
 
-            // ====== ДЕЙСТВИЯ ======
             function buyBusiness(id) {
                 const cfg = BUSINESSES[id];
                 if (!cfg || biz.owned[id]) return;
@@ -524,7 +512,6 @@
                 savePlayer(); saveBiz();
                 renderTop(); renderBusiness();
 
-                // всплывающая цифра
                 const card = bizCompaniesEl.querySelector('[data-id="' + id + '"]');
                 if (card) {
                     const rect = card.getBoundingClientRect();
@@ -538,7 +525,6 @@
                 }
             }
 
-            // ====== МОДАЛКИ ======
             function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
             function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
@@ -566,7 +552,6 @@
 
             slotBuyBtn.addEventListener('click', buySlot);
 
-            // Клик по карточке фирмы (кроме кнопки «Собрать») — апгрейд
             bizCompaniesEl.addEventListener('click', function(e) {
                 const collectBtn = e.target.closest('[data-collect]');
                 if (collectBtn) {
@@ -577,7 +562,6 @@
                 if (card) openUpgrade(card.dataset.id);
             });
 
-            // ====== РЕНДЕР СЛОТОВ ======
             function renderSlots() {
                 slotUsedEl.textContent = ownedCount() + ' / ' + biz.slots;
                 if (biz.slots >= MAX_SLOTS) {
@@ -592,7 +576,6 @@
                 }
             }
 
-            // ====== НАВИГАЦИЯ ======
             navItems.forEach(item => {
                 const go = function(e) {
                     e.preventDefault();
@@ -616,7 +599,6 @@
                 }, { passive: false });
             });
 
-            // ====== ИНИЦИАЛИЗАЦИЯ ======
             function init() {
                 loadAll();
                 tickAllFirms();
@@ -626,14 +608,12 @@
             }
             init();
 
-            // Тикер: каждую секунду обновляет накопление
             setInterval(function() {
                 tickAllFirms();
                 renderBusiness();
                 saveBiz();
             }, 1000);
 
-            // Сохранение раз в 10 сек
             setInterval(function() {
                 tickAllFirms();
                 saveBiz(); savePlayer();
@@ -656,7 +636,6 @@
                 saveBiz(); savePlayer();
             });
 
-            // ====== SAFE AREA ======
             function handleSafeArea() {
                 const bottomNav = document.getElementById('bottom-nav');
                 const safeBottom = getComputedStyle(document.documentElement)
