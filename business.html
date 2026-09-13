@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Бизнес — Лохматый клуб</title>
-    <link rel="stylesheet" href="style.css?v=5">
+    <link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
     <div id="app">
@@ -24,10 +24,6 @@
                     <div class="balance-badge">
                         <span class="wallet-icon">💵</span>
                         <span class="balance-value" id="balance-value">0</span>
-                    </div>
-                    <div class="balance-badge ice">
-                        <span class="wallet-icon">🧊</span>
-                        <span class="balance-value" id="ice-value">0</span>
                     </div>
                 </div>
             </div>
@@ -199,7 +195,6 @@
             };
 
             const balanceValue = document.getElementById('balance-value');
-            const iceValue = document.getElementById('ice-value');
             const xpFill = document.getElementById('xp-fill');
             const xpText = document.getElementById('xp-text');
             const playerLevelEl = document.getElementById('player-level');
@@ -222,14 +217,14 @@
 
             const navItems = document.querySelectorAll('.nav-item');
 
-            // ====== ФОРМАТЫ ======
-            // Компактный (для верхней панели)
             function formatNumber(num) {
                 num = Math.floor(num);
-                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                if (num >= 1000000000) return (num / 1000000000).toFixed(1) + 'B';
+                if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+                if (num >= 1000) return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                return num.toString();
             }
 
-            // Полный (для денег внутри бизнеса) — "$ 5 000 000"
             function formatMoney(num) {
                 const n = Math.floor(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
                 return '$ ' + n;
@@ -315,7 +310,6 @@
 
             function renderTop() {
                 balanceValue.textContent = formatNumber(player.wallet);
-                iceValue.textContent = formatNumber(player.ice);
                 const info = getLevelInfo(player.totalXp);
                 const percent = Math.min((info.currentInLevel / info.needForLevel) * 100, 100);
                 xpFill.style.width = percent + '%';
@@ -324,7 +318,6 @@
             }
 
             function renderBusiness() {
-                // Доход в час — полный формат
                 bizIncomeEl.textContent = formatMoney(incomePerHour());
                 bizMyCountEl.textContent = ownedCount() + ' / ' + biz.slots;
 
@@ -572,7 +565,6 @@
                 }
             }
 
-            // ====== НАВИГАЦИЯ ======
             navItems.forEach(item => {
                 const go = function(e) {
                     e.preventDefault();
