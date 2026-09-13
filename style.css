@@ -458,12 +458,12 @@ body {
     min-height: 0;
 }
 
-.earn-header {
+.earn-topbar {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 4px;
-    padding: 12px 0 4px;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 2px 4px;
     flex-shrink: 0;
 }
 
@@ -471,19 +471,35 @@ body {
     font-size: 22px;
     font-weight: 800;
     color: var(--text-primary);
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-    text-align: center;
 }
 
-.earn-subtitle {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--text-muted);
-    letter-spacing: 0.5px;
-    text-align: center;
+.earn-ice-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-card);
+    border: 1px solid rgba(74, 122, 158, 0.4);
+    border-radius: 20px;
+    padding: 5px 12px 5px 10px;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
+.earn-ice-emoji {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.earn-ice-value {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--accent-blue-light);
+    letter-spacing: 0.3px;
+}
+
+/* ====== QUICK RACE BUTTON ====== */
 .quick-race-btn {
     display: flex;
     align-items: center;
@@ -685,7 +701,6 @@ body {
     opacity: 0.7;
 }
 
-/* Card of owned business */
 .biz-card {
     background: var(--bg-card);
     border: 1px solid rgba(201, 162, 39, 0.15);
@@ -784,9 +799,7 @@ body {
     text-align: center;
 }
 
-.biz-collect-btn:active:not(:disabled) {
-    transform: scale(0.94);
-}
+.biz-collect-btn:active:not(:disabled) { transform: scale(0.94); }
 
 .biz-collect-btn:disabled {
     background: var(--bg-secondary);
@@ -796,7 +809,6 @@ body {
     min-width: 60px;
 }
 
-/* Всплывающая цифра сбора */
 .biz-float {
     position: fixed;
     pointer-events: none;
@@ -1135,9 +1147,7 @@ body {
     font-size: 14px;
 }
 
-.upg-stat.next strong {
-    color: #7DDFA0;
-}
+.upg-stat.next strong { color: #7DDFA0; }
 
 .upg-max {
     text-align: center;
@@ -1740,8 +1750,8 @@ body {
     filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8));
 }
 
-.race-runner-npc { top: 36%; }
-.race-runner-me { top: 52%; }
+.race-runner-npc { top: 33%; }
+.race-runner-me { top: 67%; }
 
 .race-result {
     flex-shrink: 0;
@@ -1799,11 +1809,23 @@ body {
 }
 
 .race-start-btn:disabled {
-    opacity: 0.6;
+    opacity: 0.55;
     cursor: not-allowed;
 }
 
 .race-start-emoji { font-size: 18px; line-height: 1; }
+
+.race-start-cost {
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(10, 10, 10, 0.75);
+    letter-spacing: 0.3px;
+    margin-left: 2px;
+}
+
+.race-start-btn:disabled .race-start-cost {
+    color: var(--text-muted);
+}
 
 /* ====== BOTTOM NAV ====== */
 #bottom-nav {
@@ -1915,6 +1937,7 @@ body {
     .race-start-btn { font-size: 13px; padding: 10px 14px; }
 
     .earn-title { font-size: 20px; }
+    .earn-ice-value { font-size: 13px; }
 
     .biz-title { font-size: 20px; }
     .biz-income-value { font-size: 22px; }
@@ -2011,8 +2034,7 @@ body {
     .race-start-btn { padding: 9px 14px; font-size: 12px; letter-spacing: 1.5px; }
 
     .earn-title { font-size: 18px; letter-spacing: 1.5px; }
-    .earn-subtitle { font-size: 10px; }
-    .quick-race-btn { padding: 11px 14px; font-size: 13px; }
+    .earn-ice-value { font-size: 12px; }
 
     .biz-title { font-size: 18px; }
     .biz-income-value { font-size: 22px; }
@@ -2030,4 +2052,4 @@ body {
 
 @media (min-width: 500px) {
     #content { padding: 12px 16px; }
-    }
+}
