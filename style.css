@@ -1740,8 +1740,8 @@ body {
     filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8));
 }
 
-.race-runner-npc { top: 33%; }
-.race-runner-me { top: 67%; }
+.race-runner-npc { top: 45%; }
+.race-runner-me { top: 52%; }
 
 .race-result {
     flex-shrink: 0;
