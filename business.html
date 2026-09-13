@@ -226,10 +226,7 @@
             // Компактный (для верхней панели)
             function formatNumber(num) {
                 num = Math.floor(num);
-                if (num >= 1000000000) return (num / 1000000000).toFixed(1) + 'B';
-                if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-                if (num >= 1000) return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-                return num.toString();
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
             }
 
             // Полный (для денег внутри бизнеса) — "$ 5 000 000"
