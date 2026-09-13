@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Ледогенератор — Лохматый клуб</title>
+    <title>Быстрый заезд — Лохматый клуб</title>
     <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
@@ -42,64 +42,58 @@
 
         <!-- CONTENT AREA -->
         <main id="content">
-            <div id="screen-ice" class="screen-content">
+            <div id="screen-race" class="screen-content">
 
-                <div class="ice-hero">
-                    <div class="ice-image-wrap">
-                        <div class="ice-glow"></div>
-                        <img src="https://cdn.pixabay.com/photo/2026/09/10/15/30/15-30-22-199_1280.png" alt="Ледогенератор" draggable="false" loading="eager">
+                <!-- RACER CARDS -->
+                <div class="race-racers">
+                    <div class="racer-card racer-me">
+                        <div class="racer-avatar">
+                            <img src="https://cdn.pixabay.com/photo/2026/09/10/20/27/20-27-55-61_1280.png" alt="Я" draggable="false">
+                        </div>
+                        <div class="racer-info">
+                            <div class="racer-title">Я</div>
+                            <div class="racer-sled">Вихрь</div>
+                            <div class="racer-speed"><span id="my-speed">80</span> км/ч</div>
+                        </div>
                     </div>
-                    <div class="ice-hero-info">
-                        <div class="ice-hero-title" id="ice-level-title">ЛЕДОГЕНЕРАТОР I</div>
-                        <div class="ice-hero-status" id="ice-status">
-                            <span class="ice-status-dot"></span>
-                            <span class="ice-status-text">РАБОТАЕТ</span>
+
+                    <div class="racer-vs">VS</div>
+
+                    <div class="racer-card racer-npc">
+                        <div class="racer-info racer-info-right">
+                            <div class="racer-title">НПС</div>
+                            <div class="racer-sled" id="npc-sled">— — —</div>
+                            <div class="racer-speed"><span id="npc-speed">??</span> км/ч</div>
+                        </div>
+                        <div class="racer-avatar">
+                            <img src="https://cdn.pixabay.com/photo/2026/09/10/20/54/20-54-13-256_1280.png" alt="НПС" draggable="false">
                         </div>
                     </div>
                 </div>
 
-                <div class="ice-info-row">
-                    <div class="ice-info-cell">
-                        <div class="ice-info-label">Производство</div>
-                        <div class="ice-info-value" id="ice-production">+5 🧊 / час</div>
-                    </div>
-                    <div class="ice-info-cell">
-                        <div class="ice-info-label">Следующий лёд</div>
-                        <div class="ice-info-value" id="ice-next-timer">--:--</div>
-                    </div>
-                </div>
+                <!-- TRACK -->
+                <div class="race-track">
+                    <div class="race-track-inner">
+                        <img class="race-track-bg" src="https://cdn.pixabay.com/photo/2026/09/10/19/57/19-57-46-407_1280.png" alt="Трасса" draggable="false">
 
-                <div class="ice-storage-card">
-                    <div class="ice-storage-header">
-                        <span class="ice-storage-emoji">🧊</span>
-                        <span class="ice-storage-title">НАКОПЛЕНО</span>
-                    </div>
-                    <div class="ice-storage-count">
-                        <span id="ice-stored">0</span>
-                        <span class="ice-storage-sep">/</span>
-                        <span id="ice-capacity">500</span>
-                    </div>
-                    <div class="ice-storage-bar">
-                        <div class="ice-storage-bar-fill" id="ice-storage-fill"></div>
-                    </div>
-                </div>
-
-                <button class="ice-collect-btn" id="ice-collect-btn" disabled>
-                    <span class="ice-collect-emoji">🧊</span>
-                    <span class="ice-collect-text">ЗАБРАТЬ</span>
-                    <span class="ice-collect-amount" id="ice-collect-amount">0</span>
-                </button>
-
-                <button class="ice-upgrade-btn" id="ice-upgrade-btn">
-                    <div class="ice-upgrade-left">
-                        <div class="ice-upgrade-title">
-                            <span class="ice-upgrade-arrow">⬆️</span>
-                            <span>УЛУЧШИТЬ</span>
+                        <div class="race-runner race-runner-npc" id="runner-npc">
+                            <img src="https://cdn.pixabay.com/photo/2026/09/10/20/54/20-54-13-256_1280.png" alt="" draggable="false">
                         </div>
-                        <div class="ice-upgrade-desc" id="ice-upgrade-desc">Ледогенератор II · +10 🧊 / час · 1 000</div>
+
+                        <div class="race-runner race-runner-me" id="runner-me">
+                            <img src="https://cdn.pixabay.com/photo/2026/09/10/20/27/20-27-55-61_1280.png" alt="" draggable="false">
+                        </div>
                     </div>
-                    <div class="ice-upgrade-cost" id="ice-upgrade-cost">2 500 💵</div>
+                </div>
+
+                <!-- START BUTTON -->
+                <button class="race-start-btn" id="race-start-btn">
+                    <span class="race-start-emoji">🏁</span>
+                    <span class="race-start-text" id="race-start-text">СТАРТ</span>
                 </button>
+
+                <!-- RESULT MESSAGE -->
+                <div class="race-result hidden" id="race-result"></div>
 
             </div>
         </main>
@@ -114,11 +108,11 @@
                 <span class="nav-emoji">💼</span>
                 <span class="nav-label">Бизнес</span>
             </button>
-            <button class="nav-item" data-screen="earn" aria-label="Заработок">
+            <button class="nav-item active" data-screen="earn" aria-label="Заработок">
                 <span class="nav-emoji">💵</span>
                 <span class="nav-label">Заработок</span>
             </button>
-            <button class="nav-item active" data-screen="berloga" aria-label="Берлога">
+            <button class="nav-item" data-screen="berloga" aria-label="Берлога">
                 <span class="nav-emoji">🏔️</span>
                 <span class="nav-label">Берлога</span>
             </button>
@@ -132,20 +126,18 @@
     <script>
         (function() {
             const PLAYER_KEY = 'lokhmaty_player_v1';
-            const GEN_KEY = 'lokhmaty_ice_gen_v1';
 
-            const LEVELS = {
-                1:  { name: 'ЛЕДОГЕНЕРАТОР I',    productionPerHour: 5,    capacity: 500,    upgradeCost: 2500,     nextLevel: 2 },
-                2:  { name: 'ЛЕДОГЕНЕРАТОР II',   productionPerHour: 10,   capacity: 1000,   upgradeCost: 7500,     nextLevel: 3 },
-                3:  { name: 'ЛЕДОГЕНЕРАТОР III',  productionPerHour: 20,   capacity: 2000,   upgradeCost: 20000,    nextLevel: 4 },
-                4:  { name: 'ЛЕДОГЕНЕРАТОР IV',   productionPerHour: 40,   capacity: 4000,   upgradeCost: 50000,    nextLevel: 5 },
-                5:  { name: 'ЛЕДОГЕНЕРАТОР V',    productionPerHour: 80,   capacity: 8000,   upgradeCost: 120000,   nextLevel: 6 },
-                6:  { name: 'ЛЕДОГЕНЕРАТОР VI',   productionPerHour: 150,  capacity: 15000,  upgradeCost: 300000,   nextLevel: 7 },
-                7:  { name: 'ЛЕДОГЕНЕРАТОР VII',  productionPerHour: 300,  capacity: 30000,  upgradeCost: 750000,   nextLevel: 8 },
-                8:  { name: 'ЛЕДОГЕНЕРАТОР VIII', productionPerHour: 600,  capacity: 60000,  upgradeCost: 1800000,  nextLevel: 9 },
-                9:  { name: 'ЛЕДОГЕНЕРАТОР IX',   productionPerHour: 1200, capacity: 120000, upgradeCost: 4500000,  nextLevel: 10 },
-                10: { name: 'ЛЕДОГЕНЕРАТОР X',    productionPerHour: 2500, capacity: 250000, upgradeCost: null,     nextLevel: null },
-            };
+            const MY_SPEED = 80;
+            const RACE_DURATION = 5000;
+            const WIN_CHANCE = 0.78;
+            const REWARD_WIN_WALLET = 100;
+            const REWARD_WIN_XP = 3;
+            const REWARD_LOSE_XP = 1;
+
+            const NPC_NAMES = ['Мороз', 'Пурга', 'Метель', 'Вьюга', 'Снеговик', 'Ледокол', 'Сугроб'];
+
+            const START_X = 0;
+            const END_X = 95;
 
             function cumulativeXp(level) {
                 let total = 0;
@@ -165,16 +157,11 @@
                 };
             }
 
-            const player = {
+            const state = {
                 wallet: 0,
                 ice: 0,
                 totalXp: 0,
-            };
-
-            const gen = {
-                level: 1,
-                storedIce: 0,
-                lastTick: Date.now(),
+                racing: false,
             };
 
             const balanceValue = document.getElementById('balance-value');
@@ -183,48 +170,33 @@
             const xpText = document.getElementById('xp-text');
             const playerLevelEl = document.getElementById('player-level');
 
-            const levelTitle = document.getElementById('ice-level-title');
-            const statusEl = document.getElementById('ice-status');
-            const productionEl = document.getElementById('ice-production');
-            const nextTimerEl = document.getElementById('ice-next-timer');
-            const storedEl = document.getElementById('ice-stored');
-            const capacityEl = document.getElementById('ice-capacity');
-            const storageFill = document.getElementById('ice-storage-fill');
-            const collectBtn = document.getElementById('ice-collect-btn');
-            const collectAmount = document.getElementById('ice-collect-amount');
-            const upgradeBtn = document.getElementById('ice-upgrade-btn');
-            const upgradeDesc = document.getElementById('ice-upgrade-desc');
-            const upgradeCost = document.getElementById('ice-upgrade-cost');
+            const mySpeedEl = document.getElementById('my-speed');
+            const npcSpeedEl = document.getElementById('npc-speed');
+            const npcSledEl = document.getElementById('npc-sled');
+
+            const runnerMe = document.getElementById('runner-me');
+            const runnerNpc = document.getElementById('runner-npc');
+
+            const startBtn = document.getElementById('race-start-btn');
+            const startText = document.getElementById('race-start-text');
+            const resultEl = document.getElementById('race-result');
 
             const navItems = document.querySelectorAll('.nav-item');
 
             function formatNumber(num) {
                 num = Math.floor(num);
-                if (num >= 1000000000) return (num / 1000000000).toFixed(1) + 'B';
                 if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
                 if (num >= 1000) return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
                 return num.toString();
-            }
-
-            function formatTimer(seconds) {
-                if (seconds == null || seconds < 0) return '--:--';
-                seconds = Math.max(0, Math.floor(seconds));
-                const h = Math.floor(seconds / 3600);
-                const m = Math.floor((seconds % 3600) / 60);
-                const s = seconds % 60;
-                if (h > 0) {
-                    return h + 'ч ' + String(m).padStart(2, '0') + 'м';
-                }
-                return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
             }
 
             function savePlayer() {
                 try {
                     const raw = localStorage.getItem(PLAYER_KEY);
                     const existing = raw ? JSON.parse(raw) : {};
-                    existing.wallet = player.wallet;
-                    existing.ice = player.ice;
-                    existing.totalXp = player.totalXp;
+                    existing.wallet = state.wallet;
+                    existing.ice = state.ice;
+                    existing.totalXp = state.totalXp;
                     localStorage.setItem(PLAYER_KEY, JSON.stringify(existing));
                 } catch (e) {}
             }
@@ -234,193 +206,118 @@
                     const raw = localStorage.getItem(PLAYER_KEY);
                     if (raw) {
                         const p = JSON.parse(raw);
-                        if (typeof p.wallet === 'number') player.wallet = p.wallet;
-                        if (typeof p.ice === 'number') player.ice = p.ice;
-                        if (typeof p.totalXp === 'number') player.totalXp = p.totalXp;
+                        if (typeof p.wallet === 'number') state.wallet = p.wallet;
+                        if (typeof p.ice === 'number') state.ice = p.ice;
+                        if (typeof p.totalXp === 'number') state.totalXp = p.totalXp;
                     }
                 } catch (e) {}
-            }
-
-            function saveGen() {
-                try {
-                    localStorage.setItem(GEN_KEY, JSON.stringify({
-                        level: gen.level,
-                        storedIce: gen.storedIce,
-                        lastTick: gen.lastTick,
-                    }));
-                } catch (e) {}
-            }
-
-            function loadGen() {
-                try {
-                    const raw = localStorage.getItem(GEN_KEY);
-                    if (raw) {
-                        const p = JSON.parse(raw);
-                        if (typeof p.level === 'number' && LEVELS[p.level]) gen.level = p.level;
-                        if (typeof p.storedIce === 'number') gen.storedIce = p.storedIce;
-                        if (typeof p.lastTick === 'number') gen.lastTick = p.lastTick;
-                    }
-                } catch (e) {}
-            }
-
-            function getConfig() {
-                return LEVELS[gen.level];
-            }
-
-            function secondsPerIce() {
-                return 3600 / getConfig().productionPerHour;
-            }
-
-            function recalculate() {
-                const now = Date.now();
-                const cfg = getConfig();
-                const sp = secondsPerIce();
-                const elapsedSec = (now - gen.lastTick) / 1000;
-                const spaceLeft = cfg.capacity - gen.storedIce;
-
-                if (spaceLeft <= 0) {
-                    gen.lastTick = now;
-                    return;
-                }
-
-                const canProduce = Math.floor(elapsedSec / sp);
-                if (canProduce <= 0) return;
-
-                const add = Math.min(canProduce, spaceLeft);
-                gen.storedIce += add;
-                gen.lastTick += add * sp * 1000;
-
-                if (gen.storedIce >= cfg.capacity) {
-                    gen.lastTick = now;
-                }
-
-                saveGen();
             }
 
             function renderTop() {
-                balanceValue.textContent = formatNumber(player.wallet);
-                iceValue.textContent = formatNumber(player.ice);
+                balanceValue.textContent = formatNumber(state.wallet);
+                iceValue.textContent = formatNumber(state.ice);
 
-                const info = getLevelInfo(player.totalXp);
+                const info = getLevelInfo(state.totalXp);
                 const percent = Math.min((info.currentInLevel / info.needForLevel) * 100, 100);
                 xpFill.style.width = percent + '%';
                 xpText.textContent = formatNumber(info.currentInLevel) + ' / ' + formatNumber(info.needForLevel);
                 playerLevelEl.textContent = 'Уровень ' + info.level;
             }
 
-            function renderGenerator() {
-                const cfg = getConfig();
+            function resetRunners() {
+                runnerMe.style.left = START_X + '%';
+                runnerNpc.style.left = START_X + '%';
+            }
 
-                levelTitle.textContent = cfg.name;
-                productionEl.textContent = '+' + formatNumber(cfg.productionPerHour) + ' 🧊 / час';
-                capacityEl.textContent = formatNumber(cfg.capacity);
-                storedEl.textContent = formatNumber(gen.storedIce);
+            function startRace() {
+                if (state.racing) return;
+                state.racing = true;
 
-                const isFull = gen.storedIce >= cfg.capacity;
-                statusEl.classList.toggle('full', isFull);
-                statusEl.querySelector('.ice-status-text').textContent =
-                    isFull ? 'ХРАНИЛИЩЕ ЗАПОЛНЕНО' : 'РАБОТАЕТ';
+                resultEl.classList.add('hidden');
+                resultEl.classList.remove('win', 'lose');
 
-                const percent = Math.min((gen.storedIce / cfg.capacity) * 100, 100);
-                storageFill.style.width = percent + '%';
-                storageFill.classList.toggle('full', isFull);
+                resetRunners();
 
-                const canCollect = gen.storedIce > 0;
-                collectBtn.disabled = !canCollect;
-                collectBtn.classList.toggle('disabled', !canCollect);
-                collectAmount.textContent = formatNumber(gen.storedIce);
+                startBtn.disabled = true;
+                startText.textContent = 'В ГОНКЕ...';
 
-                if (cfg.nextLevel) {
-                    const next = LEVELS[cfg.nextLevel];
-                    upgradeDesc.textContent =
-                        next.name + ' · +' + formatNumber(next.productionPerHour) + ' 🧊 / час · ' +
-                        formatNumber(next.capacity);
-                    upgradeCost.textContent = formatNumber(cfg.upgradeCost) + ' 💵';
-                    upgradeBtn.disabled = false;
-                    upgradeBtn.style.display = '';
+                const npcName = NPC_NAMES[Math.floor(Math.random() * NPC_NAMES.length)];
+                npcSledEl.textContent = npcName;
+
+                const playerWins = Math.random() < WIN_CHANCE;
+
+                let npcSpeed;
+                if (playerWins) {
+                    npcSpeed = 60 + Math.floor(Math.random() * 20);
                 } else {
-                    upgradeBtn.disabled = true;
-                    upgradeBtn.style.display = 'none';
+                    npcSpeed = 81 + Math.floor(Math.random() * 20);
                 }
+
+                npcSpeedEl.textContent = npcSpeed;
+
+                const maxSpeed = Math.max(MY_SPEED, npcSpeed);
+                const myFinalProgress = MY_SPEED / maxSpeed;
+                const npcFinalProgress = npcSpeed / maxSpeed;
+
+                const range = END_X - START_X;
+                const startTime = performance.now();
+
+                function tick(now) {
+                    const elapsed = now - startTime;
+                    const t = Math.min(elapsed / RACE_DURATION, 1);
+
+                    const myLeft = START_X + (t * myFinalProgress) * range;
+                    const npcLeft = START_X + (t * npcFinalProgress) * range;
+
+                    runnerMe.style.left = myLeft + '%';
+                    runnerNpc.style.left = npcLeft + '%';
+
+                    if (t < 1) {
+                        requestAnimationFrame(tick);
+                    } else {
+                        finishRace(playerWins);
+                    }
+                }
+                requestAnimationFrame(tick);
             }
 
-            function renderNextTimer() {
-                const cfg = getConfig();
-                if (gen.storedIce >= cfg.capacity) {
-                    nextTimerEl.textContent = '--:--';
-                    return;
+            function finishRace(playerWins) {
+                let message;
+
+                if (playerWins) {
+                    state.wallet += REWARD_WIN_WALLET;
+                    state.totalXp += REWARD_WIN_XP;
+                    message = '🏆 ПОБЕДА! +' + REWARD_WIN_WALLET + ' 💵 · +' + REWARD_WIN_XP + ' XP';
+                    resultEl.classList.add('win');
+                } else {
+                    state.totalXp += REWARD_LOSE_XP;
+                    message = '❄️ Проигрыш... +' + REWARD_LOSE_XP + ' XP';
+                    resultEl.classList.add('lose');
                 }
-                const sp = secondsPerIce();
-                const elapsed = (Date.now() - gen.lastTick) / 1000;
-                const nextIn = sp - (elapsed % sp);
-                nextTimerEl.textContent = formatTimer(nextIn);
-            }
 
-            function collect() {
-                if (gen.storedIce <= 0) return;
-                const amount = gen.storedIce;
-                gen.storedIce = 0;
-                player.ice += amount;
-                gen.lastTick = Date.now();
-
-                spawnFloatText('+' + formatNumber(amount) + ' 🧊', collectBtn);
-
-                const iceBadge = iceValue.closest('.balance-badge');
-                if (iceBadge) {
-                    iceBadge.classList.add('bump');
-                    setTimeout(() => iceBadge.classList.remove('bump'), 300);
-                }
+                resultEl.textContent = message;
+                resultEl.classList.remove('hidden');
 
                 savePlayer();
-                saveGen();
                 renderTop();
-                renderGenerator();
-            }
 
-            function upgrade() {
-                const cfg = getConfig();
-                if (!cfg.nextLevel) return;
-                if (player.wallet < cfg.upgradeCost) {
-                    upgradeBtn.classList.add('shake');
-                    setTimeout(() => upgradeBtn.classList.remove('shake'), 400);
-                    return;
-                }
-                player.wallet -= cfg.upgradeCost;
-                gen.level = cfg.nextLevel;
-                savePlayer();
-                saveGen();
-                renderTop();
-                renderGenerator();
-            }
-
-            function spawnFloatText(text, anchor) {
-                const rect = anchor.getBoundingClientRect();
-                const el = document.createElement('div');
-                el.className = 'ice-float';
-                el.textContent = text;
-                el.style.left = (rect.left + rect.width / 2) + 'px';
-                el.style.top = (rect.top + 10) + 'px';
-                document.body.appendChild(el);
-                setTimeout(() => el.remove(), 1100);
+                state.racing = false;
+                startBtn.disabled = false;
+                startText.textContent = 'ЕЩЁ РАЗ';
             }
 
             // ====== НАВИГАЦИЯ (с поддержкой business.html) ======
             navItems.forEach(item => {
                 const go = function(e) {
                     e.preventDefault();
+                    if (state.racing) return;
 
                     // Бизнес — отдельная страница
                     if (this.dataset.screen === 'business') {
-                        recalculate();
-                        saveGen();
-                        savePlayer();
                         window.location.href = 'business.html';
                         return;
                     }
 
-                    recalculate();
-                    saveGen();
-                    savePlayer();
                     if (this.dataset.screen === 'earn') {
                         window.location.href = 'index.html#earn';
                     } else if (this.dataset.screen === 'berloga') {
@@ -438,60 +335,24 @@
                 }, { passive: false });
             });
 
-            collectBtn.addEventListener('click', collect);
-            collectBtn.addEventListener('touchstart', function(e) {
+            startBtn.addEventListener('click', startRace);
+            startBtn.addEventListener('touchstart', function(e) {
                 e.preventDefault();
-                collect();
-            }, { passive: false });
-
-            upgradeBtn.addEventListener('click', upgrade);
-            upgradeBtn.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-                upgrade();
+                startRace();
             }, { passive: false });
 
             function init() {
                 loadPlayer();
-                loadGen();
-                recalculate();
                 renderTop();
-                renderGenerator();
-                renderNextTimer();
+                resetRunners();
             }
             init();
 
-            setInterval(function() {
-                recalculate();
-                renderGenerator();
-            }, 5000);
-
-            setInterval(function() {
-                renderNextTimer();
-                recalculate();
-                const stored = Math.floor(gen.storedIce);
-                if (stored !== parseInt(storedEl.textContent.replace(/\s/g, ''), 10)) {
-                    renderGenerator();
-                }
-            }, 1000);
-
             document.addEventListener('visibilitychange', function() {
-                if (document.visibilityState === 'hidden') {
-                    recalculate();
-                    saveGen();
-                    savePlayer();
-                } else {
+                if (document.visibilityState === 'visible') {
                     loadPlayer();
-                    loadGen();
-                    recalculate();
                     renderTop();
-                    renderGenerator();
                 }
-            });
-
-            window.addEventListener('beforeunload', function() {
-                recalculate();
-                saveGen();
-                savePlayer();
             });
 
             function handleSafeArea() {
