@@ -1742,6 +1742,7 @@ body {
     padding: 0 2px;
 }
 
+/* Track */
 .race-track {
     position: relative;
     width: 100%;
@@ -1793,30 +1794,7 @@ body {
 .race-runner-npc { top: 33%; }
 .race-runner-me { top: 67%; }
 
-.race-result {
-    flex-shrink: 0;
-    text-align: center;
-    padding: 8px 12px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    border: 1px solid;
-    background: var(--bg-card);
-}
-
-.race-result.win {
-    color: #7DDFA0;
-    border-color: rgba(125, 223, 160, 0.5);
-    box-shadow: 0 0 20px rgba(125, 223, 160, 0.2);
-}
-
-.race-result.lose {
-    color: #FF8B7D;
-    border-color: rgba(255, 139, 125, 0.5);
-    box-shadow: 0 0 20px rgba(255, 139, 125, 0.15);
-}
-
+/* Кнопка СТАРТ — прямо под картой */
 .race-start-btn {
     appearance: none;
     outline: none;
@@ -1839,7 +1817,6 @@ body {
     box-shadow: 0 4px 14px rgba(201, 162, 39, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
     transition: transform 0.12s ease, box-shadow 0.2s ease, opacity 0.2s ease;
     flex-shrink: 0;
-    margin-top: auto;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
 }
@@ -1866,6 +1843,31 @@ body {
 
 .race-start-btn:disabled .race-start-cost {
     color: var(--text-muted);
+}
+
+/* Результат — появляется ниже кнопки, ничего не сдвигает */
+.race-result {
+    flex-shrink: 0;
+    text-align: center;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    border: 1px solid;
+    background: var(--bg-card);
+}
+
+.race-result.win {
+    color: #7DDFA0;
+    border-color: rgba(125, 223, 160, 0.5);
+    box-shadow: 0 0 20px rgba(125, 223, 160, 0.2);
+}
+
+.race-result.lose {
+    color: #FF8B7D;
+    border-color: rgba(255, 139, 125, 0.5);
+    box-shadow: 0 0 20px rgba(255, 139, 125, 0.15);
 }
 
 /* ====== BOTTOM NAV ====== */
