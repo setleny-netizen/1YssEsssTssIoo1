@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Быстрый заезд — Лохматый клуб</title>
-    <link rel="stylesheet" href="style.css?v=6">
+    <link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
     <div id="app">
@@ -39,6 +39,15 @@
         <!-- CONTENT AREA -->
         <main id="content">
             <div id="screen-race" class="screen-content">
+
+                <!-- TOPBAR: заголовок + лёд -->
+                <div class="race-topbar">
+                    <div class="race-title">Быстрый заезд</div>
+                    <div class="race-ice-badge">
+                        <span class="race-ice-emoji">🧊</span>
+                        <span class="race-ice-value" id="race-ice-value">0</span>
+                    </div>
+                </div>
 
                 <!-- RACER CARDS -->
                 <div class="race-racers">
@@ -166,6 +175,7 @@
             const xpFill = document.getElementById('xp-fill');
             const xpText = document.getElementById('xp-text');
             const playerLevelEl = document.getElementById('player-level');
+            const raceIceValue = document.getElementById('race-ice-value');
 
             const mySpeedEl = document.getElementById('my-speed');
             const npcSpeedEl = document.getElementById('npc-speed');
@@ -213,6 +223,7 @@
 
             function renderTop() {
                 balanceValue.textContent = formatNumber(state.wallet);
+                if (raceIceValue) raceIceValue.textContent = formatNumber(state.ice);
 
                 const info = getLevelInfo(state.totalXp);
                 const percent = Math.min((info.currentInLevel / info.needForLevel) * 100, 100);
@@ -223,22 +234,23 @@
 
             function updateStartButton() {
                 if (state.racing) return;
-
                 const hasIce = state.ice >= RACE_COST_ICE;
-
-                if (startText.textContent === 'ЕЩЁ РАЗ') {
-                    // Не трогаем текст после гонки
-                } else {
-                    startText.textContent = hasIce ? 'СТАРТ' : 'НУЖЕН ЛЁД';
-                }
-
+                startText.textContent = hasIce ? 'СТАРТ' : 'НУЖЕН ЛЁД';
                 startBtn.disabled = !hasIce;
                 startCost.textContent = '· ' + RACE_COST_ICE + ' 🧊';
             }
 
+            // Мгновенный сброс саней на старт (без анимации отмотки)
             function resetRunners() {
+                runnerMe.style.transition = 'none';
+                runnerNpc.style.transition = 'none';
                 runnerMe.style.left = START_X + '%';
                 runnerNpc.style.left = START_X + '%';
+                // форсируем reflow, чтобы браузер применил reset
+                void runnerMe.offsetWidth;
+                void runnerNpc.offsetWidth;
+                runnerMe.style.transition = '';
+                runnerNpc.style.transition = '';
             }
 
             function startRace() {
@@ -260,6 +272,7 @@
                 resultEl.classList.add('hidden');
                 resultEl.classList.remove('win', 'lose');
 
+                // Мгновенный сброс саней на старт
                 resetRunners();
 
                 startBtn.disabled = true;
@@ -328,7 +341,6 @@
 
                 state.racing = false;
 
-                // Проверяем, хватает ли льда на следующий заезд
                 const hasIce = state.ice >= RACE_COST_ICE;
                 startBtn.disabled = !hasIce;
                 startText.textContent = hasIce ? 'ЕЩЁ РАЗ' : 'НУЖЕН ЛЁД';
