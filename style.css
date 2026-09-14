@@ -1111,6 +1111,13 @@ body {
     text-transform: uppercase;
 }
 
+/* Обёртка действий в модалке */
+.upg-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 .upg-buy-btn {
     appearance: none;
     outline: none;
@@ -1144,6 +1151,36 @@ body {
 }
 
 .upg-buy-btn.shake { animation: slot-shake 0.4s ease; }
+
+/* Кнопка продажи */
+.upg-sell-btn {
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+    font-family: inherit;
+    width: 100%;
+    padding: 12px 18px;
+    border-radius: 12px;
+    background: rgba(255, 90, 90, 0.12);
+    border: 1px solid rgba(255, 90, 90, 0.4);
+    color: #FF8B8B;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.15s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.upg-sell-btn:active { transform: scale(0.97); }
+
+.upg-sell-btn.confirm {
+    background: rgba(255, 90, 90, 0.85);
+    border-color: #FF5A5A;
+    color: #FFFFFF;
+    box-shadow: 0 0 20px rgba(255, 90, 90, 0.5);
+}
 
 /* ====== ICE GENERATOR PAGE ====== */
 #screen-ice {
@@ -1712,7 +1749,6 @@ body {
     letter-spacing: 0.3px;
 }
 
-/* Баннер с картинкой — целиком, без обрезки */
 .mine-banner {
     position: relative;
     width: 100%;
@@ -1763,7 +1799,6 @@ body {
     letter-spacing: 0.3px;
 }
 
-/* Список жил — компактные горизонтальные кнопки */
 .mine-veins {
     flex-shrink: 0;
     display: flex;
@@ -1906,7 +1941,6 @@ body {
     white-space: nowrap;
 }
 
-/* Превью инвентаря внизу */
 .mine-inv {
     flex-shrink: 0;
     background: var(--bg-card);
@@ -1963,7 +1997,6 @@ body {
     min-width: 0;
 }
 
-/* Float-текст добычи */
 .mine-float {
     position: fixed;
     pointer-events: none;
