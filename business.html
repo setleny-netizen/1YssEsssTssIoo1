@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Бизнес — Лохматый клуб</title>
-    <link rel="stylesheet" href="style.css?v=9">
+    <link rel="stylesheet" href="style.css?v=13">
 </head>
 <body>
     <div id="app">
@@ -120,7 +120,7 @@
             </div>
         </div>
 
-        <!-- MODAL: UPGRADE -->
+        <!-- MODAL: UPGRADE + SELL -->
         <div class="modal-overlay hidden" id="modal-upgrade">
             <div class="modal-sheet">
                 <div class="modal-header">
@@ -136,7 +136,7 @@
     <script>
         (function() {
             const PLAYER_KEY = 'lokhmaty_player_v1';
-            const BIZ_KEY = 'lokhmaty_business_v3';
+            const BIZ_KEY = 'lokhmaty_business_v4';
 
             const BUSINESSES = {
                 shawarma: {
@@ -168,6 +168,8 @@
 
             const BASE_SLOTS = 3;
             const MAX_SLOTS = 10;
+            const SELL_RATE = 0.5; // возвращаем 50% вложенного
+
             function slotPrice(currentSlots) {
                 const extra = currentSlots - BASE_SLOTS;
                 return 10000 * Math.pow(5, extra);
@@ -189,7 +191,7 @@
             const player = { wallet: 0, ice: 0, totalXp: 0 };
             const biz = {
                 slots: BASE_SLOTS,
-                owned: {}, // { id: { level, lastUpdate } }
+                owned: [], // [{ uid, id, level, lastUpdate }]
             };
 
             const balanceValue = document.getElementById('balance-value');
@@ -201,11 +203,7 @@
             const bizMyCountEl = document.getElementById('biz-my-count');
             const bizCompaniesEl = document.getElementById('biz-companies');
 
-            const modalCatalog = document.getElementById('modal-catalog');
-            const modalSlots = document.getElementById('modal-slots');
-            const modalUpgrade = document.getElementById('modal-upgrade');
             const catalogList = document.getElementById('catalog-list');
-
             const slotUsedEl = document.getElementById('slot-used');
             const slotNextPriceEl = document.getElementById('slot-next-price');
             const slotBuyBtn = document.getElementById('slot-buy-btn');
@@ -215,16 +213,19 @@
 
             const navItems = document.querySelectorAll('.nav-item');
 
+            let currentUpgradeUid = null;
+
+            // ====== ФОРМАТ ======
             function formatNumber(num) {
                 num = Math.floor(num);
                 return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
             }
-
             function formatMoney(num) {
                 const n = Math.floor(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
                 return '$ ' + n;
             }
 
+            // ====== СОХРАНЕНИЕ ======
             function savePlayer() {
                 try {
                     localStorage.setItem(PLAYER_KEY, JSON.stringify({
@@ -252,50 +253,65 @@
                     if (rawB) {
                         const b = JSON.parse(rawB);
                         if (typeof b.slots === 'number') biz.slots = b.slots;
-                        if (b.owned && typeof b.owned === 'object') biz.owned = b.owned;
+                        if (Array.isArray(b.owned)) biz.owned = b.owned;
                     }
                 } catch (e) {}
             }
 
-            function ownedCount() { return Object.keys(biz.owned).length; }
+            // ====== РАСЧЁТЫ ======
+            function ownedCount() { return biz.owned.length; }
 
-            function incomeOf(id) {
-                const cfg = BUSINESSES[id];
-                const lvl = biz.owned[id]?.level || 1;
-                return cfg.income * Math.pow(cfg.incomeMult, lvl - 1);
+            function findEntry(uid) {
+                return biz.owned.find(e => e.uid === uid);
+            }
+
+            function incomeOf(entry) {
+                const cfg = BUSINESSES[entry.id];
+                if (!cfg) return 0;
+                return cfg.income * Math.pow(cfg.incomeMult, entry.level - 1);
             }
 
             function incomePerHour() {
                 let total = 0;
-                for (const id in biz.owned) total += incomeOf(id);
+                for (const e of biz.owned) total += incomeOf(e);
                 return total;
             }
 
-            function upgradePrice(id) {
-                const cfg = BUSINESSES[id];
-                const lvl = biz.owned[id]?.level || 1;
-                return Math.floor(cfg.price * Math.pow(cfg.upgradeCostMult, lvl) * 0.5);
+            function upgradePriceFor(entry) {
+                const cfg = BUSINESSES[entry.id];
+                return Math.floor(cfg.price * Math.pow(cfg.upgradeCostMult, entry.level) * 0.5);
             }
 
-            // Тик фирмы: начисляет доход прямо в кошелёк игрока
-            function tickFirm(id) {
-                const data = biz.owned[id];
-                if (!data) return;
+            // Всего вложено в бизнес: цена покупки + все апгрейды до текущего уровня
+            function totalInvested(entry) {
+                const cfg = BUSINESSES[entry.id];
+                let total = cfg.price;
+                for (let lvl = 1; lvl < entry.level; lvl++) {
+                    total += Math.floor(cfg.price * Math.pow(cfg.upgradeCostMult, lvl) * 0.5);
+                }
+                return total;
+            }
+
+            function sellPriceFor(entry) {
+                return Math.floor(totalInvested(entry) * SELL_RATE);
+            }
+
+            // ====== ТИК ======
+            function tickEntry(entry) {
                 const now = Date.now();
-                if (!data.lastUpdate) data.lastUpdate = now;
-
-                const elapsedSec = (now - data.lastUpdate) / 1000;
+                if (!entry.lastUpdate) entry.lastUpdate = now;
+                const elapsedSec = (now - entry.lastUpdate) / 1000;
                 if (elapsedSec <= 0) return;
-
-                const incomePerSec = incomeOf(id) / 3600;
+                const incomePerSec = incomeOf(entry) / 3600;
                 player.wallet += incomePerSec * elapsedSec;
-                data.lastUpdate = now;
+                entry.lastUpdate = now;
             }
 
-            function tickAllFirms() {
-                for (const id in biz.owned) tickFirm(id);
+            function tickAll() {
+                for (const e of biz.owned) tickEntry(e);
             }
 
+            // ====== ОТРИСОВКА ======
             function renderTop() {
                 balanceValue.textContent = formatNumber(player.wallet);
                 const info = getLevelInfo(player.totalXp);
@@ -310,9 +326,8 @@
                 bizMyCountEl.textContent = ownedCount() + ' / ' + biz.slots;
 
                 bizCompaniesEl.innerHTML = '';
-                const owned = Object.keys(biz.owned);
 
-                if (owned.length === 0) {
+                if (biz.owned.length === 0) {
                     const empty = document.createElement('div');
                     empty.className = 'biz-empty';
                     empty.innerHTML = '<div class="biz-empty-emoji">💼</div><div>У тебя пока нет фирм</div><div class="biz-empty-hint">Нажми «Открыть бизнес» чтобы купить первую</div>';
@@ -320,22 +335,23 @@
                     return;
                 }
 
-                owned.forEach(id => bizCompaniesEl.appendChild(createOwnedCard(id)));
+                biz.owned.forEach(entry => {
+                    bizCompaniesEl.appendChild(createOwnedCard(entry));
+                });
             }
 
-            function createOwnedCard(id) {
-                const cfg = BUSINESSES[id];
-                const data = biz.owned[id];
-                const income = incomeOf(id);
+            function createOwnedCard(entry) {
+                const cfg = BUSINESSES[entry.id];
+                const income = incomeOf(entry);
 
                 const card = document.createElement('div');
                 card.className = 'biz-card';
-                card.dataset.id = id;
+                card.dataset.uid = entry.uid;
                 card.innerHTML =
                     '<div class="biz-card-icon">' + cfg.emoji + '</div>' +
                     '<div class="biz-card-info">' +
                         '<div class="biz-card-name">' + cfg.name + '</div>' +
-                        '<div class="biz-card-type">Ур. ' + data.level + ' / ' + cfg.maxLevel + ' · ' + cfg.type + '</div>' +
+                        '<div class="biz-card-type">Ур. ' + entry.level + ' / ' + cfg.maxLevel + ' · ' + cfg.type + '</div>' +
                     '</div>' +
                     '<div class="biz-card-right">' +
                         '<div class="biz-card-income">' + formatMoney(income) + '</div>' +
@@ -344,21 +360,17 @@
                 return card;
             }
 
+            // ====== КАТАЛОГ ======
             function renderCatalog() {
                 catalogList.innerHTML = '';
                 const freeSlots = biz.slots - ownedCount();
 
                 Object.values(BUSINESSES).forEach(cfg => {
-                    const owned = !!biz.owned[cfg.id];
-
                     const card = document.createElement('div');
-                    card.className = 'cat-card' + (owned ? ' owned' : '');
+                    card.className = 'cat-card';
 
                     let btnText, btnClass = 'cat-buy-btn';
-                    if (owned) {
-                        btnText = '✓ Куплено';
-                        btnClass += ' owned';
-                    } else if (freeSlots <= 0) {
+                    if (freeSlots <= 0) {
                         btnText = 'Нет слотов';
                         btnClass += ' disabled';
                     } else if (player.wallet < cfg.price) {
@@ -381,18 +393,20 @@
                 });
             }
 
-            function renderUpgrade(id) {
-                const cfg = BUSINESSES[id];
-                const data = biz.owned[id];
-                if (!data) return;
+            // ====== МОДАЛКА ФИРМЫ ======
+            function renderUpgrade(uid) {
+                const entry = findEntry(uid);
+                if (!entry) return;
+                const cfg = BUSINESSES[entry.id];
 
-                const lvl = data.level;
+                const lvl = entry.level;
                 const nextLvl = lvl + 1;
                 const isMax = lvl >= cfg.maxLevel;
-                const curIncome = incomeOf(id);
+                const curIncome = incomeOf(entry);
                 const nextIncome = isMax ? curIncome : cfg.income * Math.pow(cfg.incomeMult, nextLvl - 1);
-                const price = isMax ? 0 : upgradePrice(id);
-                const canUpgrade = !isMax && player.wallet >= price;
+                const upgPrice = isMax ? 0 : upgradePriceFor(entry);
+                const sellPrice = sellPriceFor(entry);
+                const canUpgrade = !isMax && player.wallet >= upgPrice;
 
                 upgTitleEl.textContent = cfg.emoji + ' ' + cfg.name;
 
@@ -409,11 +423,14 @@
                 }
                 html += '</div>';
 
+                html += '<div class="upg-actions">';
                 if (isMax) {
                     html += '<div class="upg-max">Максимальный уровень</div>';
                 } else {
-                    html += '<button class="upg-buy-btn' + (canUpgrade ? '' : ' disabled') + '" id="upg-buy-btn"' + (canUpgrade ? '' : ' disabled') + '>Улучшить · ' + formatMoney(price) + '</button>';
+                    html += '<button class="upg-buy-btn' + (canUpgrade ? '' : ' disabled') + '" id="upg-buy-btn"' + (canUpgrade ? '' : ' disabled') + '>Улучшить · ' + formatMoney(upgPrice) + '</button>';
                 }
+                html += '<button class="upg-sell-btn" id="upg-sell-btn">Продать · ' + formatMoney(sellPrice) + '</button>';
+                html += '</div>';
 
                 upgBodyEl.innerHTML = html;
 
@@ -425,35 +442,72 @@
                             setTimeout(() => this.classList.remove('shake'), 400);
                             return;
                         }
-                        tickFirm(id);
-                        player.wallet -= price;
-                        biz.owned[id].level = nextLvl;
+                        tickEntry(entry);
+                        player.wallet -= upgPrice;
+                        entry.level = nextLvl;
+                        entry.lastUpdate = Date.now();
                         savePlayer(); saveBiz();
                         renderTop(); renderBusiness();
-                        renderUpgrade(id);
+                        renderUpgrade(uid);
                     });
                 }
+
+                const sellBtn = document.getElementById('upg-sell-btn');
+                sellBtn.addEventListener('click', function() {
+                    if (this.dataset.confirm === '1') {
+                        sellBusiness(uid);
+                    } else {
+                        this.dataset.confirm = '1';
+                        this.textContent = 'Точно продать? · ' + formatMoney(sellPrice);
+                        this.classList.add('confirm');
+                        setTimeout(() => {
+                            if (this.isConnected) {
+                                this.dataset.confirm = '';
+                                this.textContent = 'Продать · ' + formatMoney(sellPrice);
+                                this.classList.remove('confirm');
+                            }
+                        }, 3000);
+                    }
+                });
             }
 
-            function openUpgrade(id) {
-                if (!biz.owned[id]) return;
-                renderUpgrade(id);
+            function openUpgrade(uid) {
+                if (!findEntry(uid)) return;
+                currentUpgradeUid = uid;
+                renderUpgrade(uid);
                 openModal('modal-upgrade');
             }
 
+            // ====== ДЕЙСТВИЯ ======
             function buyBusiness(id) {
                 const cfg = BUSINESSES[id];
-                if (!cfg || biz.owned[id]) return;
+                if (!cfg) return;
                 if (player.wallet < cfg.price) return;
                 if (biz.slots - ownedCount() <= 0) return;
 
                 player.wallet -= cfg.price;
-                biz.owned[id] = {
+                biz.owned.push({
+                    uid: Date.now() + '_' + Math.floor(Math.random() * 100000),
+                    id: id,
                     level: 1,
                     lastUpdate: Date.now(),
-                };
+                });
                 savePlayer(); saveBiz();
                 renderTop(); renderBusiness(); renderCatalog();
+            }
+
+            function sellBusiness(uid) {
+                const idx = biz.owned.findIndex(e => e.uid === uid);
+                if (idx === -1) return;
+                const entry = biz.owned[idx];
+                const refund = sellPriceFor(entry);
+                tickEntry(entry);
+                player.wallet += refund;
+                biz.owned.splice(idx, 1);
+                savePlayer(); saveBiz();
+                renderTop(); renderBusiness();
+                closeModal('modal-upgrade');
+                currentUpgradeUid = null;
             }
 
             function buySlot() {
@@ -470,6 +524,7 @@
                 renderTop(); renderBusiness(); renderSlots();
             }
 
+            // ====== МОДАЛКИ ======
             function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
             function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
@@ -499,7 +554,7 @@
 
             bizCompaniesEl.addEventListener('click', function(e) {
                 const card = e.target.closest('.biz-card');
-                if (card) openUpgrade(card.dataset.id);
+                if (card) openUpgrade(card.dataset.uid);
             });
 
             function renderSlots() {
@@ -516,10 +571,11 @@
                 }
             }
 
+            // ====== НАВИГАЦИЯ ======
             navItems.forEach(item => {
                 const go = function(e) {
                     e.preventDefault();
-                    tickAllFirms();
+                    tickAll();
                     saveBiz(); savePlayer();
 
                     const screen = this.dataset.screen;
@@ -549,18 +605,18 @@
                 }, { passive: false });
             });
 
+            // ====== ИНИЦИАЛИЗАЦИЯ ======
             function init() {
                 loadAll();
-                tickAllFirms();
+                tickAll();
                 saveBiz();
                 renderTop();
                 renderBusiness();
             }
             init();
 
-            // Обновление баланса и карточек каждую секунду
             setInterval(function() {
-                tickAllFirms();
+                tickAll();
                 renderTop();
                 renderBusiness();
                 saveBiz();
@@ -569,18 +625,18 @@
 
             document.addEventListener('visibilitychange', function() {
                 if (document.visibilityState === 'hidden') {
-                    tickAllFirms();
+                    tickAll();
                     saveBiz(); savePlayer();
                 } else {
                     loadAll();
-                    tickAllFirms();
+                    tickAll();
                     renderTop();
                     renderBusiness();
                 }
             });
 
             window.addEventListener('beforeunload', function() {
-                tickAllFirms();
+                tickAll();
                 saveBiz(); savePlayer();
             });
 
