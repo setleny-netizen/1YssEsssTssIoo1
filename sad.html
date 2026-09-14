@@ -1,1 +1,535 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Сад — Лохматый клуб</title>
+    <link rel="stylesheet" href="style.css?v=11">
+</head>
+<body>
+    <div id="app">
+        <!-- TOP PANEL -->
+        <header id="top-panel">
+            <div class="top-row">
+                <div class="player-info">
+                    <div class="avatar">
+                        <div class="avatar-inner">🐻</div>
+                    </div>
+                    <div class="player-name-level">
+                        <div class="player-name" id="player-name">Игрок</div>
+                        <div class="player-level" id="player-level">Уровень 1</div>
+                    </div>
+                </div>
+                <div class="balance-badge-group">
+                    <div class="balance-badge">
+                        <span class="wallet-icon">💵</span>
+                        <span class="balance-value" id="balance-value">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="xp-row">
+                <span class="xp-label">XP</span>
+                <div class="xp-bar">
+                    <div class="xp-bar-fill" id="xp-fill"></div>
+                </div>
+                <span class="xp-text" id="xp-text">0 / 100</span>
+            </div>
+        </header>
 
+        <!-- CONTENT AREA -->
+        <main id="content">
+            <div id="screen-sad" class="screen-content">
+
+                <div class="ice-hero">
+                    <div class="ice-image-wrap">
+                        <div class="ice-glow sad-glow"></div>
+                        <img src="https://cdn.pixabay.com/photo/2026/09/14/09/18/09-18-35-284_1280.png" alt="Сад" draggable="false" loading="eager">
+                    </div>
+                    <div class="ice-hero-info">
+                        <div class="ice-hero-title" id="sad-level-title">САД I</div>
+                        <div class="ice-hero-status" id="sad-status">
+                            <span class="ice-status-dot"></span>
+                            <span class="ice-status-text">РАСТЁТ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ice-info-row">
+                    <div class="ice-info-cell">
+                        <div class="ice-info-label">Собирается</div>
+                        <div class="ice-info-value" id="sad-production">+3 🍃 / час</div>
+                    </div>
+                    <div class="ice-info-cell">
+                        <div class="ice-info-label">Следующий лист</div>
+                        <div class="ice-info-value" id="sad-next-timer">--:--</div>
+                    </div>
+                </div>
+
+                <div class="ice-storage-card">
+                    <div class="ice-storage-header">
+                        <span class="ice-storage-emoji">🍃</span>
+                        <span class="ice-storage-title">СОБРАНО</span>
+                    </div>
+                    <div class="ice-storage-count">
+                        <span id="sad-stored">0</span>
+                        <span class="ice-storage-sep">/</span>
+                        <span id="sad-capacity">300</span>
+                    </div>
+                    <div class="ice-storage-bar">
+                        <div class="ice-storage-bar-fill" id="sad-storage-fill"></div>
+                    </div>
+                </div>
+
+                <button class="ice-collect-btn" id="sad-collect-btn" disabled>
+                    <span class="ice-collect-emoji">🍃</span>
+                    <span class="ice-collect-text">ЗАБРАТЬ</span>
+                    <span class="ice-collect-amount" id="sad-collect-amount">0</span>
+                </button>
+
+                <button class="ice-upgrade-btn" id="sad-upgrade-btn">
+                    <div class="ice-upgrade-left">
+                        <div class="ice-upgrade-title">
+                            <span class="ice-upgrade-arrow">⬆️</span>
+                            <span>УЛУЧШИТЬ</span>
+                        </div>
+                        <div class="ice-upgrade-desc" id="sad-upgrade-desc">Сад II · +6 🍃 / час · 600</div>
+                    </div>
+                    <div class="ice-upgrade-cost" id="sad-upgrade-cost">$ 1 500</div>
+                </button>
+
+            </div>
+        </main>
+
+        <!-- BOTTOM NAV -->
+        <nav id="bottom-nav">
+            <button class="nav-item" data-screen="invest" aria-label="Инвестиции">
+                <span class="nav-emoji">📈</span>
+                <span class="nav-label">Инвест</span>
+            </button>
+            <button class="nav-item" data-screen="business" aria-label="Бизнес">
+                <span class="nav-emoji">💼</span>
+                <span class="nav-label">Бизнес</span>
+            </button>
+            <button class="nav-item" data-screen="earn" aria-label="Заработок">
+                <span class="nav-emoji">💵</span>
+                <span class="nav-label">Заработок</span>
+            </button>
+            <button class="nav-item active" data-screen="berloga" aria-label="Берлога">
+                <span class="nav-emoji">🏔️</span>
+                <span class="nav-label">Берлога</span>
+            </button>
+            <button class="nav-item" data-screen="profile" aria-label="Профиль">
+                <span class="nav-emoji">👤</span>
+                <span class="nav-label">Профиль</span>
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        (function() {
+            const PLAYER_KEY = 'lokhmaty_player_v1';
+            const SAD_KEY = 'lokhmaty_sad_v1';
+            const INV_KEY = 'lokhmaty_inventory_v1';
+
+            // Уровни сада
+            const LEVELS = {
+                1:  { name: 'САД I',    productionPerHour: 3,    capacity: 300,    upgradeCost: 1500,     nextLevel: 2 },
+                2:  { name: 'САД II',   productionPerHour: 6,    capacity: 600,    upgradeCost: 4500,     nextLevel: 3 },
+                3:  { name: 'САД III',  productionPerHour: 12,   capacity: 1200,   upgradeCost: 12000,    nextLevel: 4 },
+                4:  { name: 'САД IV',   productionPerHour: 24,   capacity: 2400,   upgradeCost: 30000,    nextLevel: 5 },
+                5:  { name: 'САД V',    productionPerHour: 50,   capacity: 5000,   upgradeCost: 75000,    nextLevel: 6 },
+                6:  { name: 'САД VI',   productionPerHour: 100,  capacity: 10000,  upgradeCost: 200000,   nextLevel: 7 },
+                7:  { name: 'САД VII',  productionPerHour: 200,  capacity: 20000,  upgradeCost: 500000,   nextLevel: 8 },
+                8:  { name: 'САД VIII', productionPerHour: 400,  capacity: 40000,  upgradeCost: 1200000,  nextLevel: 9 },
+                9:  { name: 'САД IX',   productionPerHour: 800,  capacity: 80000,  upgradeCost: 3000000,  nextLevel: 10 },
+                10: { name: 'САД X',    productionPerHour: 1600, capacity: 160000, upgradeCost: null,     nextLevel: null },
+            };
+
+            function cumulativeXp(level) {
+                let total = 0;
+                for (let i = 1; i < level; i++) total += i * 100;
+                return total;
+            }
+
+            function getLevelInfo(totalXp) {
+                let level = 1;
+                while (cumulativeXp(level + 1) <= totalXp) level++;
+                const base = cumulativeXp(level);
+                const next = cumulativeXp(level + 1);
+                return {
+                    level,
+                    currentInLevel: totalXp - base,
+                    needForLevel: next - base,
+                };
+            }
+
+            const player = {
+                wallet: 0,
+                ice: 0,
+                totalXp: 0,
+            };
+
+            const sad = {
+                level: 1,
+                storedLeaf: 0,
+                lastTick: Date.now(),
+            };
+
+            const inventory = { stone: 0, coal: 0, iron_ore: 0, gold_ore: 0, leaf: 0 };
+
+            const balanceValue = document.getElementById('balance-value');
+            const xpFill = document.getElementById('xp-fill');
+            const xpText = document.getElementById('xp-text');
+            const playerLevelEl = document.getElementById('player-level');
+
+            const levelTitle = document.getElementById('sad-level-title');
+            const statusEl = document.getElementById('sad-status');
+            const productionEl = document.getElementById('sad-production');
+            const nextTimerEl = document.getElementById('sad-next-timer');
+            const storedEl = document.getElementById('sad-stored');
+            const capacityEl = document.getElementById('sad-capacity');
+            const storageFill = document.getElementById('sad-storage-fill');
+            const collectBtn = document.getElementById('sad-collect-btn');
+            const collectAmount = document.getElementById('sad-collect-amount');
+            const upgradeBtn = document.getElementById('sad-upgrade-btn');
+            const upgradeDesc = document.getElementById('sad-upgrade-desc');
+            const upgradeCost = document.getElementById('sad-upgrade-cost');
+
+            const navItems = document.querySelectorAll('.nav-item');
+
+            function formatNumber(num) {
+                num = Math.floor(num);
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            }
+
+            function formatMoney(num) {
+                const n = Math.floor(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                return '$ ' + n;
+            }
+
+            function formatTimer(seconds) {
+                if (seconds == null || seconds < 0) return '--:--';
+                seconds = Math.max(0, Math.floor(seconds));
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                if (h > 0) {
+                    return h + 'ч ' + String(m).padStart(2, '0') + 'м';
+                }
+                return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+            }
+
+            function savePlayer() {
+                try {
+                    const raw = localStorage.getItem(PLAYER_KEY);
+                    const existing = raw ? JSON.parse(raw) : {};
+                    existing.wallet = player.wallet;
+                    existing.ice = player.ice;
+                    existing.totalXp = player.totalXp;
+                    localStorage.setItem(PLAYER_KEY, JSON.stringify(existing));
+                } catch (e) {}
+            }
+
+            function loadPlayer() {
+                try {
+                    const raw = localStorage.getItem(PLAYER_KEY);
+                    if (raw) {
+                        const p = JSON.parse(raw);
+                        if (typeof p.wallet === 'number') player.wallet = p.wallet;
+                        if (typeof p.ice === 'number') player.ice = p.ice;
+                        if (typeof p.totalXp === 'number') player.totalXp = p.totalXp;
+                    }
+                } catch (e) {}
+            }
+
+            function saveSad() {
+                try {
+                    localStorage.setItem(SAD_KEY, JSON.stringify({
+                        level: sad.level,
+                        storedLeaf: sad.storedLeaf,
+                        lastTick: sad.lastTick,
+                    }));
+                } catch (e) {}
+            }
+
+            function loadSad() {
+                try {
+                    const raw = localStorage.getItem(SAD_KEY);
+                    if (raw) {
+                        const p = JSON.parse(raw);
+                        if (typeof p.level === 'number' && LEVELS[p.level]) sad.level = p.level;
+                        if (typeof p.storedLeaf === 'number') sad.storedLeaf = p.storedLeaf;
+                        if (typeof p.lastTick === 'number') sad.lastTick = p.lastTick;
+                    }
+                } catch (e) {}
+            }
+
+            function loadInventory() {
+                try {
+                    const raw = localStorage.getItem(INV_KEY);
+                    if (raw) {
+                        const inv = JSON.parse(raw);
+                        for (const id in inventory) {
+                            if (typeof inv[id] === 'number') inventory[id] = inv[id];
+                        }
+                    }
+                } catch (e) {}
+            }
+
+            function saveInventory() {
+                try {
+                    localStorage.setItem(INV_KEY, JSON.stringify(inventory));
+                } catch (e) {}
+            }
+
+            function getConfig() {
+                return LEVELS[sad.level];
+            }
+
+            function secondsPerLeaf() {
+                return 3600 / getConfig().productionPerHour;
+            }
+
+            function recalculate() {
+                const now = Date.now();
+                const cfg = getConfig();
+                const sp = secondsPerLeaf();
+                const elapsedSec = (now - sad.lastTick) / 1000;
+                const spaceLeft = cfg.capacity - sad.storedLeaf;
+
+                if (spaceLeft <= 0) {
+                    sad.lastTick = now;
+                    return;
+                }
+
+                const canProduce = Math.floor(elapsedSec / sp);
+                if (canProduce <= 0) return;
+
+                const add = Math.min(canProduce, spaceLeft);
+                sad.storedLeaf += add;
+                sad.lastTick += add * sp * 1000;
+
+                if (sad.storedLeaf >= cfg.capacity) {
+                    sad.lastTick = now;
+                }
+
+                saveSad();
+            }
+
+            function renderTop() {
+                balanceValue.textContent = formatNumber(player.wallet);
+
+                const info = getLevelInfo(player.totalXp);
+                const percent = Math.min((info.currentInLevel / info.needForLevel) * 100, 100);
+                xpFill.style.width = percent + '%';
+                xpText.textContent = formatNumber(info.currentInLevel) + ' / ' + formatNumber(info.needForLevel);
+                playerLevelEl.textContent = 'Уровень ' + info.level;
+            }
+
+            function renderSad() {
+                const cfg = getConfig();
+
+                levelTitle.textContent = cfg.name;
+                productionEl.textContent = '+' + formatNumber(cfg.productionPerHour) + ' 🍃 / час';
+                capacityEl.textContent = formatNumber(cfg.capacity);
+                storedEl.textContent = formatNumber(sad.storedLeaf);
+
+                const isFull = sad.storedLeaf >= cfg.capacity;
+                statusEl.classList.toggle('full', isFull);
+                statusEl.querySelector('.ice-status-text').textContent =
+                    isFull ? 'ПОЛНЫЙ СБОР' : 'РАСТЁТ';
+
+                const percent = Math.min((sad.storedLeaf / cfg.capacity) * 100, 100);
+                storageFill.style.width = percent + '%';
+                storageFill.classList.toggle('full', isFull);
+
+                const canCollect = sad.storedLeaf > 0;
+                collectBtn.disabled = !canCollect;
+                collectBtn.classList.toggle('disabled', !canCollect);
+                collectAmount.textContent = formatNumber(sad.storedLeaf);
+
+                if (cfg.nextLevel) {
+                    const next = LEVELS[cfg.nextLevel];
+                    upgradeDesc.textContent =
+                        next.name + ' · +' + formatNumber(next.productionPerHour) + ' 🍃 / час · ' +
+                        formatNumber(next.capacity);
+                    upgradeCost.textContent = formatMoney(cfg.upgradeCost);
+                    upgradeBtn.disabled = false;
+                    upgradeBtn.style.display = '';
+                } else {
+                    upgradeBtn.disabled = true;
+                    upgradeBtn.style.display = 'none';
+                }
+            }
+
+            function renderNextTimer() {
+                const cfg = getConfig();
+                if (sad.storedLeaf >= cfg.capacity) {
+                    nextTimerEl.textContent = '--:--';
+                    return;
+                }
+                const sp = secondsPerLeaf();
+                const elapsed = (Date.now() - sad.lastTick) / 1000;
+                const nextIn = sp - (elapsed % sp);
+                nextTimerEl.textContent = formatTimer(nextIn);
+            }
+
+            function collect() {
+                if (sad.storedLeaf <= 0) return;
+                const amount = sad.storedLeaf;
+                sad.storedLeaf = 0;
+                inventory.leaf = (inventory.leaf || 0) + amount;
+                sad.lastTick = Date.now();
+
+                spawnFloatText('+' + formatNumber(amount) + ' 🍃', collectBtn);
+
+                savePlayer();
+                saveSad();
+                saveInventory();
+                renderTop();
+                renderSad();
+            }
+
+            function upgrade() {
+                const cfg = getConfig();
+                if (!cfg.nextLevel) return;
+                if (player.wallet < cfg.upgradeCost) {
+                    upgradeBtn.classList.add('shake');
+                    setTimeout(() => upgradeBtn.classList.remove('shake'), 400);
+                    return;
+                }
+                player.wallet -= cfg.upgradeCost;
+                sad.level = cfg.nextLevel;
+                savePlayer();
+                saveSad();
+                renderTop();
+                renderSad();
+            }
+
+            function spawnFloatText(text, anchor) {
+                const rect = anchor.getBoundingClientRect();
+                const el = document.createElement('div');
+                el.className = 'ice-float';
+                el.textContent = text;
+                el.style.left = (rect.left + rect.width / 2) + 'px';
+                el.style.top = (rect.top + 10) + 'px';
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 1100);
+            }
+
+            navItems.forEach(item => {
+                const go = function(e) {
+                    e.preventDefault();
+
+                    const screen = this.dataset.screen;
+
+                    if (screen === 'business') {
+                        recalculate();
+                        saveSad(); savePlayer(); saveInventory();
+                        window.location.href = 'business.html';
+                        return;
+                    }
+
+                    recalculate();
+                    saveSad(); savePlayer(); saveInventory();
+
+                    if (screen === 'earn') {
+                        window.location.href = 'index.html#earn';
+                        return;
+                    }
+                    if (screen === 'berloga') {
+                        window.location.href = 'index.html';
+                        return;
+                    }
+                    if (screen === 'invest') {
+                        window.location.href = 'index.html#invest';
+                        return;
+                    }
+                    if (screen === 'profile') {
+                        window.location.href = 'index.html#profile';
+                        return;
+                    }
+                };
+                item.addEventListener('click', go);
+                item.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    go.call(this, e);
+                }, { passive: false });
+            });
+
+            collectBtn.addEventListener('click', collect);
+            collectBtn.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                collect();
+            }, { passive: false });
+
+            upgradeBtn.addEventListener('click', upgrade);
+            upgradeBtn.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                upgrade();
+            }, { passive: false });
+
+            function init() {
+                loadPlayer();
+                loadSad();
+                loadInventory();
+                recalculate();
+                renderTop();
+                renderSad();
+                renderNextTimer();
+            }
+            init();
+
+            setInterval(function() {
+                recalculate();
+                renderSad();
+            }, 5000);
+
+            setInterval(function() {
+                renderNextTimer();
+                recalculate();
+                const stored = Math.floor(sad.storedLeaf);
+                if (stored !== parseInt(storedEl.textContent.replace(/\s/g, ''), 10)) {
+                    renderSad();
+                }
+            }, 1000);
+
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'hidden') {
+                    recalculate();
+                    saveSad(); savePlayer(); saveInventory();
+                } else {
+                    loadPlayer();
+                    loadSad();
+                    loadInventory();
+                    recalculate();
+                    renderTop();
+                    renderSad();
+                }
+            });
+
+            window.addEventListener('beforeunload', function() {
+                recalculate();
+                saveSad(); savePlayer(); saveInventory();
+            });
+
+            function handleSafeArea() {
+                const bottomNav = document.getElementById('bottom-nav');
+                const safeBottom = getComputedStyle(document.documentElement)
+                    .getPropertyValue('env(safe-area-inset-bottom)');
+                if (safeBottom && safeBottom !== '0px') {
+                    bottomNav.style.paddingBottom = safeBottom;
+                }
+            }
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', handleSafeArea);
+            }
+            handleSafeArea();
+
+            document.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+        })();
+    </script>
+</body>
+</html>
