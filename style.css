@@ -385,16 +385,15 @@ body {
 }
 
 .ice-generator {
-    grid-column: 1 / -1;
     appearance: none;
     -webkit-tap-highlight-color: transparent;
     outline: none;
     font-family: inherit;
     cursor: pointer;
-    width: 100%;
     text-decoration: none;
     color: inherit;
     touch-action: manipulation;
+    border-color: rgba(74, 122, 158, 0.35);
 }
 
 /* ====== PLACEHOLDER SCREENS ====== */
