@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Шахта — Лохматый клуб</title>
-    <link rel="stylesheet" href="style.css?v=11">
+    <link rel="stylesheet" href="style.css?v=12">
 </head>
 <body>
     <div id="app">
@@ -40,6 +40,7 @@
         <main id="content">
             <div id="screen-mine" class="screen-content mine-screen">
 
+                <!-- TOPBAR -->
                 <div class="mine-topbar">
                     <div class="mine-title">Шахта</div>
                     <div class="mine-ice-badge">
@@ -48,28 +49,82 @@
                     </div>
                 </div>
 
-                <div class="mine-image-wrap" id="mine-image-wrap">
-                    <img src="https://cdn.pixabay.com/photo/2026/09/14/09/18/09-18-29-410_1280.png" alt="Шахта" draggable="false">
-                    <div class="mine-cost-badge">1 клик · 1 🧊</div>
-                    <div class="mine-hint">👆 Тыкай чтобы копать</div>
+                <!-- BANNER: картинка шахты -->
+                <div class="mine-banner">
+                    <img src="https://cdn.pixabay.com/photo/2026/09/14/09/18/09-18-29-410_1280.png" alt="Шахта" draggable="false" loading="eager">
+                    <div class="mine-banner-overlay">
+                        <div class="mine-banner-title">РУДНИК</div>
+                        <div class="mine-banner-sub">Выбери жилу для добычи</div>
+                    </div>
                 </div>
 
-                <div class="mine-stats" id="mine-stats">
-                    <div class="mine-stat">
-                        <span class="mine-stat-emoji">🪨</span>
-                        <span class="mine-stat-count" id="stat-stone">0</span>
-                    </div>
-                    <div class="mine-stat">
-                        <span class="mine-stat-emoji">⬛</span>
-                        <span class="mine-stat-count" id="stat-coal">0</span>
-                    </div>
-                    <div class="mine-stat">
-                        <span class="mine-stat-emoji">⚙️</span>
-                        <span class="mine-stat-count" id="stat-iron">0</span>
-                    </div>
-                    <div class="mine-stat">
-                        <span class="mine-stat-emoji">🥇</span>
-                        <span class="mine-stat-count" id="stat-gold">0</span>
+                <!-- VEINS: три жилы -->
+                <div class="mine-veins">
+
+                    <button class="mine-vein vein-stone" data-vein="stone">
+                        <div class="vein-top">
+                            <div class="vein-icon">🪨</div>
+                            <div class="vein-name-block">
+                                <div class="vein-name">Каменная жила</div>
+                                <div class="vein-desc">Камень · Уголь</div>
+                            </div>
+                        </div>
+                        <div class="vein-bottom">
+                            <div class="vein-cost">1 🧊</div>
+                            <div class="vein-action">КОПАТЬ</div>
+                        </div>
+                    </button>
+
+                    <button class="mine-vein vein-iron" data-vein="iron">
+                        <div class="vein-top">
+                            <div class="vein-icon">⚙️</div>
+                            <div class="vein-name-block">
+                                <div class="vein-name">Железная жила</div>
+                                <div class="vein-desc">Железо · Уголь</div>
+                            </div>
+                        </div>
+                        <div class="vein-bottom">
+                            <div class="vein-cost">3 🧊</div>
+                            <div class="vein-action">КОПАТЬ</div>
+                        </div>
+                    </button>
+
+                    <button class="mine-vein vein-gold" data-vein="gold">
+                        <div class="vein-top">
+                            <div class="vein-icon">🥇</div>
+                            <div class="vein-name-block">
+                                <div class="vein-name">Золотая жила</div>
+                                <div class="vein-desc">Золото · Железо</div>
+                            </div>
+                        </div>
+                        <div class="vein-bottom">
+                            <div class="vein-cost">10 🧊</div>
+                            <div class="vein-action">КОПАТЬ</div>
+                        </div>
+                    </button>
+
+                </div>
+
+                <!-- INVENTORY PREVIEW -->
+                <div class="mine-inv">
+                    <div class="mine-inv-title">В инвентаре</div>
+                    <div class="mine-inv-list">
+                        <div class="mine-inv-item">
+                            <span class="mine-inv-emoji">🪨</span>
+                            <span class="mine-inv-count" id="inv-stone">0</span>
+                        </div>
+                        <div class="mine-inv-item">
+                            <span class="mine-inv-emoji">⬛</span>
+                            <span class="mine-inv-count" id="inv-coal">0</span>
+                        </div>
+                        <div class="mine-inv-item">
+                            <span class="mine-inv-emoji">⚙️</span>
+                            <span class="mine-inv-count" id="inv-iron">0</span>
+                        </div>
+                        <div class="mine-inv-item">
+                            <span class="mine-inv-emoji">🥇</span>
+                            <span class="mine-inv-count" id="inv-gold">0</span>
+                        </div>
                     </div>
                 </div>
 
@@ -106,14 +161,52 @@
             const PLAYER_KEY = 'lokhmaty_player_v1';
             const INV_KEY = 'lokhmaty_inventory_v1';
 
-            const MINE_COST_ICE = 1;
+            // ====== КОНФИГ ЖИЛ ======
+            const VEINS = {
+                stone: {
+                    id: 'stone',
+                    name: 'Каменная жила',
+                    icon: '🪨',
+                    cost: 1,
+                    // Дропы с шансами (сумма = 1.0)
+                    drops: [
+                        { id: 'stone', min: 1, max: 2, chance: 0.70 },
+                        { id: 'stone', min: 2, max: 3, chance: 0.25 },
+                        { id: 'coal',  min: 1, max: 1, chance: 0.05 },
+                    ],
+                },
+                iron: {
+                    id: 'iron',
+                    name: 'Железная жила',
+                    icon: '⚙️',
+                    cost: 3,
+                    drops: [
+                        { id: 'iron_ore', min: 1, max: 1, chance: 0.50 },
+                        { id: 'iron_ore', min: 2, max: 2, chance: 0.30 },
+                        { id: 'coal',     min: 2, max: 3, chance: 0.15 },
+                        { id: 'gold_ore', min: 1, max: 1, chance: 0.05 },
+                    ],
+                },
+                gold: {
+                    id: 'gold',
+                    name: 'Золотая жила',
+                    icon: '🥇',
+                    cost: 10,
+                    drops: [
+                        { id: 'iron_ore', min: 2, max: 3, chance: 0.60 },
+                        { id: 'gold_ore', min: 1, max: 1, chance: 0.30 },
+                        { id: 'gold_ore', min: 2, max: 2, chance: 0.10 },
+                    ],
+                },
+            };
 
-            // Справочник руд с шансами
-            const RESOURCES = {
-                stone:    { id: 'stone',    name: 'Камень',        emoji: '🪨', chance: 0.60, min: 1, max: 3, color: '#C0C0C0' },
-                coal:     { id: 'coal',     name: 'Уголь',         emoji: '⬛', chance: 0.25, min: 1, max: 2, color: '#909090' },
-                iron_ore: { id: 'iron_ore', name: 'Железная руда', emoji: '⚙️', chance: 0.12, min: 1, max: 2, color: '#A8B0B8' },
-                gold_ore: { id: 'gold_ore', name: 'Золотая руда',  emoji: '🥇', chance: 0.03, min: 1, max: 1, color: '#FFD56B' },
+            // Имена и цвета для float-текста
+            const ITEM_META = {
+                stone:    { name: 'Камень',   emoji: '🪨', color: '#C0C0C0' },
+                coal:     { name: 'Уголь',    emoji: '⬛', color: '#A0A0A0' },
+                iron_ore: { name: 'Железо',   emoji: '⚙️', color: '#A8B0B8' },
+                gold_ore: { name: 'Золото',   emoji: '🥇', color: '#FFD56B' },
+                leaf:     { name: 'Лист',     emoji: '🍃', color: '#7DDFA0' },
             };
 
             const player = { wallet: 0, ice: 0, totalXp: 0 };
@@ -125,13 +218,12 @@
             const playerLevelEl = document.getElementById('player-level');
             const iceValueEl = document.getElementById('mine-ice-value');
 
-            const mineWrap = document.getElementById('mine-image-wrap');
+            const invStoneEl = document.getElementById('inv-stone');
+            const invCoalEl  = document.getElementById('inv-coal');
+            const invIronEl  = document.getElementById('inv-iron');
+            const invGoldEl  = document.getElementById('inv-gold');
 
-            const statStoneEl = document.getElementById('stat-stone');
-            const statCoalEl = document.getElementById('stat-coal');
-            const statIronEl = document.getElementById('stat-iron');
-            const statGoldEl = document.getElementById('stat-gold');
-
+            const veinButtons = document.querySelectorAll('.mine-vein');
             const navItems = document.querySelectorAll('.nav-item');
 
             function cumulativeXp(level) {
@@ -199,24 +291,34 @@
                 playerLevelEl.textContent = 'Уровень ' + info.level;
             }
 
-            function renderStats() {
-                statStoneEl.textContent = formatNumber(inventory.stone || 0);
-                statCoalEl.textContent = formatNumber(inventory.coal || 0);
-                statIronEl.textContent = formatNumber(inventory.iron_ore || 0);
-                statGoldEl.textContent = formatNumber(inventory.gold_ore || 0);
+            function renderInventoryPreview() {
+                invStoneEl.textContent = formatNumber(inventory.stone || 0);
+                invCoalEl.textContent  = formatNumber(inventory.coal || 0);
+                invIronEl.textContent  = formatNumber(inventory.iron_ore || 0);
+                invGoldEl.textContent  = formatNumber(inventory.gold_ore || 0);
             }
 
-            function rollResource() {
+            function updateVeinStates() {
+                veinButtons.forEach(btn => {
+                    const veinId = btn.dataset.vein;
+                    const cfg = VEINS[veinId];
+                    if (!cfg) return;
+                    const canAfford = player.ice >= cfg.cost;
+                    btn.classList.toggle('disabled', !canAfford);
+                });
+            }
+
+            function rollDrop(drops) {
                 const r = Math.random();
                 let cumulative = 0;
-                for (const id in RESOURCES) {
-                    cumulative += RESOURCES[id].chance;
-                    if (r < cumulative) return id;
+                for (const d of drops) {
+                    cumulative += d.chance;
+                    if (r < cumulative) return d;
                 }
-                return 'stone';
+                return drops[0];
             }
 
-            function spawnFloatText(x, y, text, color) {
+            function spawnFloat(x, y, text, color) {
                 const el = document.createElement('div');
                 el.className = 'mine-float';
                 el.textContent = text;
@@ -224,30 +326,33 @@
                 el.style.top = y + 'px';
                 if (color) el.style.color = color;
                 document.body.appendChild(el);
-                setTimeout(() => el.remove(), 1000);
+                setTimeout(() => el.remove(), 1100);
             }
 
-            function handleClick(e) {
-                // Проверяем лёд
-                if (player.ice < MINE_COST_ICE) {
-                    mineWrap.classList.add('shake');
-                    setTimeout(() => mineWrap.classList.remove('shake'), 400);
+            function handleVeinClick(e, btn) {
+                const veinId = btn.dataset.vein;
+                const cfg = VEINS[veinId];
+                if (!cfg) return;
+
+                if (player.ice < cfg.cost) {
+                    btn.classList.add('shake');
+                    setTimeout(() => btn.classList.remove('shake'), 400);
                     return;
                 }
 
                 // Списываем лёд
-                player.ice -= MINE_COST_ICE;
+                player.ice -= cfg.cost;
                 savePlayer();
 
-                // Определяем ресурс
-                const dropId = rollResource();
-                const cfg = RESOURCES[dropId];
-                const qty = cfg.min + Math.floor(Math.random() * (cfg.max - cfg.min + 1));
+                // Роллим дроп
+                const drop = rollDrop(cfg.drops);
+                const qty = drop.min + Math.floor(Math.random() * (drop.max - drop.min + 1));
 
-                inventory[dropId] = (inventory[dropId] || 0) + qty;
+                inventory[drop.id] = (inventory[drop.id] || 0) + qty;
                 saveInventory();
 
                 // Позиция для float-текста
+                const rect = btn.getBoundingClientRect();
                 let x, y;
                 if (e.touches && e.touches[0]) {
                     x = e.touches[0].clientX;
@@ -259,23 +364,31 @@
                     x = e.clientX;
                     y = e.clientY;
                 } else {
-                    const rect = mineWrap.getBoundingClientRect();
                     x = rect.left + rect.width / 2;
-                    y = rect.top + rect.height / 2;
+                    y = rect.top + 10;
                 }
 
-                spawnFloatText(x, y, '+' + qty + ' ' + cfg.emoji, cfg.color);
+                const meta = ITEM_META[drop.id] || { emoji: '?', color: '#FFF' };
+                spawnFloat(x, y, '+' + qty + ' ' + meta.emoji, meta.color);
+
+                // Визуальный отклик
+                btn.classList.add('mined');
+                setTimeout(() => btn.classList.remove('mined'), 200);
 
                 renderTop();
-                renderStats();
+                renderInventoryPreview();
+                updateVeinStates();
             }
 
-            // Клик — с задержкой для антиспама не нужен, пусть спамит
-            mineWrap.addEventListener('click', handleClick);
-            mineWrap.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-                handleClick(e);
-            }, { passive: false });
+            veinButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    handleVeinClick(e, this);
+                });
+                btn.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    handleVeinClick(e, this);
+                }, { passive: false });
+            });
 
             navItems.forEach(item => {
                 const go = function(e) {
@@ -315,7 +428,8 @@
             function init() {
                 loadAll();
                 renderTop();
-                renderStats();
+                renderInventoryPreview();
+                updateVeinStates();
             }
             init();
 
@@ -323,14 +437,16 @@
                 if (document.visibilityState === 'visible') {
                     loadAll();
                     renderTop();
-                    renderStats();
+                    renderInventoryPreview();
+                    updateVeinStates();
                 }
             });
 
             window.addEventListener('focus', function() {
                 loadAll();
                 renderTop();
-                renderStats();
+                renderInventoryPreview();
+                updateVeinStates();
             });
 
             window.addEventListener('beforeunload', function() {
