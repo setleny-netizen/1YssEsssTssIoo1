@@ -1,1 +1,360 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Шахта — Лохматый клуб</title>
+    <link rel="stylesheet" href="style.css?v=11">
+</head>
+<body>
+    <div id="app">
+        <!-- TOP PANEL -->
+        <header id="top-panel">
+            <div class="top-row">
+                <div class="player-info">
+                    <div class="avatar">
+                        <div class="avatar-inner">🐻</div>
+                    </div>
+                    <div class="player-name-level">
+                        <div class="player-name" id="player-name">Игрок</div>
+                        <div class="player-level" id="player-level">Уровень 1</div>
+                    </div>
+                </div>
+                <div class="balance-badge-group">
+                    <div class="balance-badge">
+                        <span class="wallet-icon">💵</span>
+                        <span class="balance-value" id="balance-value">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="xp-row">
+                <span class="xp-label">XP</span>
+                <div class="xp-bar">
+                    <div class="xp-bar-fill" id="xp-fill"></div>
+                </div>
+                <span class="xp-text" id="xp-text">0 / 100</span>
+            </div>
+        </header>
 
+        <!-- CONTENT AREA -->
+        <main id="content">
+            <div id="screen-mine" class="screen-content mine-screen">
+
+                <div class="mine-topbar">
+                    <div class="mine-title">Шахта</div>
+                    <div class="mine-ice-badge">
+                        <span class="mine-ice-emoji">🧊</span>
+                        <span class="mine-ice-value" id="mine-ice-value">0</span>
+                    </div>
+                </div>
+
+                <div class="mine-image-wrap" id="mine-image-wrap">
+                    <img src="https://cdn.pixabay.com/photo/2026/09/14/09/18/09-18-29-410_1280.png" alt="Шахта" draggable="false">
+                    <div class="mine-cost-badge">1 клик · 1 🧊</div>
+                    <div class="mine-hint">👆 Тыкай чтобы копать</div>
+                </div>
+
+                <div class="mine-stats" id="mine-stats">
+                    <div class="mine-stat">
+                        <span class="mine-stat-emoji">🪨</span>
+                        <span class="mine-stat-count" id="stat-stone">0</span>
+                    </div>
+                    <div class="mine-stat">
+                        <span class="mine-stat-emoji">⬛</span>
+                        <span class="mine-stat-count" id="stat-coal">0</span>
+                    </div>
+                    <div class="mine-stat">
+                        <span class="mine-stat-emoji">⚙️</span>
+                        <span class="mine-stat-count" id="stat-iron">0</span>
+                    </div>
+                    <div class="mine-stat">
+                        <span class="mine-stat-emoji">🥇</span>
+                        <span class="mine-stat-count" id="stat-gold">0</span>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- BOTTOM NAV -->
+        <nav id="bottom-nav">
+            <button class="nav-item" data-screen="invest" aria-label="Инвестиции">
+                <span class="nav-emoji">📈</span>
+                <span class="nav-label">Инвест</span>
+            </button>
+            <button class="nav-item" data-screen="business" aria-label="Бизнес">
+                <span class="nav-emoji">💼</span>
+                <span class="nav-label">Бизнес</span>
+            </button>
+            <button class="nav-item" data-screen="earn" aria-label="Заработок">
+                <span class="nav-emoji">💵</span>
+                <span class="nav-label">Заработок</span>
+            </button>
+            <button class="nav-item active" data-screen="berloga" aria-label="Берлога">
+                <span class="nav-emoji">🏔️</span>
+                <span class="nav-label">Берлога</span>
+            </button>
+            <button class="nav-item" data-screen="profile" aria-label="Профиль">
+                <span class="nav-emoji">👤</span>
+                <span class="nav-label">Профиль</span>
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        (function() {
+            const PLAYER_KEY = 'lokhmaty_player_v1';
+            const INV_KEY = 'lokhmaty_inventory_v1';
+
+            const MINE_COST_ICE = 1;
+
+            // Справочник руд с шансами
+            const RESOURCES = {
+                stone:    { id: 'stone',    name: 'Камень',        emoji: '🪨', chance: 0.60, min: 1, max: 3, color: '#C0C0C0' },
+                coal:     { id: 'coal',     name: 'Уголь',         emoji: '⬛', chance: 0.25, min: 1, max: 2, color: '#909090' },
+                iron_ore: { id: 'iron_ore', name: 'Железная руда', emoji: '⚙️', chance: 0.12, min: 1, max: 2, color: '#A8B0B8' },
+                gold_ore: { id: 'gold_ore', name: 'Золотая руда',  emoji: '🥇', chance: 0.03, min: 1, max: 1, color: '#FFD56B' },
+            };
+
+            const player = { wallet: 0, ice: 0, totalXp: 0 };
+            const inventory = { stone: 0, coal: 0, iron_ore: 0, gold_ore: 0, leaf: 0 };
+
+            const balanceValue = document.getElementById('balance-value');
+            const xpFill = document.getElementById('xp-fill');
+            const xpText = document.getElementById('xp-text');
+            const playerLevelEl = document.getElementById('player-level');
+            const iceValueEl = document.getElementById('mine-ice-value');
+
+            const mineWrap = document.getElementById('mine-image-wrap');
+
+            const statStoneEl = document.getElementById('stat-stone');
+            const statCoalEl = document.getElementById('stat-coal');
+            const statIronEl = document.getElementById('stat-iron');
+            const statGoldEl = document.getElementById('stat-gold');
+
+            const navItems = document.querySelectorAll('.nav-item');
+
+            function cumulativeXp(level) {
+                let total = 0;
+                for (let i = 1; i < level; i++) total += i * 100;
+                return total;
+            }
+            function getLevelInfo(totalXp) {
+                let level = 1;
+                while (cumulativeXp(level + 1) <= totalXp) level++;
+                const base = cumulativeXp(level);
+                const next = cumulativeXp(level + 1);
+                return { level, currentInLevel: totalXp - base, needForLevel: next - base };
+            }
+
+            function formatNumber(num) {
+                num = Math.floor(num);
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            }
+
+            function savePlayer() {
+                try {
+                    const raw = localStorage.getItem(PLAYER_KEY);
+                    const existing = raw ? JSON.parse(raw) : {};
+                    existing.wallet = player.wallet;
+                    existing.ice = player.ice;
+                    existing.totalXp = player.totalXp;
+                    localStorage.setItem(PLAYER_KEY, JSON.stringify(existing));
+                } catch (e) {}
+            }
+
+            function saveInventory() {
+                try {
+                    localStorage.setItem(INV_KEY, JSON.stringify(inventory));
+                } catch (e) {}
+            }
+
+            function loadAll() {
+                try {
+                    const rawP = localStorage.getItem(PLAYER_KEY);
+                    if (rawP) {
+                        const p = JSON.parse(rawP);
+                        if (typeof p.wallet === 'number') player.wallet = p.wallet;
+                        if (typeof p.ice === 'number') player.ice = p.ice;
+                        if (typeof p.totalXp === 'number') player.totalXp = p.totalXp;
+                    }
+                    const rawI = localStorage.getItem(INV_KEY);
+                    if (rawI) {
+                        const inv = JSON.parse(rawI);
+                        for (const id in inventory) {
+                            if (typeof inv[id] === 'number') inventory[id] = inv[id];
+                        }
+                    }
+                } catch (e) {}
+            }
+
+            function renderTop() {
+                balanceValue.textContent = formatNumber(player.wallet);
+                iceValueEl.textContent = formatNumber(player.ice);
+
+                const info = getLevelInfo(player.totalXp);
+                const percent = Math.min((info.currentInLevel / info.needForLevel) * 100, 100);
+                xpFill.style.width = percent + '%';
+                xpText.textContent = formatNumber(info.currentInLevel) + ' / ' + formatNumber(info.needForLevel);
+                playerLevelEl.textContent = 'Уровень ' + info.level;
+            }
+
+            function renderStats() {
+                statStoneEl.textContent = formatNumber(inventory.stone || 0);
+                statCoalEl.textContent = formatNumber(inventory.coal || 0);
+                statIronEl.textContent = formatNumber(inventory.iron_ore || 0);
+                statGoldEl.textContent = formatNumber(inventory.gold_ore || 0);
+            }
+
+            function rollResource() {
+                const r = Math.random();
+                let cumulative = 0;
+                for (const id in RESOURCES) {
+                    cumulative += RESOURCES[id].chance;
+                    if (r < cumulative) return id;
+                }
+                return 'stone';
+            }
+
+            function spawnFloatText(x, y, text, color) {
+                const el = document.createElement('div');
+                el.className = 'mine-float';
+                el.textContent = text;
+                el.style.left = x + 'px';
+                el.style.top = y + 'px';
+                if (color) el.style.color = color;
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 1000);
+            }
+
+            function handleClick(e) {
+                // Проверяем лёд
+                if (player.ice < MINE_COST_ICE) {
+                    mineWrap.classList.add('shake');
+                    setTimeout(() => mineWrap.classList.remove('shake'), 400);
+                    return;
+                }
+
+                // Списываем лёд
+                player.ice -= MINE_COST_ICE;
+                savePlayer();
+
+                // Определяем ресурс
+                const dropId = rollResource();
+                const cfg = RESOURCES[dropId];
+                const qty = cfg.min + Math.floor(Math.random() * (cfg.max - cfg.min + 1));
+
+                inventory[dropId] = (inventory[dropId] || 0) + qty;
+                saveInventory();
+
+                // Позиция для float-текста
+                let x, y;
+                if (e.touches && e.touches[0]) {
+                    x = e.touches[0].clientX;
+                    y = e.touches[0].clientY;
+                } else if (e.changedTouches && e.changedTouches[0]) {
+                    x = e.changedTouches[0].clientX;
+                    y = e.changedTouches[0].clientY;
+                } else if (typeof e.clientX === 'number' && e.clientX > 0) {
+                    x = e.clientX;
+                    y = e.clientY;
+                } else {
+                    const rect = mineWrap.getBoundingClientRect();
+                    x = rect.left + rect.width / 2;
+                    y = rect.top + rect.height / 2;
+                }
+
+                spawnFloatText(x, y, '+' + qty + ' ' + cfg.emoji, cfg.color);
+
+                renderTop();
+                renderStats();
+            }
+
+            // Клик — с задержкой для антиспама не нужен, пусть спамит
+            mineWrap.addEventListener('click', handleClick);
+            mineWrap.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                handleClick(e);
+            }, { passive: false });
+
+            navItems.forEach(item => {
+                const go = function(e) {
+                    e.preventDefault();
+                    savePlayer();
+                    saveInventory();
+
+                    const screen = this.dataset.screen;
+                    if (screen === 'business') {
+                        window.location.href = 'business.html';
+                        return;
+                    }
+                    if (screen === 'berloga') {
+                        window.location.href = 'index.html';
+                        return;
+                    }
+                    if (screen === 'earn') {
+                        window.location.href = 'index.html#earn';
+                        return;
+                    }
+                    if (screen === 'invest') {
+                        window.location.href = 'index.html#invest';
+                        return;
+                    }
+                    if (screen === 'profile') {
+                        window.location.href = 'index.html#profile';
+                        return;
+                    }
+                };
+                item.addEventListener('click', go);
+                item.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    go.call(this, e);
+                }, { passive: false });
+            });
+
+            function init() {
+                loadAll();
+                renderTop();
+                renderStats();
+            }
+            init();
+
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'visible') {
+                    loadAll();
+                    renderTop();
+                    renderStats();
+                }
+            });
+
+            window.addEventListener('focus', function() {
+                loadAll();
+                renderTop();
+                renderStats();
+            });
+
+            window.addEventListener('beforeunload', function() {
+                savePlayer();
+                saveInventory();
+            });
+
+            function handleSafeArea() {
+                const bottomNav = document.getElementById('bottom-nav');
+                const safeBottom = getComputedStyle(document.documentElement)
+                    .getPropertyValue('env(safe-area-inset-bottom)');
+                if (safeBottom && safeBottom !== '0px') {
+                    bottomNav.style.paddingBottom = safeBottom;
+                }
+            }
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', handleSafeArea);
+            }
+            handleSafeArea();
+
+            document.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+        })();
+    </script>
+</body>
+</html>
