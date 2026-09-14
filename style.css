@@ -498,7 +498,6 @@ body {
     letter-spacing: 0.3px;
 }
 
-/* ====== QUICK RACE BUTTON ====== */
 .quick-race-btn {
     display: flex;
     align-items: center;
@@ -700,7 +699,6 @@ body {
     opacity: 0.7;
 }
 
-/* Карточка фирмы — БЕЗ кнопки «Собрать» */
 .biz-card {
     background: var(--bg-card);
     border: 1px solid rgba(201, 162, 39, 0.15);
@@ -1538,6 +1536,318 @@ body {
     100% { opacity: 0; transform: translate(-50%, -70px) scale(0.95); }
 }
 
+/* ====== INVENTORY SCREEN ====== */
+.inventory-screen {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    max-width: 420px;
+    padding: 4px 8px;
+    gap: 10px;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.inv-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 2px 4px;
+    flex-shrink: 0;
+}
+
+.inv-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.inv-grid {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    padding-bottom: 4px;
+    align-content: start;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+
+.inv-item {
+    background: var(--bg-card);
+    border-radius: 12px;
+    border: 1px solid rgba(201, 162, 39, 0.15);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 10px 6px 8px;
+    aspect-ratio: 1 / 1.15;
+    transition: transform 0.15s ease;
+}
+
+.inv-item:active {
+    transform: scale(0.97);
+}
+
+.inv-item-icon {
+    font-size: 42px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+    flex-shrink: 0;
+}
+
+.inv-item-name {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-align: center;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    letter-spacing: 0.2px;
+}
+
+.inv-item-count {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--accent-orange-light);
+    letter-spacing: 0.3px;
+}
+
+.inv-empty {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 12px;
+    padding: 40px 20px;
+}
+
+.inv-empty-emoji {
+    font-size: 48px;
+    filter: grayscale(0.6) brightness(0.7);
+    margin-bottom: 6px;
+}
+
+.inv-empty-hint {
+    font-size: 10px;
+    color: var(--text-muted);
+    opacity: 0.7;
+    max-width: 240px;
+    line-height: 1.4;
+}
+
+/* ====== MINE SCREEN ====== */
+.mine-screen {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    max-width: 420px;
+    padding: 4px 8px;
+    gap: 10px;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.mine-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 2px 2px;
+    flex-shrink: 0;
+}
+
+.mine-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.mine-ice-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-card);
+    border: 1px solid rgba(74, 122, 158, 0.4);
+    border-radius: 20px;
+    padding: 5px 12px 5px 10px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.mine-ice-emoji {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.mine-ice-value {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--accent-blue-light);
+    letter-spacing: 0.3px;
+}
+
+/* Картинка шахты — тапабельная */
+.mine-image-wrap {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background: var(--bg-card);
+    border: 1px solid rgba(74, 122, 158, 0.3);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+}
+
+.mine-image-wrap:active {
+    transform: scale(0.995);
+}
+
+.mine-image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    pointer-events: none;
+    -webkit-user-drag: none;
+    user-drag: none;
+    background: #0A0A0A;
+    max-height: 100%;
+}
+
+.mine-cost-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(10, 10, 10, 0.75);
+    border: 1px solid rgba(201, 162, 39, 0.4);
+    color: var(--accent-orange-light);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 3;
+    pointer-events: none;
+}
+
+.mine-hint {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10, 10, 10, 0.7);
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 3;
+    pointer-events: none;
+    animation: mine-hint-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes mine-hint-pulse {
+    0%, 100% { opacity: 0.7; }
+    50%      { opacity: 1; }
+}
+
+.mine-image-wrap.shake {
+    animation: slot-shake 0.4s ease;
+}
+
+/* Статистика добычи */
+.mine-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.mine-stat {
+    background: var(--bg-card);
+    border: 1px solid rgba(201, 162, 39, 0.15);
+    border-radius: 10px;
+    padding: 8px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-width: 0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.mine-stat-emoji {
+    font-size: 20px;
+    line-height: 1;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.6));
+}
+
+.mine-stat-count {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+/* Всплывающий текст при добыче */
+.mine-float {
+    position: fixed;
+    pointer-events: none;
+    font-size: 18px;
+    font-weight: 900;
+    color: #FFFFFF;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.6), 0 2px 6px rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    transform: translate(-50%, 0);
+    animation: mine-float-up 1s ease-out forwards;
+}
+
+@keyframes mine-float-up {
+    0%   { opacity: 0; transform: translate(-50%, 10px) scale(0.9); }
+    20%  { opacity: 1; transform: translate(-50%, -6px) scale(1.15); }
+    100% { opacity: 0; transform: translate(-50%, -70px) scale(0.95); }
+}
+
 /* ====== RACE PAGE ====== */
 #screen-race {
     display: flex;
@@ -1741,8 +2051,8 @@ body {
     filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8));
 }
 
-.race-runner-npc { top: 38%; }
-.race-runner-me { top: 52%; }
+.race-runner-npc { top: 33%; }
+.race-runner-me { top: 67%; }
 
 .race-start-btn {
     appearance: none;
@@ -1950,6 +2260,13 @@ body {
         gap: 8px;
     }
     .biz-card-icon { width: 40px; height: 40px; font-size: 20px; }
+
+    .inv-title { font-size: 20px; }
+    .inv-item-icon { font-size: 36px; }
+
+    .mine-title { font-size: 20px; }
+    .mine-stat-emoji { font-size: 16px; }
+    .mine-stat-count { font-size: 11px; }
 }
 
 @media (max-height: 700px) {
@@ -1974,6 +2291,8 @@ body {
     .race-runner { width: 58px; height: 58px; }
 
     .modal-sheet { max-height: 88vh; }
+
+    .inv-item-icon { font-size: 38px; }
 }
 
 @media (max-height: 600px) {
@@ -2036,6 +2355,19 @@ body {
     .cat-card { padding: 10px 12px; }
     .cat-icon { width: 42px; height: 42px; font-size: 22px; }
     .cat-name { font-size: 13px; }
+
+    .inv-title { font-size: 18px; letter-spacing: 1.2px; }
+    .inv-item-icon { font-size: 32px; }
+    .inv-item-name { font-size: 9px; }
+    .inv-item-count { font-size: 10px; }
+    .inv-grid { gap: 6px; }
+
+    .mine-title { font-size: 18px; letter-spacing: 1.2px; }
+    .mine-stat-emoji { font-size: 16px; }
+    .mine-stat-count { font-size: 10px; }
+    .mine-stat { padding: 6px 3px; }
+    .mine-cost-badge { font-size: 10px; padding: 4px 8px; }
+    .mine-hint { font-size: 10px; padding: 4px 10px; }
 }
 
 @media (min-width: 500px) {
