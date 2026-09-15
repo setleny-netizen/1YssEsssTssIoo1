@@ -2545,7 +2545,7 @@ body {
 /* Кирка — справа от ледника, повёрнута к нему */
 .pickaxe {
     position: absolute;
-    right: 38%;
+    right: 22%;
     top: 42%;
     font-size: 72px;
     line-height: 1;
