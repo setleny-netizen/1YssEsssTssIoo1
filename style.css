@@ -2885,8 +2885,8 @@ body {
     .icebreak-scene { min-height: 240px; }
     .iceblock { width: 120px; height: 120px; margin-right: 55px; }
     .iceblock-emoji { font-size: 100px; }
-    .pickaxe { font-size: 62px; right: 6%; }
-    .pickaxe.strike { transform: translateY(-50%) translateX(-30px) rotate(-55deg); }
+    .pickaxe { font-size: 62px; right: 20%; top: 42%; }
+    .pickaxe.strike { transform: translateY(-50%) translateX(-40px) rotate(-55deg); }
 }
 
 @media (max-height: 600px) {
@@ -2981,8 +2981,8 @@ body {
     .pickaxe.strike { transform: translateY(-50%) translateX(-25px) rotate(-55deg); }
     .icebreak-title { font-size: 18px; }
     .icebreak-float { font-size: 18px; }
-    .pickaxe-info { padding: 8px 10px; gap: 8px; }
-    .pickaxe-upgrade-btn { padding: 6px 10px; min-width: 80px; }
+    .pickaxe { font-size: 52px; right: 18%; top: 42%; }
+    .pickaxe.strike { transform: translateY(-50%) translateX(-35px) rotate(-55deg); }
 }
 
 @media (min-width: 500px) {
