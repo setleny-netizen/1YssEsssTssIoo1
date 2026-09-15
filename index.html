@@ -179,11 +179,11 @@
                 <span class="nav-emoji">💼</span>
                 <span class="nav-label">Бизнес</span>
             </button>
-            <button class="nav-item" data-screen="earn" aria-label="Заработок">
+            <button class="nav-item active" data-screen="earn" aria-label="Заработок">
                 <span class="nav-emoji">💵</span>
                 <span class="nav-label">Заработок</span>
             </button>
-            <button class="nav-item active" data-screen="berloga" aria-label="Берлога">
+            <button class="nav-item" data-screen="berloga" aria-label="Берлога">
                 <span class="nav-emoji">🏔️</span>
                 <span class="nav-label">Берлога</span>
             </button>
@@ -202,7 +202,7 @@
                 wallet: 0,
                 ice: 0,
                 totalXp: 0,
-                activeScreen: 'berloga',
+                activeScreen: 'earn',
             };
 
             function cumulativeXp(level) {
@@ -325,7 +325,8 @@
                 if (hash && valid.includes(hash)) {
                     switchScreen(hash);
                 } else {
-                    switchScreen('berloga');
+                    // Стартовый экран — Заработок
+                    switchScreen('earn');
                 }
             }
             init();
