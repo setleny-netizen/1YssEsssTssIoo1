@@ -2562,3 +2562,457 @@ body {
 @media (min-width: 500px) {
     #content { padding: 12px 16px; }
 }
+
+
+/* ====== EARN ACTIONS ====== */
+.earn-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.earn-action-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--bg-card);
+    border: 1px solid rgba(201, 162, 39, 0.15);
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.12s ease, background 0.15s ease, border-color 0.2s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
+}
+
+.earn-action-card:active {
+    transform: scale(0.98);
+    background: var(--bg-secondary);
+    border-color: rgba(201, 162, 39, 0.35);
+}
+
+.earn-action-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.earn-action-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.earn-action-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.earn-action-sub {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.earn-action-arrow {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent-orange-light);
+    opacity: 0.6;
+    flex-shrink: 0;
+    line-height: 1;
+    padding-right: 2px;
+}
+
+/* ====== ICEBREAK SCREEN ====== */
+.icebreak-screen {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    max-width: 420px;
+    padding: 4px 8px;
+    gap: 10px;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.icebreak-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 2px 2px;
+    flex-shrink: 0;
+}
+
+.icebreak-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.icebreak-ice-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-card);
+    border: 1px solid rgba(74, 122, 158, 0.4);
+    border-radius: 20px;
+    padding: 5px 12px 5px 10px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.icebreak-ice-emoji {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.icebreak-ice-value {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--accent-blue-light);
+    letter-spacing: 0.3px;
+}
+
+/* Energy bar */
+.icebreak-energy {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.energy-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.energy-count {
+    color: var(--accent-orange-light);
+    font-weight: 800;
+    letter-spacing: 0.3px;
+}
+
+.energy-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(242, 239, 230, 0.06);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid rgba(201, 162, 39, 0.12);
+}
+
+.energy-bar-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #C9A227, #D4AF37);
+    border-radius: 4px;
+    transition: width 0.4s ease, background 0.3s ease;
+}
+
+.energy-bar-fill.low {
+    background: linear-gradient(90deg, #B8753D, #FFB547);
+}
+
+/* Scene: pickaxe + iceblock */
+.icebreak-scene {
+    position: relative;
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-card);
+    border: 1px solid rgba(74, 122, 158, 0.3);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Кирка сверху */
+.pickaxe {
+    position: absolute;
+    top: 8%;
+    left: 50%;
+    transform: translateX(-50%) rotate(-35deg);
+    font-size: 64px;
+    line-height: 1;
+    pointer-events: none;
+    z-index: 5;
+    transition: transform 0.14s ease-out;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
+    transform-origin: center center;
+}
+
+.pickaxe.strike {
+    transform: translateX(-30%) translateY(80px) rotate(15deg);
+    transition: transform 0.06s cubic-bezier(0.5, 0, 0.9, 0.3);
+}
+
+/* Ледник */
+.iceblock {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(74, 122, 158, 0.35) 0%, rgba(36, 59, 85, 0.1) 60%, transparent 100%);
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    z-index: 3;
+    animation: iceblock-glow 3s ease-in-out infinite;
+}
+
+.iceblock-emoji {
+    font-size: 120px;
+    line-height: 1;
+    filter: drop-shadow(0 0 40px rgba(74, 122, 158, 0.7));
+    pointer-events: none;
+    display: block;
+    transform: translateY(2px);
+}
+
+.iceblock.shake {
+    animation: iceblock-shake 0.2s ease-in-out;
+}
+
+@keyframes iceblock-glow {
+    0%, 100% {
+        background: radial-gradient(circle, rgba(74, 122, 158, 0.35) 0%, rgba(36, 59, 85, 0.1) 60%, transparent 100%);
+    }
+    50% {
+        background: radial-gradient(circle, rgba(74, 122, 158, 0.55) 0%, rgba(36, 59, 85, 0.18) 60%, transparent 100%);
+    }
+}
+
+@keyframes iceblock-shake {
+    0%   { transform: translateX(0) translateY(0); }
+    20%  { transform: translateX(-4px) translateY(-2px); }
+    40%  { transform: translateX(4px) translateY(2px); }
+    60%  { transform: translateX(-3px) translateY(-1px); }
+    80%  { transform: translateX(3px) translateY(1px); }
+    100% { transform: translateX(0) translateY(0); }
+}
+
+/* Искры */
+.spark {
+    position: fixed;
+    border-radius: 50%;
+    background: #FFFFFF;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 8px rgba(255, 220, 100, 0.9), 0 0 16px rgba(255, 180, 60, 0.5);
+    animation: spark-fly 0.65s cubic-bezier(0.15, 0.75, 0.5, 1) forwards;
+}
+
+.spark:nth-child(odd) {
+    background: #FFE080;
+    box-shadow: 0 0 8px rgba(255, 220, 100, 0.9), 0 0 16px rgba(255, 180, 60, 0.5);
+}
+
+.spark:nth-child(even) {
+    background: #D4AF37;
+    box-shadow: 0 0 6px rgba(212, 175, 55, 0.8);
+}
+
+@keyframes spark-fly {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    30% {
+        opacity: 1;
+        transform: translate(calc(-50% + var(--dx) * 0.4), calc(-50% + var(--dy) * 0.4)) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.4);
+    }
+}
+
+/* Float-текст над ледником */
+.icebreak-float {
+    position: fixed;
+    pointer-events: none;
+    font-size: 22px;
+    font-weight: 900;
+    color: #7DD8FF;
+    text-shadow: 0 0 12px rgba(125, 216, 255, 0.9), 0 2px 6px rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    transform: translate(-50%, 0);
+    animation: icebreak-float-up 1.2s ease-out forwards;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+}
+
+@keyframes icebreak-float-up {
+    0%   { opacity: 0; transform: translate(-50%, 10px) scale(0.8); }
+    15%  { opacity: 1; transform: translate(-50%, -8px) scale(1.2); }
+    60%  { opacity: 1; transform: translate(-50%, -45px) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -90px) scale(0.9); }
+}
+
+/* Подсказка */
+.icebreak-hint {
+    text-align: center;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+    padding: 2px 0;
+}
+
+/* Инфо о кирке + кнопка апгрейда */
+.pickaxe-info {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--bg-card);
+    border: 1px solid rgba(201, 162, 39, 0.15);
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.pickaxe-info-left {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.pickaxe-info-title {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--accent-orange-light);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pickaxe-info-sub {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pickaxe-info-sub span {
+    color: var(--accent-blue-light);
+    font-weight: 700;
+}
+
+.pickaxe-upgrade-btn {
+    appearance: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #C9A227, #A88920);
+    border: none;
+    color: #0A0A0A;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    flex-shrink: 0;
+    transition: transform 0.12s ease, opacity 0.2s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    min-width: 92px;
+}
+
+.pickaxe-upgrade-btn:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+.pickaxe-upgrade-btn:disabled,
+.pickaxe-upgrade-btn.maxed {
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.pickaxe-upg-title {
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.pickaxe-upg-cost {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+}
+
+.pickaxe-upgrade-btn.shake {
+    animation: slot-shake 0.4s ease;
+}
+
+/* Адаптив для icebreak */
+@media (max-height: 700px) {
+    .icebreak-scene { min-height: 240px; }
+    .iceblock { width: 120px; height: 120px; }
+    .iceblock-emoji { font-size: 100px; }
+    .pickaxe { font-size: 54px; top: 6%; }
+}
+
+@media (max-height: 600px) {
+    .icebreak-scene { min-height: 200px; }
+    .iceblock { width: 100px; height: 100px; }
+    .iceblock-emoji { font-size: 84px; }
+    .pickaxe { font-size: 46px; top: 4%; }
+    .pickaxe.strike { transform: translateX(-30%) translateY(60px) rotate(15deg); }
+    .icebreak-title { font-size: 18px; }
+    .icebreak-float { font-size: 18px; }
+    .pickaxe-info { padding: 8px 10px; gap: 8px; }
+    .pickaxe-upgrade-btn { padding: 6px 10px; min-width: 80px; }
+}
