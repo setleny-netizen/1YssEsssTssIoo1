@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Колоть ледник — Лохматый клуб</title>
+    <link rel="stylesheet" href="style.css?v=14">
+</head>
+<body>
+    <div id="app">
+        <!-- TOP PANEL -->
+        <header id="top-panel">
+            <div class="top-row">
+                <div class="player-info">
+                    <div class="avatar">
+                        <div class="avatar-inner">🐻</div>
+                    </div>
+                    <div class="player-name-level">
+                        <div class="player-name" id="player-name">Игрок</div>
+                        <div class="player-level" id="player-level">Уровень 1</div>
+                    </div>
+                </div>
+                <div class="balance-badge-group">
+                    <div class="balance-badge">
+                        <span class="wallet-icon">💵</span>
+                        <span class="balance-value" id="balance-value">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="xp-row">
+                <span class="xp-label">XP</span>
+                <div class="xp-bar">
+                    <div class="xp-bar-fill" id="xp-fill"></div>
+                </div>
+                <span class="xp-text" id="xp-text">0 / 100</span>
+            </div>
+        </header>
+
+        <!-- CONTENT AREA -->
+        <main id="content">
+            <div id="screen-icebreak" class="screen-content icebreak-screen">
+
+                <!-- TOPBAR -->
+                <div class="icebreak-topbar">
+                    <div class="icebreak-title">Ледник</div>
+                    <div class="icebreak-ice-badge">
+                        <span class="icebreak-ice-emoji">🧊</span>
+                        <span class="icebreak-ice-value" id="icebreak-ice-value">0</span>
+                    </div>
+                </div>
+
+                <!-- ENERGY BAR -->
+                <div class="icebreak-energy">
+                    <div class="energy-label">
+                        <span>⚡ Энергия</span>
+                        <span class="energy-count" id="energy-count">200 / 200</span>
+                    </div>
+                    <div class="energy-bar">
+                        <div class="energy-bar-fill" id="energy-fill"></div>
+                    </div>
+                </div>
+
+                <!-- SCENE: кирка + ледник -->
+                <div class="icebreak-scene" id="icebreak-scene">
+
+                    <div class="pickaxe" id="pickaxe">⛏️</div>
+
+                    <div class="iceblock" id="iceblock">
+                        <span class="iceblock-emoji">🧊</span>
+                    </div>
+
+                </div>
+
+                <!-- HINT -->
+                <div class="icebreak-hint">Тапай по леднику чтобы колоть</div>
+
+                <!-- PICKAXE INFO -->
+                <div class="pickaxe-info" id="pickaxe-info">
+                    <div class="pickaxe-info-left">
+                        <div class="pickaxe-info-title">⛏️ КИРКА · УР. <span id="pickaxe-level">1</span></div>
+                        <div class="pickaxe-info-sub">
+                            <span id="pickaxe-drop">+1 🧊</span> при удаче · 25%
+                        </div>
+                    </div>
+                    <button class="pickaxe-upgrade-btn" id="pickaxe-upgrade-btn">
+                        <div class="pickaxe-upg-title">УЛУЧШИТЬ</div>
+                        <div class="pickaxe-upg-cost" id="pickaxe-upg-cost">$ 3 000</div>
+                    </button>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- BOTTOM NAV -->
+        <nav id="bottom-nav">
+            <button class="nav-item" data-screen="invest" aria-label="Инвестиции">
+                <span class="nav-emoji">📈</span>
+                <span class="nav-label">Инвест</span>
+            </button>
+            <button class="nav-item" data-screen="business" aria-label="Бизнес">
+                <span class="nav-emoji">💼</span>
+                <span class="nav-label">Бизнес</span>
+            </button>
+            <button class="nav-item active" data-screen="earn" aria-label="Заработок">
+                <span class="nav-emoji">💵</span>
+                <span class="nav-label">Заработок</span>
+            </button>
+            <button class="nav-item" data-screen="berloga" aria-label="Берлога">
+                <span class="nav-emoji">🏔️</span>
+                <span class="nav-label">Берлога</span>
+            </button>
+            <button class="nav-item" data-screen="profile" aria-label="Профиль">
+                <span class="nav-emoji">👤</span>
+                <span class="nav-label">Профиль</span>
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        (function() {
+            const PLAYER_KEY = 'lokhmaty_player_v1';
+            const PICKAXE_KEY = 'lokhmaty_pickaxe_v1';
+
+            // ====== УРОВНИ КИРКИ ======
+            const PICKAXE_LEVELS = {
+                1: { level: 1, drop: 1, upgradeCost: null },
+                2: { level: 2, drop: 2, upgradeCost: 3000 },
+                3: { level: 3, drop: 3, upgradeCost: 15000 },
+                4: { level: 4, drop: 4, upgradeCost: 75000 },
+                5: { level: 5, drop: 5, upgradeCost: 500000 },
+            };
+            const MAX_PICKAXE = 5;
+
+            const SUCCESS_CHANCE = 0.25;
+            const STRIKE_COST = 1;
+
+            const MAX_ENERGY = 200;
+            const ENERGY_REGEN_SEC = 60; // +1 ⚡ в минуту
+
+            // ====== СОСТОЯНИЕ ======
+            const player = { wallet: 0, ice: 0, totalXp: 0 };
+            const pickaxe = {
+                level: 1,
+                energy: MAX_ENERGY,
+                lastEnergyUpdate: Date.now(),
+            };
+
+            // ====== DOM ======
+            const balanceValue = document.getElementById('balance-value');
+            const xpFill = document.getElementById('xp-fill');
+            const xpText = document.getElementById('xp-text');
+            const playerLevelEl = document.getElementById('player-level');
+            const iceValueEl = document.getElementById('icebreak-ice-value');
+
+            const scene = document.getElementById('icebreak-scene');
+            const pickaxeEl = document.getElementById('pickaxe');
+            const iceblockEl = document.getElementById('iceblock');
+
+            const energyCountEl = document.getElementById('energy-count');
+            const energyFillEl = document.getElementById('energy-fill');
+
+            const pickaxeLevelEl = document.getElementById('pickaxe-level');
+            const pickaxeDropEl = document.getElementById('pickaxe-drop');
+            const upgradeBtn = document.getElementById('pickaxe-upgrade-btn');
+            const upgradeCostEl = document.getElementById('pickaxe-upg-cost');
+
+            const navItems = document.querySelectorAll('.nav-item');
+
+            // ====== УРОВНИ ИГРОКА ======
+            function cumulativeXp(level) {
+                let total = 0;
+                for (let i = 1; i < level; i++) total += i * 100;
+                return total;
+            }
+            function getLevelInfo(totalXp) {
+                let level = 1;
+                while (cumulativeXp(level + 1) <= totalXp) level++;
+                const base = cumulativeXp(level);
+                const next = cumulativeXp(level + 1);
+                return { level, currentInLevel: totalXp - base, needForLevel: next - base };
+            }
+
+            // ====== ФОРМАТ ======
+            function formatNumber(num) {
+                num = Math.floor(num);
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            }
+            function formatMoney(num) {
+                const n = Math.floor(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                return '$ ' + n;
+            }
+
+            // ====== СОХРАНЕНИЕ ======
+            function savePlayer() {
+                try {
+                    const raw = localStorage.getItem(PLAYER_KEY);
+                    const existing = raw ? JSON.parse(raw) : {};
+                    existing.wallet = player.wallet;
+                    existing.ice = player.ice;
+                    existing.totalXp = player.totalXp;
+                    localStorage.setItem(PLAYER_KEY, JSON.stringify(existing));
+                } catch (e) {}
+            }
+            function savePickaxe() {
+                try {
+                    localStorage.setItem(PICKAXE_KEY, JSON.stringify({
+                        level: pickaxe.level,
+                        energy: pickaxe.energy,
+                        lastEnergyUpdate: pickaxe.lastEnergyUpdate,
+                    }));
+                } catch (e) {}
+            }
+            function loadAll() {
+                try {
+                    const rawP = localStorage.getItem(PLAYER_KEY);
+                    if (rawP) {
+                        const p = JSON.parse(rawP);
+                        if (typeof p.wallet === 'number') player.wallet = p.wallet;
+                        if (typeof p.ice === 'number') player.ice = p.ice;
+                        if (typeof p.totalXp === 'number') player.totalXp = p.totalXp;
+                    }
+                    const rawK = localStorage.getItem(PICKAXE_KEY);
+                    if (rawK) {
+                        const k = JSON.parse(rawK);
+                        if (typeof k.level === 'number' && PICKAXE_LEVELS[k.level]) pickaxe.level = k.level;
+                        if (typeof k.energy === 'number') pickaxe.energy = k.energy;
+                        if (typeof k.lastEnergyUpdate === 'number') pickaxe.lastEnergyUpdate = k.lastEnergyUpdate;
+                    }
+                } catch (e) {}
+            }
+
+            // ====== ЭНЕРГИЯ ======
+            function regenerateEnergy() {
+                const now = Date.now();
+                const elapsed = Math.floor((now - pickaxe.lastEnergyUpdate) / 1000);
+                if (elapsed <= 0) return;
+                const regen = Math.floor(elapsed / ENERGY_REGEN_SEC);
+                if (regen <= 0) return;
+
+                const before = pickaxe.energy;
+                pickaxe.energy = Math.min(MAX_ENERGY, pickaxe.energy + regen);
+                pickaxe.lastEnergyUpdate += regen * ENERGY_REGEN_SEC * 1000;
+
+                if (pickaxe.energy !== before) {
+                    savePickaxe();
+                }
+
+                if (pickaxe.energy >= MAX_ENERGY) {
+                    pickaxe.lastEnergyUpdate = now;
+                }
+            }
+
+            // ====== ОТРИСОВКА ======
+            function renderTop() {
+                balanceValue.textContent = formatNumber(player.wallet);
+                iceValueEl.textContent = formatNumber(player.ice);
+
+                const info = getLevelInfo(player.totalXp);
+                const percent = Math.min((info.currentInLevel / info.needForLevel) * 100, 100);
+                xpFill.style.width = percent + '%';
+                xpText.textContent = formatNumber(info.currentInLevel) + ' / ' + formatNumber(info.needForLevel);
+                playerLevelEl.textContent = 'Уровень ' + info.level;
+            }
+
+            function renderEnergy() {
+                energyCountEl.textContent = pickaxe.energy + ' / ' + MAX_ENERGY;
+                const pct = Math.min((pickaxe.energy / MAX_ENERGY) * 100, 100);
+                energyFillEl.style.width = pct + '%';
+                energyFillEl.classList.toggle('low', pct <= 20);
+            }
+
+            function renderPickaxe() {
+                const cfg = PICKAXE_LEVELS[pickaxe.level];
+                pickaxeLevelEl.textContent = cfg.level;
+                pickaxeDropEl.textContent = '+' + cfg.drop + ' 🧊';
+
+                if (pickaxe.level >= MAX_PICKAXE) {
+                    upgradeBtn.disabled = true;
+                    upgradeCostEl.textContent = 'МАКС';
+                    upgradeBtn.classList.add('maxed');
+                } else {
+                    upgradeBtn.disabled = false;
+                    upgradeBtn.classList.remove('maxed');
+                    upgradeCostEl.textContent = formatMoney(cfg.upgradeCost);
+                }
+            }
+
+            function renderAll() {
+                renderTop();
+                renderEnergy();
+                renderPickaxe();
+            }
+
+            // ====== АНИМАЦИЯ УДАРА ======
+            function spawnSparks(x, y) {
+                const count = 6 + Math.floor(Math.random() * 3);
+                for (let i = 0; i < count; i++) {
+                    const spark = document.createElement('span');
+                    spark.className = 'spark';
+                    // Размер и цвет — рандом
+                    const size = 4 + Math.random() * 6;
+                    spark.style.width = size + 'px';
+                    spark.style.height = size + 'px';
+                    spark.style.left = x + 'px';
+                    spark.style.top = y + 'px';
+
+                    // Случайный разлёт
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = 30 + Math.random() * 60;
+                    const dx = Math.cos(angle) * dist;
+                    const dy = Math.sin(angle) * dist;
+
+                    spark.style.setProperty('--dx', dx + 'px');
+                    spark.style.setProperty('--dy', dy + 'px');
+
+                    document.body.appendChild(spark);
+                    setTimeout(() => spark.remove(), 650);
+                }
+            }
+
+            function spawnFloatText(x, y, text, color) {
+                const el = document.createElement('div');
+                el.className = 'icebreak-float';
+                el.textContent = text;
+                el.style.left = x + 'px';
+                el.style.top = y + 'px';
+                if (color) el.style.color = color;
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 1200);
+            }
+
+            function shakeElement(el) {
+                el.classList.add('shake');
+                setTimeout(() => el.classList.remove('shake'), 200);
+            }
+
+            function strike(event) {
+                // Проверяем энергию
+                if (pickaxe.energy < STRIKE_COST) {
+                    shakeElement(iceblockEl);
+                    return;
+                }
+
+                // Точка удара — по центру ледника
+                const rect = iceblockEl.getBoundingClientRect();
+                const cx = rect.left + rect.width / 2;
+                const cy = rect.top + rect.height / 2;
+
+                // 1. Анимация кирки
+                pickaxeEl.classList.remove('strike');
+                void pickaxeEl.offsetWidth;
+                pickaxeEl.classList.add('strike');
+
+                // 2. Тряска ледника
+                shakeElement(iceblockEl);
+
+                // 3. Списываем энергию
+                pickaxe.energy -= STRIKE_COST;
+
+                // 4. Искры
+                setTimeout(() => {
+                    spawnSparks(cx, cy);
+                }, 60);
+
+                // 5. Проверяем шанс
+                const win = Math.random() < SUCCESS_CHANCE;
+                if (win) {
+                    const drop = PICKAXE_LEVELS[pickaxe.level].drop;
+                    player.ice += drop;
+                    setTimeout(() => {
+                        spawnFloatText(cx, cy - 50, '+' + drop + ' 🧊', '#7DD8FF');
+                        // Обновляем баланс льда через мгновение
+                        renderTop();
+                    }, 100);
+                }
+
+                savePlayer();
+                savePickaxe();
+                renderEnergy();
+            }
+
+            // ====== АПГРЕЙД ======
+            function upgradePickaxe() {
+                if (pickaxe.level >= MAX_PICKAXE) return;
+                const cfg = PICKAXE_LEVELS[pickaxe.level];
+                if (player.wallet < cfg.upgradeCost) {
+                    upgradeBtn.classList.add('shake');
+                    setTimeout(() => upgradeBtn.classList.remove('shake'), 400);
+                    return;
+                }
+                player.wallet -= cfg.upgradeCost;
+                pickaxe.level += 1;
+                savePlayer();
+                savePickaxe();
+                renderAll();
+            }
+
+            // ====== ОБРАБОТЧИКИ ======
+            // Удар по леднику
+            iceblockEl.addEventListener('click', function(e) {
+                e.preventDefault();
+                strike(e);
+            });
+            iceblockEl.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                strike(e);
+            }, { passive: false });
+
+            // Апгрейд кирки
+            upgradeBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                upgradePickaxe();
+            });
+            upgradeBtn.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                upgradePickaxe();
+            }, { passive: false });
+
+            // ====== НАВИГАЦИЯ ======
+            navItems.forEach(item => {
+                const go = function(e) {
+                    e.preventDefault();
+                    savePlayer();
+                    savePickaxe();
+
+                    const screen = this.dataset.screen;
+                    if (screen === 'business') {
+                        window.location.href = 'business.html';
+                        return;
+                    }
+                    if (screen === 'earn') {
+                        window.location.href = 'index.html#earn';
+                        return;
+                    }
+                    if (screen === 'berloga') {
+                        window.location.href = 'index.html';
+                        return;
+                    }
+                    if (screen === 'invest') {
+                        window.location.href = 'index.html#invest';
+                        return;
+                    }
+                    if (screen === 'profile') {
+                        window.location.href = 'index.html#profile';
+                        return;
+                    }
+                };
+                item.addEventListener('click', go);
+                item.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    go.call(this, e);
+                }, { passive: false });
+            });
+
+            // ====== ИНИЦИАЛИЗАЦИЯ ======
+            function init() {
+                loadAll();
+                regenerateEnergy();
+                renderAll();
+            }
+            init();
+
+            // Обновление каждую секунду: восстановление энергии + обновление баланса
+            setInterval(function() {
+                regenerateEnergy();
+                renderEnergy();
+                renderTop();
+            }, 1000);
+
+            // Полное сохранение раз в 10 сек
+            setInterval(function() {
+                savePlayer();
+                savePickaxe();
+            }, 10000);
+
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'hidden') {
+                    savePlayer();
+                    savePickaxe();
+                } else {
+                    loadAll();
+                    regenerateEnergy();
+                    renderAll();
+                }
+            });
+
+            window.addEventListener('beforeunload', function() {
+                savePlayer();
+                savePickaxe();
+            });
+
+            function handleSafeArea() {
+                const bottomNav = document.getElementById('bottom-nav');
+                const safeBottom = getComputedStyle(document.documentElement)
+                    .getPropertyValue('env(safe-area-inset-bottom)');
+                if (safeBottom && safeBottom !== '0px') {
+                    bottomNav.style.paddingBottom = safeBottom;
+                }
+            }
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', handleSafeArea);
+            }
+            handleSafeArea();
+
+            document.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+        })();
+    </script>
+</body>
+</html>
