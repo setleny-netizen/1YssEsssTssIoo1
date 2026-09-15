@@ -498,35 +498,87 @@ body {
     letter-spacing: 0.3px;
 }
 
-.quick-race-btn {
+/* ====== EARN ACTIONS ====== */
+.earn-actions {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 14px 18px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #C9A227, #A88920);
-    color: #0A0A0A;
-    font-size: 14px;
-    font-weight: 800;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    text-decoration: none;
-    cursor: pointer;
-    box-shadow: 0 4px 14px rgba(201, 162, 39, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-    transition: transform 0.12s ease, box-shadow 0.2s ease;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-    width: 100%;
+    flex-direction: column;
+    gap: 10px;
     flex-shrink: 0;
 }
 
-.quick-race-btn:active {
-    transform: scale(0.97);
-    box-shadow: 0 2px 8px rgba(201, 162, 39, 0.3);
+.earn-action-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--bg-card);
+    border: 1px solid rgba(201, 162, 39, 0.15);
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.12s ease, background 0.15s ease, border-color 0.2s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
 }
 
-.quick-race-emoji { font-size: 18px; line-height: 1; }
+.earn-action-card:active {
+    transform: scale(0.98);
+    background: var(--bg-secondary);
+    border-color: rgba(201, 162, 39, 0.35);
+}
+
+.earn-action-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.earn-action-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.earn-action-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.earn-action-sub {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.earn-action-arrow {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent-orange-light);
+    opacity: 0.6;
+    flex-shrink: 0;
+    line-height: 1;
+    padding-right: 2px;
+}
 
 /* ====== BUSINESS SCREEN ====== */
 .business-screen {
@@ -1111,7 +1163,6 @@ body {
     text-transform: uppercase;
 }
 
-/* Обёртка действий в модалке */
 .upg-actions {
     display: flex;
     flex-direction: column;
@@ -1152,7 +1203,6 @@ body {
 
 .upg-buy-btn.shake { animation: slot-shake 0.4s ease; }
 
-/* Кнопка продажи */
 .upg-sell-btn {
     appearance: none;
     outline: none;
@@ -2374,278 +2424,6 @@ body {
 /* ====== HIDDEN ====== */
 .hidden { display: none !important; }
 
-/* ====== RESPONSIVE ====== */
-@media (max-width: 360px) {
-    :root {
-        --top-panel-height: 62px;
-        --bottom-nav-height: 50px;
-        --font-size-xs: 8px;
-        --font-size-sm: 10px;
-        --font-size-md: 12px;
-        --font-size-lg: 14px;
-        --font-size-xl: 16px;
-        --font-size-xxl: 18px;
-    }
-    .avatar { width: 28px; height: 28px; }
-    .avatar-inner { font-size: 16px; }
-    .nav-item .nav-emoji { font-size: 16px; }
-    .nav-item .nav-label { font-size: 6px; }
-    .berloga-btn .btn-emoji { font-size: 26px; }
-    .berloga-btn .btn-label { font-size: 10px; }
-    .stat-block { padding: 4px 6px; gap: 4px; }
-    .stat-block .stat-emoji { font-size: 13px; }
-    .stats-row { padding: 6px; gap: 4px; }
-    .balance-badge { padding: 4px 8px 4px 6px; gap: 3px; }
-    .balance-badge .wallet-icon { font-size: 12px; }
-
-    .racer-avatar { width: 40px; height: 40px; }
-    .racer-sled { font-size: 12px; }
-    .racer-speed { font-size: 10px; }
-    .racer-vs { font-size: 11px; }
-    .race-runner { width: 56px; height: 56px; }
-    .race-start-btn { font-size: 13px; padding: 10px 14px; }
-    .race-title { font-size: 20px; }
-
-    .earn-title { font-size: 20px; }
-    .earn-ice-value { font-size: 13px; }
-
-    .biz-title { font-size: 20px; }
-    .biz-income-value { font-size: 22px; }
-    .biz-slot-btn { font-size: 10px; padding: 5px 10px; }
-
-    .cat-card {
-        grid-template-columns: 40px 1fr;
-        gap: 10px;
-    }
-    .cat-icon { width: 40px; height: 40px; font-size: 22px; }
-    .cat-buy-btn {
-        grid-column: 1 / -1;
-        width: 100%;
-    }
-
-    .biz-card {
-        grid-template-columns: 40px 1fr auto;
-        gap: 8px;
-    }
-    .biz-card-icon { width: 40px; height: 40px; font-size: 20px; }
-
-    .inv-title { font-size: 20px; }
-    .inv-item-icon { font-size: 36px; }
-
-    .mine-title { font-size: 20px; }
-    .mine-banner-title { font-size: 13px; }
-    .mine-banner-sub { font-size: 9px; }
-    .vein-icon { width: 34px; height: 34px; font-size: 18px; }
-    .vein-name { font-size: 11px; }
-    .vein-desc { font-size: 8px; }
-    .vein-cost { font-size: 10px; padding: 2px 7px; }
-    .vein-action { font-size: 9px; }
-    .mine-inv-emoji { font-size: 12px; }
-    .mine-inv-count { font-size: 10px; }
-}
-
-@media (max-height: 700px) {
-    :root {
-        --top-panel-height: 62px;
-        --bottom-nav-height: 54px;
-    }
-    .berloga-buttons-grid { gap: 5px; }
-    .berloga-btn { border-radius: 10px; gap: 3px; padding: 4px; }
-    .berloga-btn .btn-emoji { font-size: 26px; }
-    .berloga-btn .btn-label { font-size: 9px; }
-
-    .ice-hero-title { font-size: 12px; letter-spacing: 1.6px; }
-    .ice-storage-count { font-size: 16px; }
-    .ice-storage-count #ice-capacity,
-    .ice-storage-count #sad-capacity { font-size: 13px; }
-    .ice-collect-btn { padding: 10px 14px; font-size: 12px; }
-    .ice-info-value { font-size: 11px; }
-    .ice-info-cell { padding: 5px 8px; }
-
-    .racer-card { padding: 6px 8px; gap: 8px; }
-    .racer-avatar { width: 42px; height: 42px; }
-    .race-runner { width: 58px; height: 58px; }
-
-    .modal-sheet { max-height: 88vh; }
-
-    .inv-item-icon { font-size: 38px; }
-
-    .mine-vein { padding: 7px 10px; gap: 8px; }
-    .vein-icon { width: 34px; height: 34px; font-size: 18px; }
-}
-
-@media (max-height: 600px) {
-    :root {
-        --top-panel-height: 56px;
-        --bottom-nav-height: 46px;
-    }
-    .avatar { width: 24px; height: 24px; }
-    .avatar-inner { font-size: 14px; }
-    .berloga-buttons-grid { gap: 4px; }
-    .berloga-btn { border-radius: 8px; gap: 2px; padding: 3px; }
-    .berloga-btn .btn-emoji { font-size: 22px; }
-    .berloga-btn .btn-label { font-size: 8px; }
-    .stat-block { padding: 3px 4px; gap: 3px; }
-    .stat-block .stat-emoji { font-size: 12px; }
-    .stats-row { padding: 5px; gap: 3px; }
-    .stat-value { font-size: 9px; }
-
-    #screen-ice { gap: 5px; }
-    .ice-hero { gap: 3px; }
-    .ice-hero-title { font-size: 11px; letter-spacing: 1.2px; }
-    .ice-hero-status { font-size: 9px; }
-    .ice-info-cell { padding: 4px 6px; }
-    .ice-info-label { font-size: 7px; }
-    .ice-info-value { font-size: 10px; }
-    .ice-storage-card { padding: 6px 10px; gap: 4px; }
-    .ice-storage-count { font-size: 15px; }
-    .ice-storage-count #ice-capacity,
-    .ice-storage-count #sad-capacity { font-size: 12px; }
-    .ice-storage-bar { height: 5px; }
-    .ice-collect-btn { padding: 9px 12px; font-size: 11px; letter-spacing: 1px; }
-    .ice-upgrade-btn { padding: 8px 12px; }
-    .ice-upgrade-title { font-size: 10px; }
-    .ice-upgrade-desc { font-size: 8px; }
-    .ice-upgrade-cost { font-size: 11px; }
-
-    #screen-race { gap: 5px; }
-    .race-racers { gap: 4px; }
-    .racer-card { padding: 5px 6px; gap: 6px; }
-    .racer-avatar { width: 36px; height: 36px; }
-    .racer-title { font-size: 8px; }
-    .racer-sled { font-size: 12px; }
-    .racer-speed { font-size: 9px; }
-    .race-runner { width: 52px; height: 52px; }
-    .race-result { font-size: 11px; padding: 6px 10px; }
-    .race-start-btn { padding: 9px 14px; font-size: 12px; letter-spacing: 1.5px; }
-    .race-title { font-size: 18px; letter-spacing: 1.2px; }
-
-    .earn-title { font-size: 18px; letter-spacing: 1.5px; }
-    .earn-ice-value { font-size: 12px; }
-
-    .biz-title { font-size: 18px; }
-    .biz-income-value { font-size: 22px; }
-    .biz-income-card { padding: 10px 12px; }
-    .biz-open-btn { padding: 11px 16px; font-size: 13px; }
-    .biz-my-title { font-size: 14px; }
-
-    .modal-sheet { max-height: 92vh; }
-    .modal-header { padding: 12px 14px 10px; }
-    .modal-body { padding: 12px 14px 16px; }
-    .cat-card { padding: 10px 12px; }
-    .cat-icon { width: 42px; height: 42px; font-size: 22px; }
-    .cat-name { font-size: 13px; }
-
-    .inv-title { font-size: 18px; letter-spacing: 1.2px; }
-    .inv-item-icon { font-size: 32px; }
-    .inv-item-name { font-size: 9px; }
-    .inv-item-count { font-size: 10px; }
-    .inv-grid { gap: 6px; }
-
-    .mine-screen { gap: 6px; }
-    .mine-title { font-size: 18px; letter-spacing: 1.2px; }
-    .mine-banner-overlay { padding: 8px 10px 6px; }
-    .mine-banner-title { font-size: 12px; letter-spacing: 1.5px; }
-    .mine-banner-sub { font-size: 8px; }
-    .mine-vein { padding: 6px 8px; gap: 6px; }
-    .vein-icon { width: 30px; height: 30px; font-size: 16px; }
-    .vein-name { font-size: 11px; }
-    .vein-desc { font-size: 8px; }
-    .vein-cost { font-size: 10px; padding: 2px 7px; }
-    .vein-action { font-size: 9px; letter-spacing: 1px; }
-    .mine-inv { padding: 6px 8px; gap: 4px; }
-    .mine-inv-emoji { font-size: 12px; }
-    .mine-inv-count { font-size: 10px; }
-    .mine-inv-item { padding: 4px 3px; }
-}
-
-@media (min-width: 500px) {
-    #content { padding: 12px 16px; }
-}
-
-
-/* ====== EARN ACTIONS ====== */
-.earn-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    flex-shrink: 0;
-}
-
-.earn-action-card {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 16px;
-    background: var(--bg-card);
-    border: 1px solid rgba(201, 162, 39, 0.15);
-    border-radius: 14px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-    text-decoration: none;
-    color: inherit;
-    transition: transform 0.12s ease, background 0.15s ease, border-color 0.2s ease;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-    cursor: pointer;
-}
-
-.earn-action-card:active {
-    transform: scale(0.98);
-    background: var(--bg-secondary);
-    border-color: rgba(201, 162, 39, 0.35);
-}
-
-.earn-action-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    background: var(--bg-secondary);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
-    flex-shrink: 0;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
-}
-
-.earn-action-info {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.earn-action-title {
-    font-size: 14px;
-    font-weight: 800;
-    color: var(--text-primary);
-    letter-spacing: 0.2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.earn-action-sub {
-    font-size: 10px;
-    color: var(--text-muted);
-    letter-spacing: 0.2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.earn-action-arrow {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--accent-orange-light);
-    opacity: 0.6;
-    flex-shrink: 0;
-    line-height: 1;
-    padding-right: 2px;
-}
-
 /* ====== ICEBREAK SCREEN ====== */
 .icebreak-screen {
     display: flex;
@@ -2746,7 +2524,7 @@ body {
     background: linear-gradient(90deg, #B8753D, #FFB547);
 }
 
-/* Scene: pickaxe + iceblock */
+/* Scene: ледник + кирка */
 .icebreak-scene {
     position: relative;
     flex: 1 1 0;
@@ -2764,24 +2542,25 @@ body {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Кирка сверху */
+/* Кирка — справа от ледника, повёрнута к нему */
 .pickaxe {
     position: absolute;
-    top: 8%;
-    left: 50%;
-    transform: translateX(-50%) rotate(-35deg);
-    font-size: 64px;
+    right: 8%;
+    top: 50%;
+    font-size: 72px;
     line-height: 1;
     pointer-events: none;
     z-index: 5;
-    transition: transform 0.14s ease-out;
+    transform: translateY(-50%) rotate(20deg);
+    transform-origin: 20% 80%;
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
     filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
-    transform-origin: center center;
 }
 
+/* Позиция при ударе — кирка "летит" к центру ледника и наклоняется вниз */
 .pickaxe.strike {
-    transform: translateX(-30%) translateY(80px) rotate(15deg);
-    transition: transform 0.06s cubic-bezier(0.5, 0, 0.9, 0.3);
+    transform: translateY(-50%) translateX(-40px) rotate(-55deg);
+    transition: transform 0.1s cubic-bezier(0.5, 0, 0.9, 0.3);
 }
 
 /* Ледник */
@@ -2800,6 +2579,7 @@ body {
     -webkit-tap-highlight-color: transparent;
     z-index: 3;
     animation: iceblock-glow 3s ease-in-out infinite;
+    margin-right: 60px;
 }
 
 .iceblock-emoji {
@@ -2997,22 +2777,214 @@ body {
     animation: slot-shake 0.4s ease;
 }
 
-/* Адаптив для icebreak */
+/* ====== RESPONSIVE ====== */
+@media (max-width: 360px) {
+    :root {
+        --top-panel-height: 62px;
+        --bottom-nav-height: 50px;
+        --font-size-xs: 8px;
+        --font-size-sm: 10px;
+        --font-size-md: 12px;
+        --font-size-lg: 14px;
+        --font-size-xl: 16px;
+        --font-size-xxl: 18px;
+    }
+    .avatar { width: 28px; height: 28px; }
+    .avatar-inner { font-size: 16px; }
+    .nav-item .nav-emoji { font-size: 16px; }
+    .nav-item .nav-label { font-size: 6px; }
+    .berloga-btn .btn-emoji { font-size: 26px; }
+    .berloga-btn .btn-label { font-size: 10px; }
+    .stat-block { padding: 4px 6px; gap: 4px; }
+    .stat-block .stat-emoji { font-size: 13px; }
+    .stats-row { padding: 6px; gap: 4px; }
+    .balance-badge { padding: 4px 8px 4px 6px; gap: 3px; }
+    .balance-badge .wallet-icon { font-size: 12px; }
+
+    .racer-avatar { width: 40px; height: 40px; }
+    .racer-sled { font-size: 12px; }
+    .racer-speed { font-size: 10px; }
+    .racer-vs { font-size: 11px; }
+    .race-runner { width: 56px; height: 56px; }
+    .race-start-btn { font-size: 13px; padding: 10px 14px; }
+    .race-title { font-size: 20px; }
+
+    .earn-title { font-size: 20px; }
+    .earn-ice-value { font-size: 13px; }
+
+    .biz-title { font-size: 20px; }
+    .biz-income-value { font-size: 22px; }
+    .biz-slot-btn { font-size: 10px; padding: 5px 10px; }
+
+    .cat-card {
+        grid-template-columns: 40px 1fr;
+        gap: 10px;
+    }
+    .cat-icon { width: 40px; height: 40px; font-size: 22px; }
+    .cat-buy-btn {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+
+    .biz-card {
+        grid-template-columns: 40px 1fr auto;
+        gap: 8px;
+    }
+    .biz-card-icon { width: 40px; height: 40px; font-size: 20px; }
+
+    .inv-title { font-size: 20px; }
+    .inv-item-icon { font-size: 36px; }
+
+    .mine-title { font-size: 20px; }
+    .mine-banner-title { font-size: 13px; }
+    .mine-banner-sub { font-size: 9px; }
+    .vein-icon { width: 34px; height: 34px; font-size: 18px; }
+    .vein-name { font-size: 11px; }
+    .vein-desc { font-size: 8px; }
+    .vein-cost { font-size: 10px; padding: 2px 7px; }
+    .vein-action { font-size: 9px; }
+    .mine-inv-emoji { font-size: 12px; }
+    .mine-inv-count { font-size: 10px; }
+
+    .icebreak-title { font-size: 20px; }
+    .icebreak-ice-value { font-size: 13px; }
+    .pickaxe { font-size: 58px; }
+    .iceblock { width: 110px; height: 110px; margin-right: 50px; }
+    .iceblock-emoji { font-size: 92px; }
+}
+
 @media (max-height: 700px) {
+    :root {
+        --top-panel-height: 62px;
+        --bottom-nav-height: 54px;
+    }
+    .berloga-buttons-grid { gap: 5px; }
+    .berloga-btn { border-radius: 10px; gap: 3px; padding: 4px; }
+    .berloga-btn .btn-emoji { font-size: 26px; }
+    .berloga-btn .btn-label { font-size: 9px; }
+
+    .ice-hero-title { font-size: 12px; letter-spacing: 1.6px; }
+    .ice-storage-count { font-size: 16px; }
+    .ice-storage-count #ice-capacity,
+    .ice-storage-count #sad-capacity { font-size: 13px; }
+    .ice-collect-btn { padding: 10px 14px; font-size: 12px; }
+    .ice-info-value { font-size: 11px; }
+    .ice-info-cell { padding: 5px 8px; }
+
+    .racer-card { padding: 6px 8px; gap: 8px; }
+    .racer-avatar { width: 42px; height: 42px; }
+    .race-runner { width: 58px; height: 58px; }
+
+    .modal-sheet { max-height: 88vh; }
+
+    .inv-item-icon { font-size: 38px; }
+
+    .mine-vein { padding: 7px 10px; gap: 8px; }
+    .vein-icon { width: 34px; height: 34px; font-size: 18px; }
+
     .icebreak-scene { min-height: 240px; }
-    .iceblock { width: 120px; height: 120px; }
+    .iceblock { width: 120px; height: 120px; margin-right: 55px; }
     .iceblock-emoji { font-size: 100px; }
-    .pickaxe { font-size: 54px; top: 6%; }
+    .pickaxe { font-size: 62px; right: 6%; }
+    .pickaxe.strike { transform: translateY(-50%) translateX(-30px) rotate(-55deg); }
 }
 
 @media (max-height: 600px) {
+    :root {
+        --top-panel-height: 56px;
+        --bottom-nav-height: 46px;
+    }
+    .avatar { width: 24px; height: 24px; }
+    .avatar-inner { font-size: 14px; }
+    .berloga-buttons-grid { gap: 4px; }
+    .berloga-btn { border-radius: 8px; gap: 2px; padding: 3px; }
+    .berloga-btn .btn-emoji { font-size: 22px; }
+    .berloga-btn .btn-label { font-size: 8px; }
+    .stat-block { padding: 3px 4px; gap: 3px; }
+    .stat-block .stat-emoji { font-size: 12px; }
+    .stats-row { padding: 5px; gap: 3px; }
+    .stat-value { font-size: 9px; }
+
+    #screen-ice { gap: 5px; }
+    .ice-hero { gap: 3px; }
+    .ice-hero-title { font-size: 11px; letter-spacing: 1.2px; }
+    .ice-hero-status { font-size: 9px; }
+    .ice-info-cell { padding: 4px 6px; }
+    .ice-info-label { font-size: 7px; }
+    .ice-info-value { font-size: 10px; }
+    .ice-storage-card { padding: 6px 10px; gap: 4px; }
+    .ice-storage-count { font-size: 15px; }
+    .ice-storage-count #ice-capacity,
+    .ice-storage-count #sad-capacity { font-size: 12px; }
+    .ice-storage-bar { height: 5px; }
+    .ice-collect-btn { padding: 9px 12px; font-size: 11px; letter-spacing: 1px; }
+    .ice-upgrade-btn { padding: 8px 12px; }
+    .ice-upgrade-title { font-size: 10px; }
+    .ice-upgrade-desc { font-size: 8px; }
+    .ice-upgrade-cost { font-size: 11px; }
+
+    #screen-race { gap: 5px; }
+    .race-racers { gap: 4px; }
+    .racer-card { padding: 5px 6px; gap: 6px; }
+    .racer-avatar { width: 36px; height: 36px; }
+    .racer-title { font-size: 8px; }
+    .racer-sled { font-size: 12px; }
+    .racer-speed { font-size: 9px; }
+    .race-runner { width: 52px; height: 52px; }
+    .race-result { font-size: 11px; padding: 6px 10px; }
+    .race-start-btn { padding: 9px 14px; font-size: 12px; letter-spacing: 1.5px; }
+    .race-title { font-size: 18px; letter-spacing: 1.2px; }
+
+    .earn-title { font-size: 18px; letter-spacing: 1.5px; }
+    .earn-ice-value { font-size: 12px; }
+
+    .biz-title { font-size: 18px; }
+    .biz-income-value { font-size: 22px; }
+    .biz-income-card { padding: 10px 12px; }
+    .biz-open-btn { padding: 11px 16px; font-size: 13px; }
+    .biz-my-title { font-size: 14px; }
+
+    .modal-sheet { max-height: 92vh; }
+    .modal-header { padding: 12px 14px 10px; }
+    .modal-body { padding: 12px 14px 16px; }
+    .cat-card { padding: 10px 12px; }
+    .cat-icon { width: 42px; height: 42px; font-size: 22px; }
+    .cat-name { font-size: 13px; }
+
+    .inv-title { font-size: 18px; letter-spacing: 1.2px; }
+    .inv-item-icon { font-size: 32px; }
+    .inv-item-name { font-size: 9px; }
+    .inv-item-count { font-size: 10px; }
+    .inv-grid { gap: 6px; }
+
+    .mine-screen { gap: 6px; }
+    .mine-title { font-size: 18px; letter-spacing: 1.2px; }
+    .mine-banner-overlay { padding: 8px 10px 6px; }
+    .mine-banner-title { font-size: 12px; letter-spacing: 1.5px; }
+    .mine-banner-sub { font-size: 8px; }
+    .mine-vein { padding: 6px 8px; gap: 6px; }
+    .vein-icon { width: 30px; height: 30px; font-size: 16px; }
+    .vein-name { font-size: 11px; }
+    .vein-desc { font-size: 8px; }
+    .vein-cost { font-size: 10px; padding: 2px 7px; }
+    .vein-action { font-size: 9px; letter-spacing: 1px; }
+    .mine-inv { padding: 6px 8px; gap: 4px; }
+    .mine-inv-emoji { font-size: 12px; }
+    .mine-inv-count { font-size: 10px; }
+    .mine-inv-item { padding: 4px 3px; }
+
+    .icebreak-screen { gap: 6px; }
     .icebreak-scene { min-height: 200px; }
-    .iceblock { width: 100px; height: 100px; }
+    .iceblock { width: 100px; height: 100px; margin-right: 45px; }
     .iceblock-emoji { font-size: 84px; }
-    .pickaxe { font-size: 46px; top: 4%; }
-    .pickaxe.strike { transform: translateX(-30%) translateY(60px) rotate(15deg); }
+    .pickaxe { font-size: 52px; right: 5%; }
+    .pickaxe.strike { transform: translateY(-50%) translateX(-25px) rotate(-55deg); }
     .icebreak-title { font-size: 18px; }
     .icebreak-float { font-size: 18px; }
     .pickaxe-info { padding: 8px 10px; gap: 8px; }
     .pickaxe-upgrade-btn { padding: 6px 10px; min-width: 80px; }
+}
+
+@media (min-width: 500px) {
+    #content { padding: 12px 16px; }
 }
