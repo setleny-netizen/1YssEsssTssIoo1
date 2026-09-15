@@ -60,14 +60,14 @@
                     </div>
                 </div>
 
-                <!-- SCENE: кирка + ледник -->
+                <!-- SCENE: ледник + кирка -->
                 <div class="icebreak-scene" id="icebreak-scene">
-
-                    <div class="pickaxe" id="pickaxe">⛏️</div>
 
                     <div class="iceblock" id="iceblock">
                         <span class="iceblock-emoji">🧊</span>
                     </div>
+
+                    <div class="pickaxe" id="pickaxe">⛏️</div>
 
                 </div>
 
@@ -135,7 +135,7 @@
             const STRIKE_COST = 1;
 
             const MAX_ENERGY = 200;
-            const ENERGY_REGEN_SEC = 60; // +1 ⚡ в минуту
+            const ENERGY_REGEN_SEC = 60;
 
             // ====== СОСТОЯНИЕ ======
             const player = { wallet: 0, ice: 0, totalXp: 0 };
@@ -218,6 +218,12 @@
                         if (typeof p.wallet === 'number') player.wallet = p.wallet;
                         if (typeof p.ice === 'number') player.ice = p.ice;
                         if (typeof p.totalXp === 'number') player.totalXp = p.totalXp;
+                    } else {
+                        // Первый запуск — стартовый бонус
+                        player.wallet = 0;
+                        player.ice = 1000;
+                        player.totalXp = 0;
+                        savePlayer();
                     }
                     const rawK = localStorage.getItem(PICKAXE_KEY);
                     if (rawK) {
@@ -241,13 +247,8 @@
                 pickaxe.energy = Math.min(MAX_ENERGY, pickaxe.energy + regen);
                 pickaxe.lastEnergyUpdate += regen * ENERGY_REGEN_SEC * 1000;
 
-                if (pickaxe.energy !== before) {
-                    savePickaxe();
-                }
-
-                if (pickaxe.energy >= MAX_ENERGY) {
-                    pickaxe.lastEnergyUpdate = now;
-                }
+                if (pickaxe.energy !== before) savePickaxe();
+                if (pickaxe.energy >= MAX_ENERGY) pickaxe.lastEnergyUpdate = now;
             }
 
             // ====== ОТРИСОВКА ======
@@ -291,20 +292,18 @@
                 renderPickaxe();
             }
 
-            // ====== АНИМАЦИЯ УДАРА ======
+            // ====== АНИМАЦИЯ ======
             function spawnSparks(x, y) {
                 const count = 6 + Math.floor(Math.random() * 3);
                 for (let i = 0; i < count; i++) {
                     const spark = document.createElement('span');
                     spark.className = 'spark';
-                    // Размер и цвет — рандом
                     const size = 4 + Math.random() * 6;
                     spark.style.width = size + 'px';
                     spark.style.height = size + 'px';
                     spark.style.left = x + 'px';
                     spark.style.top = y + 'px';
 
-                    // Случайный разлёт
                     const angle = Math.random() * Math.PI * 2;
                     const dist = 30 + Math.random() * 60;
                     const dx = Math.cos(angle) * dist;
@@ -330,11 +329,16 @@
             }
 
             function shakeElement(el) {
+                el.classList.remove('shake');
+                void el.offsetWidth;
                 el.classList.add('shake');
                 setTimeout(() => el.classList.remove('shake'), 200);
             }
 
-            function strike(event) {
+            // ====== УДАР ======
+            let strikeResetTimer = null;
+
+            function strike() {
                 // Проверяем энергию
                 if (pickaxe.energy < STRIKE_COST) {
                     shakeElement(iceblockEl);
@@ -342,14 +346,19 @@
                 }
 
                 // Точка удара — по центру ледника
-                const rect = iceblockEl.getBoundingClientRect();
-                const cx = rect.left + rect.width / 2;
-                const cy = rect.top + rect.height / 2;
+                const iceRect = iceblockEl.getBoundingClientRect();
+                const cx = iceRect.left + iceRect.width / 2;
+                const cy = iceRect.top + iceRect.height / 2;
 
                 // 1. Анимация кирки
+                if (strikeResetTimer) clearTimeout(strikeResetTimer);
                 pickaxeEl.classList.remove('strike');
                 void pickaxeEl.offsetWidth;
                 pickaxeEl.classList.add('strike');
+
+                strikeResetTimer = setTimeout(function() {
+                    pickaxeEl.classList.remove('strike');
+                }, 260);
 
                 // 2. Тряска ледника
                 shakeElement(iceblockEl);
@@ -357,21 +366,20 @@
                 // 3. Списываем энергию
                 pickaxe.energy -= STRIKE_COST;
 
-                // 4. Искры
-                setTimeout(() => {
+                // 4. Искры в момент касания (~130мс)
+                setTimeout(function() {
                     spawnSparks(cx, cy);
-                }, 60);
+                }, 130);
 
-                // 5. Проверяем шанс
+                // 5. Проверка шанса
                 const win = Math.random() < SUCCESS_CHANCE;
                 if (win) {
                     const drop = PICKAXE_LEVELS[pickaxe.level].drop;
                     player.ice += drop;
-                    setTimeout(() => {
+                    setTimeout(function() {
                         spawnFloatText(cx, cy - 50, '+' + drop + ' 🧊', '#7DD8FF');
-                        // Обновляем баланс льда через мгновение
                         renderTop();
-                    }, 100);
+                    }, 150);
                 }
 
                 savePlayer();
@@ -396,17 +404,15 @@
             }
 
             // ====== ОБРАБОТЧИКИ ======
-            // Удар по леднику
             iceblockEl.addEventListener('click', function(e) {
                 e.preventDefault();
-                strike(e);
+                strike();
             });
             iceblockEl.addEventListener('touchstart', function(e) {
                 e.preventDefault();
-                strike(e);
+                strike();
             }, { passive: false });
 
-            // Апгрейд кирки
             upgradeBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 upgradePickaxe();
@@ -460,14 +466,12 @@
             }
             init();
 
-            // Обновление каждую секунду: восстановление энергии + обновление баланса
             setInterval(function() {
                 regenerateEnergy();
                 renderEnergy();
                 renderTop();
             }, 1000);
 
-            // Полное сохранение раз в 10 сек
             setInterval(function() {
                 savePlayer();
                 savePickaxe();
