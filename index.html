@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Лохматый клуб</title>
-    <link rel="stylesheet" href="style.css?v=11">
+    <link rel="stylesheet" href="style.css?v=14">
 </head>
 <body>
     <div id="app">
@@ -118,10 +118,27 @@
                     </div>
                 </div>
 
-                <a class="quick-race-btn" href="race.html">
-                    <span class="quick-race-emoji">🏁</span>
-                    <span class="quick-race-text">Быстрый заезд · 1 🧊</span>
-                </a>
+                <div class="earn-actions">
+
+                    <a class="earn-action-card" href="icebreak.html">
+                        <div class="earn-action-icon">⛏️</div>
+                        <div class="earn-action-info">
+                            <div class="earn-action-title">Колоть ледник</div>
+                            <div class="earn-action-sub">Удары киркой · шанс найти лёд</div>
+                        </div>
+                        <div class="earn-action-arrow">›</div>
+                    </a>
+
+                    <a class="earn-action-card" href="race.html">
+                        <div class="earn-action-icon">🏁</div>
+                        <div class="earn-action-info">
+                            <div class="earn-action-title">Быстрый заезд</div>
+                            <div class="earn-action-sub">1 🧊 → 100 💵 · 5 сек</div>
+                        </div>
+                        <div class="earn-action-arrow">›</div>
+                    </a>
+
+                </div>
             </div>
 
             <!-- Бизнес (заглушка) -->
@@ -243,6 +260,12 @@
                         if (typeof p.wallet === 'number') state.wallet = p.wallet;
                         if (typeof p.ice === 'number') state.ice = p.ice;
                         if (typeof p.totalXp === 'number') state.totalXp = p.totalXp;
+                    } else {
+                        // Первый запуск — стартовый бонус
+                        state.wallet = 0;
+                        state.ice = 1000;
+                        state.totalXp = 0;
+                        savePlayer();
                     }
                 } catch (e) {}
             }
