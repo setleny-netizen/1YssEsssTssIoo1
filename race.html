@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Быстрый заезд — Лохматый клуб</title>
-    <link rel="stylesheet" href="style.css?v=8">
+    <link rel="stylesheet" href="style.css?v=15">
 </head>
 <body>
     <div id="app">
@@ -52,8 +52,8 @@
                 <!-- RACER CARDS -->
                 <div class="race-racers">
                     <div class="racer-card racer-me">
-                        <div class="racer-avatar">
-                            <img src="https://cdn.pixabay.com/photo/2026/09/10/20/27/20-27-55-61_1280.png" alt="Я" draggable="false">
+                        <div class="racer-avatar racer-avatar-me">
+                            <span class="racer-emoji">🐻</span>
                         </div>
                         <div class="racer-info">
                             <div class="racer-title">Я</div>
@@ -70,35 +70,73 @@
                             <div class="racer-sled" id="npc-sled">— — —</div>
                             <div class="racer-speed"><span id="npc-speed">??</span> км/ч</div>
                         </div>
-                        <div class="racer-avatar">
-                            <img src="https://cdn.pixabay.com/photo/2026/09/10/20/54/20-54-13-256_1280.png" alt="НПС" draggable="false">
+                        <div class="racer-avatar racer-avatar-npc">
+                            <span class="racer-emoji">🦊</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- TRACK -->
-                <div class="race-track">
-                    <div class="race-track-inner">
-                        <img class="race-track-bg" src="https://cdn.pixabay.com/photo/2026/09/13/17/14/17-14-44-886_1280.png" alt="Трасса" draggable="false">
+                <!-- TRACK (всё на CSS) -->
+                <div class="race-track" id="race-track">
 
-                        <div class="race-runner race-runner-npc" id="runner-npc">
-                            <img src="https://cdn.pixabay.com/photo/2026/09/10/20/54/20-54-13-256_1280.png" alt="" draggable="false">
+                    <!-- Фон сцены: небо, горы, снег -->
+                    <div class="race-scene">
+                        <div class="race-sky"></div>
+                        <div class="race-mountains"></div>
+                        <div class="race-trees-layer"></div>
+                        <div class="race-ground"></div>
+                    </div>
+
+                    <!-- Дорожки -->
+                    <div class="race-lanes">
+                        <div class="race-lane race-lane-npc">
+                            <div class="race-lane-markers"></div>
                         </div>
-
-                        <div class="race-runner race-runner-me" id="runner-me">
-                            <img src="https://cdn.pixabay.com/photo/2026/09/10/20/27/20-27-55-61_1280.png" alt="" draggable="false">
+                        <div class="race-lane race-lane-me">
+                            <div class="race-lane-markers"></div>
                         </div>
                     </div>
+
+                    <!-- Старт / Финиш -->
+                    <div class="race-start-line"></div>
+                    <div class="race-finish-line"></div>
+
+                    <!-- Участники (CSS-сани + эмодзи) -->
+                    <div class="race-runner race-runner-npc" id="runner-npc">
+                        <div class="sled sled-red">
+                            <div class="sled-body"></div>
+                            <div class="sled-back"></div>
+                            <div class="sled-front"></div>
+                            <div class="sled-runner-left"></div>
+                            <div class="sled-runner-right"></div>
+                        </div>
+                        <div class="sled-rider">🦊</div>
+                    </div>
+
+                    <div class="race-runner race-runner-me" id="runner-me">
+                        <div class="sled sled-blue">
+                            <div class="sled-body"></div>
+                            <div class="sled-back"></div>
+                            <div class="sled-front"></div>
+                            <div class="sled-runner-left"></div>
+                            <div class="sled-runner-right"></div>
+                        </div>
+                        <div class="sled-rider">🐻</div>
+                    </div>
+
+                    <!-- Снежинки (генерируются JS) -->
+                    <div class="race-snow" id="race-snow"></div>
+
                 </div>
 
-                <!-- START BUTTON — прямо под картой -->
+                <!-- START BUTTON -->
                 <button class="race-start-btn" id="race-start-btn">
                     <span class="race-start-emoji">🏁</span>
                     <span class="race-start-text" id="race-start-text">СТАРТ</span>
                     <span class="race-start-cost" id="race-start-cost">· 1 🧊</span>
                 </button>
 
-                <!-- RESULT — появляется ниже кнопки -->
+                <!-- RESULT MESSAGE -->
                 <div class="race-result hidden" id="race-result"></div>
 
             </div>
@@ -135,16 +173,17 @@
 
             const MY_SPEED = 80;
             const RACE_DURATION = 5000;
-            const WIN_CHANCE = 0.99;
-            const REWARD_WIN_WALLET = 10000;
+            const WIN_CHANCE = 0.78;
+            const REWARD_WIN_WALLET = 100;
             const REWARD_WIN_XP = 3;
             const REWARD_LOSE_XP = 1;
             const RACE_COST_ICE = 1;
 
             const NPC_NAMES = ['Мороз', 'Пурга', 'Метель', 'Вьюга', 'Снеговик', 'Ледокол', 'Сугроб'];
 
-            const START_X = 0;
-            const END_X = 95;
+            // Позиции в % от ширины сцены
+            const START_X = 8;
+            const END_X = 92;
 
             function cumulativeXp(level) {
                 let total = 0;
@@ -189,14 +228,33 @@
             const startCost = document.getElementById('race-start-cost');
             const resultEl = document.getElementById('race-result');
 
+            const snowLayer = document.getElementById('race-snow');
             const navItems = document.querySelectorAll('.nav-item');
 
-            // Полный формат без сокращений
+            // ====== СНЕЖИНКИ ======
+            function createSnow() {
+                snowLayer.innerHTML = '';
+                const count = 18;
+                for (let i = 0; i < count; i++) {
+                    const flake = document.createElement('span');
+                    flake.className = 'snowflake';
+                    flake.style.left = (Math.random() * 100) + '%';
+                    flake.style.animationDelay = (Math.random() * 6) + 's';
+                    flake.style.animationDuration = (4 + Math.random() * 4) + 's';
+                    flake.style.opacity = (0.4 + Math.random() * 0.6).toString();
+                    flake.style.transform = 'scale(' + (0.5 + Math.random() * 0.7) + ')';
+                    snowLayer.appendChild(flake);
+                }
+            }
+            createSnow();
+
+            // ====== ФОРМАТ ======
             function formatNumber(num) {
                 num = Math.floor(num);
                 return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
             }
 
+            // ====== СОХРАНЕНИЕ ======
             function savePlayer() {
                 try {
                     const raw = localStorage.getItem(PLAYER_KEY);
@@ -216,6 +274,11 @@
                         if (typeof p.wallet === 'number') state.wallet = p.wallet;
                         if (typeof p.ice === 'number') state.ice = p.ice;
                         if (typeof p.totalXp === 'number') state.totalXp = p.totalXp;
+                    } else {
+                        state.wallet = 0;
+                        state.ice = 1000;
+                        state.totalXp = 0;
+                        savePlayer();
                     }
                 } catch (e) {}
             }
@@ -342,6 +405,7 @@
                 startCost.textContent = '· ' + RACE_COST_ICE + ' 🧊';
             }
 
+            // ====== НАВИГАЦИЯ ======
             navItems.forEach(item => {
                 const go = function(e) {
                     e.preventDefault();
