@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Быстрый заезд — Лохматый клуб</title>
-    <link rel="stylesheet" href="style.css?v=16">
+    <link rel="stylesheet" href="style.css?v=17">
 </head>
 <body>
     <div id="app">
@@ -74,10 +74,9 @@
                     </div>
                 </div>
 
-                <!-- TRACK (всё на CSS) -->
+                <!-- TRACK -->
                 <div class="race-track" id="race-track">
 
-                    <!-- Фон сцены: небо, горы, снег -->
                     <div class="race-scene">
                         <div class="race-sky"></div>
                         <div class="race-mountains"></div>
@@ -85,7 +84,6 @@
                         <div class="race-ground"></div>
                     </div>
 
-                    <!-- Дорожки с разметкой -->
                     <div class="race-lanes">
                         <div class="race-lane race-lane-npc">
                             <div class="race-lane-dash"></div>
@@ -95,11 +93,9 @@
                         </div>
                     </div>
 
-                    <!-- Старт / Финиш -->
-                    <div class="race-start-line"></div>
+                    <div class="race-start-line" id="race-start-line"></div>
                     <div class="race-finish-line" id="race-finish-line"></div>
 
-                    <!-- Участники (CSS-сани) -->
                     <div class="race-runner race-runner-npc" id="runner-npc">
                         <div class="sled sled-red">
                             <div class="sled-body"></div>
@@ -120,14 +116,15 @@
                         </div>
                     </div>
 
-                    <!-- Снежинки -->
                     <div class="race-snow" id="race-snow"></div>
 
-                    <!-- СВЕТОФОР -->
-                    <div class="race-traffic hidden" id="race-traffic">
-                        <div class="traffic-light red" id="traffic-red"></div>
-                        <div class="traffic-light yellow" id="traffic-yellow"></div>
-                        <div class="traffic-light green" id="traffic-green"></div>
+                    <!-- СВЕТОФОР F1: 5 ламп -->
+                    <div class="race-traffic" id="race-traffic" style="display:none">
+                        <div class="traffic-light" data-light="1"></div>
+                        <div class="traffic-light" data-light="2"></div>
+                        <div class="traffic-light" data-light="3"></div>
+                        <div class="traffic-light" data-light="4"></div>
+                        <div class="traffic-light" data-light="5"></div>
                     </div>
 
                 </div>
@@ -139,7 +136,7 @@
                     <span class="race-start-cost" id="race-start-cost">· 1 🧊</span>
                 </button>
 
-                <!-- RESULT MESSAGE -->
+                <!-- RESULT -->
                 <div class="race-result hidden" id="race-result"></div>
 
             </div>
@@ -182,17 +179,19 @@
             const REWARD_LOSE_XP = 1;
             const RACE_COST_ICE = 1;
 
-            // Тайминги светофора (мс)
-            const LIGHT_RED_MS = 1000;
-            const LIGHT_YELLOW_MS = 1000;
-            const LIGHT_GREEN_MS = 1000;
-            const LIGHT_TOTAL_MS = LIGHT_RED_MS + LIGHT_YELLOW_MS + LIGHT_GREEN_MS;
+            // Светофор F1
+            const LIGHT_STEP_MS = 300;      // между зажиганиями
+            const LIGHT_HOLD_MS = 1000;     // держим все 5
+            const LIGHT_FADEOUT_MS = 400;   // пауза после гашения
 
             const NPC_NAMES = ['Мороз', 'Пурга', 'Метель', 'Вьюга', 'Снеговик', 'Ледокол', 'Сугроб'];
 
-            // Позиции в % от ширины сцены
             const START_X = 8;
             const END_X = 88;
+            const START_LINE_START = 2;
+            const START_LINE_END = -28;
+            const FINISH_LINE_START = 120;
+            const FINISH_LINE_END = 88;
 
             function cumulativeXp(level) {
                 let total = 0;
@@ -231,6 +230,7 @@
             const runnerMe = document.getElementById('runner-me');
             const runnerNpc = document.getElementById('runner-npc');
 
+            const startLine = document.getElementById('race-start-line');
             const finishLine = document.getElementById('race-finish-line');
 
             const startBtn = document.getElementById('race-start-btn');
@@ -239,9 +239,7 @@
             const resultEl = document.getElementById('race-result');
 
             const trafficEl = document.getElementById('race-traffic');
-            const trafficRed = document.getElementById('traffic-red');
-            const trafficYellow = document.getElementById('traffic-yellow');
-            const trafficGreen = document.getElementById('traffic-green');
+            const trafficLights = trafficEl.querySelectorAll('.traffic-light');
 
             const snowLayer = document.getElementById('race-snow');
             const navItems = document.querySelectorAll('.nav-item');
@@ -317,55 +315,55 @@
                 startCost.textContent = '· ' + RACE_COST_ICE + ' 🧊';
             }
 
-            // Сброс саней и финиша
             function resetPositions() {
                 runnerMe.style.transition = 'none';
                 runnerNpc.style.transition = 'none';
                 runnerMe.style.left = START_X + '%';
                 runnerNpc.style.left = START_X + '%';
 
-                // Финиш прячем за правым краем
+                startLine.style.transition = 'none';
+                startLine.style.left = START_LINE_START + '%';
+
                 finishLine.style.transition = 'none';
-                finishLine.classList.add('hidden');
+                finishLine.style.left = FINISH_LINE_START + '%';
 
                 void runnerMe.offsetWidth;
                 void runnerNpc.offsetWidth;
+                void startLine.offsetWidth;
                 void finishLine.offsetWidth;
 
                 runnerMe.style.transition = '';
                 runnerNpc.style.transition = '';
+                startLine.style.transition = '';
                 finishLine.style.transition = '';
             }
 
-            // Показать светофор, вернуть Promise когда можно стартовать
+            // Светофор F1: 5 красных по очереди, потом гаснут
             function runTrafficLight() {
                 return new Promise(resolve => {
-                    trafficEl.classList.remove('hidden');
-                    trafficRed.classList.remove('active');
-                    trafficYellow.classList.remove('active');
-                    trafficGreen.classList.remove('active');
+                    // Показываем светофор, все лампы выключены
+                    trafficEl.style.display = 'flex';
+                    trafficLights.forEach(l => l.classList.remove('active'));
 
-                    // Красный
-                    trafficRed.classList.add('active');
+                    // Зажигаем по одной лампе
+                    for (let i = 0; i < 5; i++) {
+                        setTimeout(() => {
+                            trafficLights[i].classList.add('active');
+                        }, LIGHT_STEP_MS * (i + 1));
+                    }
 
-                    // Жёлтый через LIGHT_RED_MS
+                    const totalOn = LIGHT_STEP_MS * 5 + LIGHT_HOLD_MS;
+
+                    // Все гаснут → старт
                     setTimeout(() => {
-                        trafficYellow.classList.add('active');
-                    }, LIGHT_RED_MS);
+                        trafficLights.forEach(l => l.classList.remove('active'));
 
-                    // Зелёный через LIGHT_RED_MS + LIGHT_YELLOW_MS
-                    setTimeout(() => {
-                        trafficGreen.classList.add('active');
-                    }, LIGHT_RED_MS + LIGHT_YELLOW_MS);
+                        setTimeout(() => {
+                            trafficEl.style.display = 'none';
+                            resolve();
+                        }, LIGHT_FADEOUT_MS);
 
-                    // Старт через LIGHT_TOTAL_MS
-                    setTimeout(() => {
-                        trafficEl.classList.add('hidden');
-                        trafficRed.classList.remove('active');
-                        trafficYellow.classList.remove('active');
-                        trafficGreen.classList.remove('active');
-                        resolve();
-                    }, LIGHT_TOTAL_MS);
+                    }, totalOn);
                 });
             }
 
@@ -403,9 +401,7 @@
                     npcSpeed = 81 + Math.floor(Math.random() * 20);
                 }
 
-                // Показываем скорость НПС позже, во время гонки
-
-                // Ждём светофор, потом стартуем
+                // Ждём светофор
                 runTrafficLight().then(() => {
                     startText.textContent = 'В ГОНКЕ...';
 
@@ -416,10 +412,9 @@
                     const npcFinalProgress = npcSpeed / maxSpeed;
 
                     const range = END_X - START_X;
+                    const startLineRange = START_LINE_START - START_LINE_END;
+                    const finishLineRange = FINISH_LINE_START - FINISH_LINE_END;
                     const startTime = performance.now();
-
-                    // Показываем финиш и сдвигаем его влево (эффект приближения)
-                    finishLine.classList.remove('hidden');
 
                     function tick(now) {
                         const elapsed = now - startTime;
@@ -431,8 +426,12 @@
                         runnerMe.style.left = myLeft + '%';
                         runnerNpc.style.left = npcLeft + '%';
 
-                        // Финиш едет навстречу — от 120% к 88% (визуальный эффект)
-                        const finishLeft = 120 - (t * (120 - END_X));
+                        // Стартовая линия уезжает влево
+                        const startLineLeft = START_LINE_START - t * startLineRange;
+                        startLine.style.left = startLineLeft + '%';
+
+                        // Финиш приближается справа
+                        const finishLeft = FINISH_LINE_START - t * finishLineRange;
                         finishLine.style.left = finishLeft + '%';
 
                         if (t < 1) {
