@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Быстрый заезд — Лохматый клуб</title>
-    <link rel="stylesheet" href="style.css?v=17">
+    <link rel="stylesheet" href="style.css?v=18">
 </head>
 <body>
     <div id="app">
@@ -84,7 +84,7 @@
                         <div class="race-ground"></div>
                     </div>
 
-                    <div class="race-lanes">
+                    <div class="race-lanes" id="race-lanes">
                         <div class="race-lane race-lane-npc">
                             <div class="race-lane-dash"></div>
                         </div>
@@ -118,13 +118,13 @@
 
                     <div class="race-snow" id="race-snow"></div>
 
-                    <!-- СВЕТОФОР F1: 5 ламп -->
+                    <!-- СВЕТОФОР F1 -->
                     <div class="race-traffic" id="race-traffic" style="display:none">
-                        <div class="traffic-light" data-light="1"></div>
-                        <div class="traffic-light" data-light="2"></div>
-                        <div class="traffic-light" data-light="3"></div>
-                        <div class="traffic-light" data-light="4"></div>
-                        <div class="traffic-light" data-light="5"></div>
+                        <div class="traffic-light" id="tl1"></div>
+                        <div class="traffic-light" id="tl2"></div>
+                        <div class="traffic-light" id="tl3"></div>
+                        <div class="traffic-light" id="tl4"></div>
+                        <div class="traffic-light" id="tl5"></div>
                     </div>
 
                 </div>
@@ -179,17 +179,17 @@
             const REWARD_LOSE_XP = 1;
             const RACE_COST_ICE = 1;
 
-            // Светофор F1
-            const LIGHT_STEP_MS = 300;      // между зажиганиями
-            const LIGHT_HOLD_MS = 1000;     // держим все 5
-            const LIGHT_FADEOUT_MS = 400;   // пауза после гашения
+            const LIGHT_STEP_MS = 300;
+            const LIGHT_HOLD_MS = 1000;
+            const LIGHT_FADEOUT_MS = 400;
 
             const NPC_NAMES = ['Мороз', 'Пурга', 'Метель', 'Вьюга', 'Снеговик', 'Ледокол', 'Сугроб'];
 
-            const START_X = 8;
+            // Гонщики стартуют правее стартовой линии
+            const START_X = 14;
             const END_X = 88;
-            const START_LINE_START = 2;
-            const START_LINE_END = -28;
+            const START_LINE_START = 4;
+            const START_LINE_END = -30;
             const FINISH_LINE_START = 120;
             const FINISH_LINE_END = 88;
 
@@ -233,13 +233,20 @@
             const startLine = document.getElementById('race-start-line');
             const finishLine = document.getElementById('race-finish-line');
 
+            const raceLanes = document.getElementById('race-lanes');
+
             const startBtn = document.getElementById('race-start-btn');
             const startText = document.getElementById('race-start-text');
             const startCost = document.getElementById('race-start-cost');
             const resultEl = document.getElementById('race-result');
 
             const trafficEl = document.getElementById('race-traffic');
-            const trafficLights = trafficEl.querySelectorAll('.traffic-light');
+            const tl1 = document.getElementById('tl1');
+            const tl2 = document.getElementById('tl2');
+            const tl3 = document.getElementById('tl3');
+            const tl4 = document.getElementById('tl4');
+            const tl5 = document.getElementById('tl5');
+            const trafficLights = [tl1, tl2, tl3, tl4, tl5];
 
             const snowLayer = document.getElementById('race-snow');
             const navItems = document.querySelectorAll('.nav-item');
@@ -338,17 +345,25 @@
                 finishLine.style.transition = '';
             }
 
-            // Светофор F1: 5 красных по очереди, потом гаснут
+            // Показать светофор и вернуть Promise
             function runTrafficLight() {
                 return new Promise(resolve => {
-                    // Показываем светофор, все лампы выключены
+                    // Показываем светофор
                     trafficEl.style.display = 'flex';
-                    trafficLights.forEach(l => l.classList.remove('active'));
 
-                    // Зажигаем по одной лампе
+                    // Все лампы выключены
+                    trafficLights.forEach(l => {
+                        l.style.background = '#1A1A1A';
+                        l.style.borderColor = '#2A2A2A';
+                        l.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.8)';
+                    });
+
+                    // Зажигаем по одной
                     for (let i = 0; i < 5; i++) {
                         setTimeout(() => {
-                            trafficLights[i].classList.add('active');
+                            trafficLights[i].style.background = 'radial-gradient(circle at 35% 35%, #FF5050, #C00000)';
+                            trafficLights[i].style.borderColor = '#FF5050';
+                            trafficLights[i].style.boxShadow = '0 0 18px rgba(255, 60, 60, 0.95), inset 0 -2px 4px rgba(0,0,0,0.4)';
                         }, LIGHT_STEP_MS * (i + 1));
                     }
 
@@ -356,7 +371,11 @@
 
                     // Все гаснут → старт
                     setTimeout(() => {
-                        trafficLights.forEach(l => l.classList.remove('active'));
+                        trafficLights.forEach(l => {
+                            l.style.background = '#1A1A1A';
+                            l.style.borderColor = '#2A2A2A';
+                            l.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.8)';
+                        });
 
                         setTimeout(() => {
                             trafficEl.style.display = 'none';
@@ -376,7 +395,6 @@
                     return;
                 }
 
-                // Списываем лёд
                 state.ice -= RACE_COST_ICE;
                 savePlayer();
                 renderTop();
@@ -401,9 +419,11 @@
                     npcSpeed = 81 + Math.floor(Math.random() * 20);
                 }
 
-                // Ждём светофор
                 runTrafficLight().then(() => {
                     startText.textContent = 'В ГОНКЕ...';
+
+                    // Запускаем анимацию дороги
+                    raceLanes.classList.add('racing');
 
                     npcSpeedEl.textContent = npcSpeed;
 
@@ -437,6 +457,8 @@
                         if (t < 1) {
                             requestAnimationFrame(tick);
                         } else {
+                            // Останавливаем анимацию дороги
+                            raceLanes.classList.remove('racing');
                             finishRace(playerWins);
                         }
                     }
