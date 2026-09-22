@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Быстрый заезд — Лохматый клуб</title>
-    <link rel="stylesheet" href="style.css?v=15">
+    <link rel="stylesheet" href="style.css?v=16">
 </head>
 <body>
     <div id="app">
@@ -57,7 +57,6 @@
                         </div>
                         <div class="racer-info">
                             <div class="racer-title">Я</div>
-                            <div class="racer-sled">Вихрь</div>
                             <div class="racer-speed"><span id="my-speed">80</span> км/ч</div>
                         </div>
                     </div>
@@ -67,7 +66,6 @@
                     <div class="racer-card racer-npc">
                         <div class="racer-info racer-info-right">
                             <div class="racer-title">НПС</div>
-                            <div class="racer-sled" id="npc-sled">— — —</div>
                             <div class="racer-speed"><span id="npc-speed">??</span> км/ч</div>
                         </div>
                         <div class="racer-avatar racer-avatar-npc">
@@ -87,21 +85,21 @@
                         <div class="race-ground"></div>
                     </div>
 
-                    <!-- Дорожки -->
+                    <!-- Дорожки с разметкой -->
                     <div class="race-lanes">
                         <div class="race-lane race-lane-npc">
-                            <div class="race-lane-markers"></div>
+                            <div class="race-lane-dash"></div>
                         </div>
                         <div class="race-lane race-lane-me">
-                            <div class="race-lane-markers"></div>
+                            <div class="race-lane-dash"></div>
                         </div>
                     </div>
 
                     <!-- Старт / Финиш -->
                     <div class="race-start-line"></div>
-                    <div class="race-finish-line"></div>
+                    <div class="race-finish-line" id="race-finish-line"></div>
 
-                    <!-- Участники (CSS-сани + эмодзи) -->
+                    <!-- Участники (CSS-сани) -->
                     <div class="race-runner race-runner-npc" id="runner-npc">
                         <div class="sled sled-red">
                             <div class="sled-body"></div>
@@ -122,8 +120,15 @@
                         </div>
                     </div>
 
-                    <!-- Снежинки (генерируются JS) -->
+                    <!-- Снежинки -->
                     <div class="race-snow" id="race-snow"></div>
+
+                    <!-- СВЕТОФОР -->
+                    <div class="race-traffic hidden" id="race-traffic">
+                        <div class="traffic-light red" id="traffic-red"></div>
+                        <div class="traffic-light yellow" id="traffic-yellow"></div>
+                        <div class="traffic-light green" id="traffic-green"></div>
+                    </div>
 
                 </div>
 
@@ -177,11 +182,17 @@
             const REWARD_LOSE_XP = 1;
             const RACE_COST_ICE = 1;
 
+            // Тайминги светофора (мс)
+            const LIGHT_RED_MS = 1000;
+            const LIGHT_YELLOW_MS = 1000;
+            const LIGHT_GREEN_MS = 1000;
+            const LIGHT_TOTAL_MS = LIGHT_RED_MS + LIGHT_YELLOW_MS + LIGHT_GREEN_MS;
+
             const NPC_NAMES = ['Мороз', 'Пурга', 'Метель', 'Вьюга', 'Снеговик', 'Ледокол', 'Сугроб'];
 
             // Позиции в % от ширины сцены
             const START_X = 8;
-            const END_X = 92;
+            const END_X = 88;
 
             function cumulativeXp(level) {
                 let total = 0;
@@ -216,15 +227,21 @@
 
             const mySpeedEl = document.getElementById('my-speed');
             const npcSpeedEl = document.getElementById('npc-speed');
-            const npcSledEl = document.getElementById('npc-sled');
 
             const runnerMe = document.getElementById('runner-me');
             const runnerNpc = document.getElementById('runner-npc');
+
+            const finishLine = document.getElementById('race-finish-line');
 
             const startBtn = document.getElementById('race-start-btn');
             const startText = document.getElementById('race-start-text');
             const startCost = document.getElementById('race-start-cost');
             const resultEl = document.getElementById('race-result');
+
+            const trafficEl = document.getElementById('race-traffic');
+            const trafficRed = document.getElementById('traffic-red');
+            const trafficYellow = document.getElementById('traffic-yellow');
+            const trafficGreen = document.getElementById('traffic-green');
 
             const snowLayer = document.getElementById('race-snow');
             const navItems = document.querySelectorAll('.nav-item');
@@ -300,15 +317,56 @@
                 startCost.textContent = '· ' + RACE_COST_ICE + ' 🧊';
             }
 
-            function resetRunners() {
+            // Сброс саней и финиша
+            function resetPositions() {
                 runnerMe.style.transition = 'none';
                 runnerNpc.style.transition = 'none';
                 runnerMe.style.left = START_X + '%';
                 runnerNpc.style.left = START_X + '%';
+
+                // Финиш прячем за правым краем
+                finishLine.style.transition = 'none';
+                finishLine.classList.add('hidden');
+
                 void runnerMe.offsetWidth;
                 void runnerNpc.offsetWidth;
+                void finishLine.offsetWidth;
+
                 runnerMe.style.transition = '';
                 runnerNpc.style.transition = '';
+                finishLine.style.transition = '';
+            }
+
+            // Показать светофор, вернуть Promise когда можно стартовать
+            function runTrafficLight() {
+                return new Promise(resolve => {
+                    trafficEl.classList.remove('hidden');
+                    trafficRed.classList.remove('active');
+                    trafficYellow.classList.remove('active');
+                    trafficGreen.classList.remove('active');
+
+                    // Красный
+                    trafficRed.classList.add('active');
+
+                    // Жёлтый через LIGHT_RED_MS
+                    setTimeout(() => {
+                        trafficYellow.classList.add('active');
+                    }, LIGHT_RED_MS);
+
+                    // Зелёный через LIGHT_RED_MS + LIGHT_YELLOW_MS
+                    setTimeout(() => {
+                        trafficGreen.classList.add('active');
+                    }, LIGHT_RED_MS + LIGHT_YELLOW_MS);
+
+                    // Старт через LIGHT_TOTAL_MS
+                    setTimeout(() => {
+                        trafficEl.classList.add('hidden');
+                        trafficRed.classList.remove('active');
+                        trafficYellow.classList.remove('active');
+                        trafficGreen.classList.remove('active');
+                        resolve();
+                    }, LIGHT_TOTAL_MS);
+                });
             }
 
             function startRace() {
@@ -320,6 +378,7 @@
                     return;
                 }
 
+                // Списываем лёд
                 state.ice -= RACE_COST_ICE;
                 savePlayer();
                 renderTop();
@@ -329,14 +388,11 @@
                 resultEl.classList.add('hidden');
                 resultEl.classList.remove('win', 'lose');
 
-                resetRunners();
+                resetPositions();
 
                 startBtn.disabled = true;
-                startText.textContent = 'В ГОНКЕ...';
+                startText.textContent = 'ПОДГОТОВКА...';
                 startCost.textContent = '';
-
-                const npcName = NPC_NAMES[Math.floor(Math.random() * NPC_NAMES.length)];
-                npcSledEl.textContent = npcName;
 
                 const playerWins = Math.random() < WIN_CHANCE;
 
@@ -347,32 +403,46 @@
                     npcSpeed = 81 + Math.floor(Math.random() * 20);
                 }
 
-                npcSpeedEl.textContent = npcSpeed;
+                // Показываем скорость НПС позже, во время гонки
 
-                const maxSpeed = Math.max(MY_SPEED, npcSpeed);
-                const myFinalProgress = MY_SPEED / maxSpeed;
-                const npcFinalProgress = npcSpeed / maxSpeed;
+                // Ждём светофор, потом стартуем
+                runTrafficLight().then(() => {
+                    startText.textContent = 'В ГОНКЕ...';
 
-                const range = END_X - START_X;
-                const startTime = performance.now();
+                    npcSpeedEl.textContent = npcSpeed;
 
-                function tick(now) {
-                    const elapsed = now - startTime;
-                    const t = Math.min(elapsed / RACE_DURATION, 1);
+                    const maxSpeed = Math.max(MY_SPEED, npcSpeed);
+                    const myFinalProgress = MY_SPEED / maxSpeed;
+                    const npcFinalProgress = npcSpeed / maxSpeed;
 
-                    const myLeft = START_X + (t * myFinalProgress) * range;
-                    const npcLeft = START_X + (t * npcFinalProgress) * range;
+                    const range = END_X - START_X;
+                    const startTime = performance.now();
 
-                    runnerMe.style.left = myLeft + '%';
-                    runnerNpc.style.left = npcLeft + '%';
+                    // Показываем финиш и сдвигаем его влево (эффект приближения)
+                    finishLine.classList.remove('hidden');
 
-                    if (t < 1) {
-                        requestAnimationFrame(tick);
-                    } else {
-                        finishRace(playerWins);
+                    function tick(now) {
+                        const elapsed = now - startTime;
+                        const t = Math.min(elapsed / RACE_DURATION, 1);
+
+                        const myLeft = START_X + (t * myFinalProgress) * range;
+                        const npcLeft = START_X + (t * npcFinalProgress) * range;
+
+                        runnerMe.style.left = myLeft + '%';
+                        runnerNpc.style.left = npcLeft + '%';
+
+                        // Финиш едет навстречу — от 120% к 88% (визуальный эффект)
+                        const finishLeft = 120 - (t * (120 - END_X));
+                        finishLine.style.left = finishLeft + '%';
+
+                        if (t < 1) {
+                            requestAnimationFrame(tick);
+                        } else {
+                            finishRace(playerWins);
+                        }
                     }
-                }
-                requestAnimationFrame(tick);
+                    requestAnimationFrame(tick);
+                });
             }
 
             function finishRace(playerWins) {
@@ -448,7 +518,7 @@
             function init() {
                 loadPlayer();
                 renderTop();
-                resetRunners();
+                resetPositions();
                 updateStartButton();
             }
             init();
