@@ -183,11 +183,6 @@ body {
 
 .balance-badge.ice .balance-value { color: var(--accent-blue-light); }
 
-.balance-badge.ice.bump .balance-value {
-    transform: scale(1.25);
-    color: #7DD8FF;
-}
-
 .xp-row {
     display: flex;
     align-items: center;
@@ -1687,9 +1682,7 @@ body {
     transition: transform 0.15s ease;
 }
 
-.inv-item:active {
-    transform: scale(0.97);
-}
+.inv-item:active { transform: scale(0.97); }
 
 .inv-item-icon {
     font-size: 42px;
@@ -1787,11 +1780,7 @@ body {
     white-space: nowrap;
 }
 
-.mine-ice-emoji {
-    font-size: 14px;
-    line-height: 1;
-}
-
+.mine-ice-emoji { font-size: 14px; line-height: 1; }
 .mine-ice-value {
     font-size: 14px;
     font-weight: 800;
@@ -1900,15 +1889,8 @@ body {
     background: var(--bg-secondary);
 }
 
-.mine-vein.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.mine-vein.shake {
-    animation: slot-shake 0.4s ease;
-}
-
+.mine-vein.disabled { opacity: 0.5; cursor: not-allowed; }
+.mine-vein.shake { animation: slot-shake 0.4s ease; }
 .mine-vein.mined {
     background: rgba(201, 162, 39, 0.08);
     border-color: rgba(201, 162, 39, 0.4);
@@ -2066,7 +2048,7 @@ body {
     100% { opacity: 0; transform: translate(-50%, -80px) scale(0.95); }
 }
 
-/* ====== RACE PAGE ====== */
+/* ====== RACE PAGE (CSS-сцена) ====== */
 #screen-race {
     display: flex;
     flex-direction: column;
@@ -2107,11 +2089,7 @@ body {
     white-space: nowrap;
 }
 
-.race-ice-emoji {
-    font-size: 14px;
-    line-height: 1;
-}
-
+.race-ice-emoji { font-size: 14px; line-height: 1; }
 .race-ice-value {
     font-size: 14px;
     font-weight: 800;
@@ -2158,14 +2136,20 @@ body {
     justify-content: center;
 }
 
-.racer-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    pointer-events: none;
-    -webkit-user-drag: none;
-    user-drag: none;
+.racer-avatar-me {
+    background: linear-gradient(135deg, rgba(74, 122, 158, 0.3), rgba(36, 59, 85, 0.3));
+    border: 1px solid rgba(74, 122, 158, 0.5);
+}
+
+.racer-avatar-npc {
+    background: linear-gradient(135deg, rgba(201, 60, 60, 0.3), rgba(120, 30, 30, 0.3));
+    border: 1px solid rgba(201, 60, 60, 0.5);
+}
+
+.racer-emoji {
+    font-size: 26px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
 }
 
 .racer-info {
@@ -2221,57 +2205,310 @@ body {
     padding: 0 2px;
 }
 
+/* ====== TRACK — CSS-сцена ====== */
 .race-track {
     position: relative;
     width: 100%;
+    aspect-ratio: 16 / 10;
     flex-shrink: 0;
     border-radius: var(--border-radius);
     overflow: hidden;
-    background: var(--bg-card);
+    background: #0A1220;
     border: 1px solid rgba(74, 122, 158, 0.3);
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
     line-height: 0;
 }
 
-.race-track-inner {
+/* Фон: небо + горы + снег */
+.race-scene {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.race-sky {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom,
+        #0A1220 0%,
+        #152238 20%,
+        #243B55 40%,
+        #4A7A9E 55%,
+        #8AB8D8 70%,
+        #C8DCE8 85%,
+        #F2EFE6 100%);
+}
+
+.race-mountains {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 45%;
+    height: 30%;
+    background:
+        linear-gradient(135deg, transparent 50%, #4A5F70 50%) 0 0 / 25% 100% no-repeat,
+        linear-gradient(-135deg, transparent 50%, #3D5062 50%) 20% 0 / 30% 100% no-repeat,
+        linear-gradient(135deg, transparent 50%, #5A6E80 50%) 50% 0 / 28% 100% no-repeat,
+        linear-gradient(-135deg, transparent 50%, #4A5F70 50%) 75% 0 / 25% 100% no-repeat;
+    opacity: 0.75;
+    z-index: 2;
+    clip-path: polygon(0 100%, 8% 45%, 16% 70%, 25% 30%, 35% 65%, 45% 40%, 55% 60%, 65% 25%, 75% 55%, 85% 35%, 95% 65%, 100% 40%, 100% 100%);
+}
+
+.race-trees-layer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 38%;
+    height: 22%;
+    z-index: 3;
+    background:
+        radial-gradient(ellipse 3px 12px at 5% 100%, #1B2A41 100%, transparent 100%),
+        radial-gradient(ellipse 3px 14px at 12% 100%, #243B55 100%, transparent 100%),
+        radial-gradient(ellipse 3px 10px at 20% 100%, #1B2A41 100%, transparent 100%),
+        radial-gradient(ellipse 3px 13px at 30% 100%, #243B55 100%, transparent 100%),
+        radial-gradient(ellipse 3px 12px at 42% 100%, #1B2A41 100%, transparent 100%),
+        radial-gradient(ellipse 3px 15px at 52% 100%, #243B55 100%, transparent 100%),
+        radial-gradient(ellipse 3px 11px at 60% 100%, #1B2A41 100%, transparent 100%),
+        radial-gradient(ellipse 3px 14px at 70% 100%, #243B55 100%, transparent 100%),
+        radial-gradient(ellipse 3px 12px at 80% 100%, #1B2A41 100%, transparent 100%),
+        radial-gradient(ellipse 3px 13px at 90% 100%, #243B55 100%, transparent 100%),
+        radial-gradient(ellipse 3px 10px at 97% 100%, #1B2A41 100%, transparent 100%);
+    opacity: 0.85;
+}
+
+.race-ground {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 45%;
+    background: linear-gradient(to bottom,
+        #C8DCE8 0%,
+        #E8F0F5 20%,
+        #F2EFE6 50%,
+        #DDE5EA 80%,
+        #C8DCE8 100%);
+    z-index: 4;
+}
+
+/* Дорожки */
+.race-lanes {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 45%;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+}
+
+.race-lane {
+    flex: 1;
     position: relative;
-    width: 100%;
-    line-height: 0;
+    display: flex;
+    align-items: center;
 }
 
-.race-track-bg {
-    width: 100%;
-    height: auto;
-    display: block;
+.race-lane-npc {
+    background: linear-gradient(to bottom,
+        rgba(120, 190, 230, 0.15) 0%,
+        rgba(120, 190, 230, 0.35) 50%,
+        rgba(120, 190, 230, 0.15) 100%);
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.5);
+}
+
+.race-lane-me {
+    background: linear-gradient(to bottom,
+        rgba(120, 190, 230, 0.15) 0%,
+        rgba(120, 190, 230, 0.35) 50%,
+        rgba(120, 190, 230, 0.15) 100%);
+    border-top: 1px dashed rgba(255, 255, 255, 0.5);
+}
+
+/* Ледяная гладь с блеском */
+.race-lane::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.15) 30%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0.15) 70%,
+        transparent 100%);
+    background-size: 200% 100%;
+    animation: ice-shimmer 5s ease-in-out infinite;
     pointer-events: none;
-    -webkit-user-drag: none;
-    user-drag: none;
 }
 
+@keyframes ice-shimmer {
+    0%, 100% { background-position: -100% 0; }
+    50%      { background-position: 200% 0; }
+}
+
+/* Стартовая линия */
+.race-start-line {
+    position: absolute;
+    left: 4%;
+    top: 55%;
+    bottom: 0;
+    width: 6px;
+    z-index: 6;
+    background: repeating-linear-gradient(
+        to bottom,
+        #F2EFE6 0px, #F2EFE6 6px,
+        #243B55 6px, #243B55 12px
+    );
+    box-shadow: 0 0 10px rgba(242, 239, 230, 0.6);
+    pointer-events: none;
+}
+
+/* Финишная линия — шахматный узор */
+.race-finish-line {
+    position: absolute;
+    right: 8%;
+    top: 55%;
+    bottom: 0;
+    width: 10px;
+    z-index: 6;
+    background:
+        repeating-conic-gradient(
+            #F2EFE6 0% 25%,
+            #0A0A0A 0% 50%
+        ) 0 0 / 10px 10px;
+    box-shadow: 0 0 12px rgba(242, 239, 230, 0.5);
+    pointer-events: none;
+}
+
+/* Участники */
 .race-runner {
     position: absolute;
-    width: 64px;
-    height: 64px;
+    width: 54px;
+    height: 54px;
     transform: translate(-50%, -50%);
-    z-index: 3;
+    z-index: 7;
     pointer-events: none;
     transition: left 0.08s linear;
 }
 
-.race-runner img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-    pointer-events: none;
-    -webkit-user-drag: none;
-    user-drag: none;
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8));
+.race-runner-npc { top: 68%; }
+.race-runner-me  { top: 82%; }
+
+/* Сани: корпус, полозья, спинка */
+.sled {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
 }
 
-.race-runner-npc { top: 38%; }
-.race-runner-me { top: 52%; }
+.sled-body {
+    position: absolute;
+    left: 4px;
+    right: 8px;
+    bottom: 14px;
+    height: 14px;
+    border-radius: 4px 8px 4px 4px;
+    box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.2);
+}
 
+.sled-back {
+    position: absolute;
+    left: 4px;
+    bottom: 14px;
+    width: 8px;
+    height: 20px;
+    border-radius: 4px 4px 0 4px;
+}
+
+.sled-front {
+    position: absolute;
+    right: 8px;
+    bottom: 14px;
+    width: 10px;
+    height: 10px;
+    border-radius: 4px 8px 0 0;
+    transform: skewX(-15deg);
+}
+
+.sled-runner-left,
+.sled-runner-right {
+    position: absolute;
+    left: 2px;
+    right: 4px;
+    height: 3px;
+    border-radius: 2px;
+    background: #C0C0C0;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.sled-runner-left { bottom: 8px; }
+.sled-runner-right { bottom: 3px; }
+
+/* Красные сани (НПС) */
+.sled-red .sled-body { background: linear-gradient(to bottom, #E85A5A 0%, #C43030 100%); }
+.sled-red .sled-back { background: linear-gradient(to bottom, #C43030 0%, #8B1F1F 100%); }
+.sled-red .sled-front { background: linear-gradient(to bottom, #E85A5A 0%, #C43030 100%); }
+
+/* Синие сани (игрок) */
+.sled-blue .sled-body { background: linear-gradient(to bottom, #4A7A9E 0%, #243B55 100%); }
+.sled-blue .sled-back { background: linear-gradient(to bottom, #243B55 0%, #152238 100%); }
+.sled-blue .sled-front { background: linear-gradient(to bottom, #4A7A9E 0%, #243B55 100%); }
+
+.sled-rider {
+    position: absolute;
+    left: 50%;
+    top: -6px;
+    transform: translateX(-50%);
+    font-size: 26px;
+    line-height: 1;
+    z-index: 2;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6));
+    pointer-events: none;
+}
+
+/* Снег */
+.race-snow {
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.snowflake {
+    position: absolute;
+    top: -10px;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.9);
+    animation-name: snow-fall;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes snow-fall {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(140px) translateX(20px);
+        opacity: 0;
+    }
+}
+
+/* Кнопка старта */
 .race-start-btn {
     appearance: none;
     outline: none;
@@ -2294,6 +2531,7 @@ body {
     box-shadow: 0 4px 14px rgba(201, 162, 39, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
     transition: transform 0.12s ease, box-shadow 0.2s ease, opacity 0.2s ease;
     flex-shrink: 0;
+    margin-top: auto;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
 }
@@ -2466,11 +2704,7 @@ body {
     white-space: nowrap;
 }
 
-.icebreak-ice-emoji {
-    font-size: 14px;
-    line-height: 1;
-}
-
+.icebreak-ice-emoji { font-size: 14px; line-height: 1; }
 .icebreak-ice-value {
     font-size: 14px;
     font-weight: 800;
@@ -2478,7 +2712,6 @@ body {
     letter-spacing: 0.3px;
 }
 
-/* Energy bar */
 .icebreak-energy {
     flex-shrink: 0;
     display: flex;
@@ -2524,7 +2757,6 @@ body {
     background: linear-gradient(90deg, #B8753D, #FFB547);
 }
 
-/* Scene: ледник + кирка */
 .icebreak-scene {
     position: relative;
     flex: 1 1 0;
@@ -2542,7 +2774,6 @@ body {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Кирка — справа от ледника, повёрнута к нему */
 .pickaxe {
     position: absolute;
     right: 22%;
@@ -2557,13 +2788,11 @@ body {
     filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
 }
 
-/* Позиция при ударе — кирка "летит" к центру ледника и наклоняется вниз */
 .pickaxe.strike {
-    transform: translateY(-50%) translateX(-40px) rotate(-55deg);
+    transform: translateY(-50%) translateX(-50px) rotate(-55deg);
     transition: transform 0.1s cubic-bezier(0.5, 0, 0.9, 0.3);
 }
 
-/* Ледник */
 .iceblock {
     position: relative;
     display: flex;
@@ -2613,7 +2842,6 @@ body {
     100% { transform: translateX(0) translateY(0); }
 }
 
-/* Искры */
 .spark {
     position: fixed;
     border-radius: 50%;
@@ -2636,21 +2864,11 @@ body {
 }
 
 @keyframes spark-fly {
-    0% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-    }
-    30% {
-        opacity: 1;
-        transform: translate(calc(-50% + var(--dx) * 0.4), calc(-50% + var(--dy) * 0.4)) scale(1.2);
-    }
-    100% {
-        opacity: 0;
-        transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.4);
-    }
+    0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    30% { opacity: 1; transform: translate(calc(-50% + var(--dx) * 0.4), calc(-50% + var(--dy) * 0.4)) scale(1.2); }
+    100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.4); }
 }
 
-/* Float-текст над ледником */
 .icebreak-float {
     position: fixed;
     pointer-events: none;
@@ -2672,7 +2890,6 @@ body {
     100% { opacity: 0; transform: translate(-50%, -90px) scale(0.9); }
 }
 
-/* Подсказка */
 .icebreak-hint {
     text-align: center;
     font-size: 10px;
@@ -2682,7 +2899,6 @@ body {
     padding: 2px 0;
 }
 
-/* Инфо о кирке + кнопка апгрейда */
 .pickaxe-info {
     flex-shrink: 0;
     display: flex;
@@ -2748,9 +2964,7 @@ body {
     min-width: 92px;
 }
 
-.pickaxe-upgrade-btn:active:not(:disabled) {
-    transform: scale(0.95);
-}
+.pickaxe-upgrade-btn:active:not(:disabled) { transform: scale(0.95); }
 
 .pickaxe-upgrade-btn:disabled,
 .pickaxe-upgrade-btn.maxed {
@@ -2802,10 +3016,12 @@ body {
     .balance-badge .wallet-icon { font-size: 12px; }
 
     .racer-avatar { width: 40px; height: 40px; }
+    .racer-emoji { font-size: 22px; }
     .racer-sled { font-size: 12px; }
     .racer-speed { font-size: 10px; }
     .racer-vs { font-size: 11px; }
-    .race-runner { width: 56px; height: 56px; }
+    .race-runner { width: 46px; height: 46px; }
+    .sled-rider { font-size: 22px; }
     .race-start-btn { font-size: 13px; padding: 10px 14px; }
     .race-title { font-size: 20px; }
 
@@ -2873,7 +3089,9 @@ body {
 
     .racer-card { padding: 6px 8px; gap: 8px; }
     .racer-avatar { width: 42px; height: 42px; }
-    .race-runner { width: 58px; height: 58px; }
+    .racer-emoji { font-size: 22px; }
+    .race-runner { width: 48px; height: 48px; }
+    .sled-rider { font-size: 22px; }
 
     .modal-sheet { max-height: 88vh; }
 
@@ -2885,8 +3103,8 @@ body {
     .icebreak-scene { min-height: 240px; }
     .iceblock { width: 120px; height: 120px; margin-right: 55px; }
     .iceblock-emoji { font-size: 100px; }
-    .pickaxe { font-size: 62px; right: 20%; top: 42%; }
-    .pickaxe.strike { transform: translateY(-50%) translateX(-40px) rotate(-55deg); }
+    .pickaxe { font-size: 62px; right: 6%; }
+    .pickaxe.strike { transform: translateY(-50%) translateX(-30px) rotate(-55deg); }
 }
 
 @media (max-height: 600px) {
@@ -2927,10 +3145,12 @@ body {
     .race-racers { gap: 4px; }
     .racer-card { padding: 5px 6px; gap: 6px; }
     .racer-avatar { width: 36px; height: 36px; }
+    .racer-emoji { font-size: 20px; }
     .racer-title { font-size: 8px; }
     .racer-sled { font-size: 12px; }
     .racer-speed { font-size: 9px; }
-    .race-runner { width: 52px; height: 52px; }
+    .race-runner { width: 42px; height: 42px; }
+    .sled-rider { font-size: 20px; top: -4px; }
     .race-result { font-size: 11px; padding: 6px 10px; }
     .race-start-btn { padding: 9px 14px; font-size: 12px; letter-spacing: 1.5px; }
     .race-title { font-size: 18px; letter-spacing: 1.2px; }
@@ -2981,8 +3201,8 @@ body {
     .pickaxe.strike { transform: translateY(-50%) translateX(-25px) rotate(-55deg); }
     .icebreak-title { font-size: 18px; }
     .icebreak-float { font-size: 18px; }
-    .pickaxe { font-size: 52px; right: 18%; top: 42%; }
-    .pickaxe.strike { transform: translateY(-50%) translateX(-35px) rotate(-55deg); }
+    .pickaxe-info { padding: 8px 10px; gap: 8px; }
+    .pickaxe-upgrade-btn { padding: 6px 10px; min-width: 80px; }
 }
 
 @media (min-width: 500px) {
