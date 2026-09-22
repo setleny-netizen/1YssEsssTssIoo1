@@ -481,11 +481,7 @@ body {
     white-space: nowrap;
 }
 
-.earn-ice-emoji {
-    font-size: 14px;
-    line-height: 1;
-}
-
+.earn-ice-emoji { font-size: 14px; line-height: 1; }
 .earn-ice-value {
     font-size: 14px;
     font-weight: 800;
@@ -493,7 +489,6 @@ body {
     letter-spacing: 0.3px;
 }
 
-/* ====== EARN ACTIONS ====== */
 .earn-actions {
     display: flex;
     flex-direction: column;
@@ -931,11 +926,6 @@ body {
 }
 
 .cat-card:last-child { margin-bottom: 0; }
-
-.cat-card.owned {
-    border-color: rgba(125, 223, 160, 0.4);
-    background: rgba(125, 223, 160, 0.05);
-}
 
 .cat-icon {
     width: 48px;
@@ -2012,12 +2002,7 @@ body {
     min-width: 0;
 }
 
-.mine-inv-emoji {
-    font-size: 14px;
-    line-height: 1;
-    flex-shrink: 0;
-}
-
+.mine-inv-emoji { font-size: 14px; line-height: 1; flex-shrink: 0; }
 .mine-inv-count {
     font-size: 11px;
     font-weight: 800;
@@ -2158,6 +2143,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 1px;
+    justify-content: center;
 }
 
 .racer-info-right {
@@ -2173,20 +2159,9 @@ body {
     text-transform: uppercase;
 }
 
-.racer-sled {
-    font-size: 14px;
-    font-weight: 800;
-    color: var(--text-primary);
-    letter-spacing: 0.3px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-}
-
 .racer-speed {
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 800;
     color: var(--accent-orange-light);
     letter-spacing: 0.3px;
 }
@@ -2209,7 +2184,8 @@ body {
 .race-track {
     position: relative;
     width: 100%;
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 16 / 9;
+    max-height: 230px;
     flex-shrink: 0;
     border-radius: var(--border-radius);
     overflow: hidden;
@@ -2217,6 +2193,7 @@ body {
     border: 1px solid rgba(74, 122, 158, 0.3);
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
     line-height: 0;
+    margin: 0 auto;
 }
 
 /* Фон: небо + горы + снег */
@@ -2227,25 +2204,27 @@ body {
     overflow: hidden;
 }
 
+/* Небо меньше — только 25% высоты */
 .race-sky {
     position: absolute;
-    inset: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 25%;
     background: linear-gradient(to bottom,
         #0A1220 0%,
-        #152238 20%,
-        #243B55 40%,
-        #4A7A9E 55%,
-        #8AB8D8 70%,
-        #C8DCE8 85%,
-        #F2EFE6 100%);
+        #152238 40%,
+        #243B55 80%,
+        #2A4A6A 100%);
 }
 
+/* Горы — 15% высоты */
 .race-mountains {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 45%;
-    height: 30%;
+    top: 25%;
+    height: 15%;
     background:
         linear-gradient(135deg, transparent 50%, #4A5F70 50%) 0 0 / 25% 100% no-repeat,
         linear-gradient(-135deg, transparent 50%, #3D5062 50%) 20% 0 / 30% 100% no-repeat,
@@ -2253,53 +2232,55 @@ body {
         linear-gradient(-135deg, transparent 50%, #4A5F70 50%) 75% 0 / 25% 100% no-repeat;
     opacity: 0.75;
     z-index: 2;
-    clip-path: polygon(0 100%, 8% 45%, 16% 70%, 25% 30%, 35% 65%, 45% 40%, 55% 60%, 65% 25%, 75% 55%, 85% 35%, 95% 65%, 100% 40%, 100% 100%);
+    clip-path: polygon(0 100%, 8% 40%, 16% 70%, 25% 25%, 35% 65%, 45% 35%, 55% 60%, 65% 20%, 75% 55%, 85% 30%, 95% 65%, 100% 35%, 100% 100%);
 }
 
+/* Ёлки — 10% высоты */
 .race-trees-layer {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 38%;
-    height: 22%;
+    top: 35%;
+    height: 8%;
     z-index: 3;
     background:
-        radial-gradient(ellipse 3px 12px at 5% 100%, #1B2A41 100%, transparent 100%),
-        radial-gradient(ellipse 3px 14px at 12% 100%, #243B55 100%, transparent 100%),
-        radial-gradient(ellipse 3px 10px at 20% 100%, #1B2A41 100%, transparent 100%),
-        radial-gradient(ellipse 3px 13px at 30% 100%, #243B55 100%, transparent 100%),
-        radial-gradient(ellipse 3px 12px at 42% 100%, #1B2A41 100%, transparent 100%),
-        radial-gradient(ellipse 3px 15px at 52% 100%, #243B55 100%, transparent 100%),
-        radial-gradient(ellipse 3px 11px at 60% 100%, #1B2A41 100%, transparent 100%),
-        radial-gradient(ellipse 3px 14px at 70% 100%, #243B55 100%, transparent 100%),
-        radial-gradient(ellipse 3px 12px at 80% 100%, #1B2A41 100%, transparent 100%),
-        radial-gradient(ellipse 3px 13px at 90% 100%, #243B55 100%, transparent 100%),
-        radial-gradient(ellipse 3px 10px at 97% 100%, #1B2A41 100%, transparent 100%);
+        radial-gradient(ellipse 3px 10px at 5% 100%, #1B2A41 100%, transparent 100%),
+        radial-gradient(ellipse 3px 12px at 12% 100%, #243B55 100%, transparent 100%),
+        radial-gradient(ellipse 3px 8px at 20% 100%, #1B2A41 100%, transparent 100%),
+        radial-gradient(ellipse 3px 11px at 30% 100%, #243B55 100%, transparent 100%),
+        radial-gradient(ellipse 3px 10px at 42% 100%, #1B2A41 100%, transparent 100%),
+        radial-gradient(ellipse 3px 13px at 52% 100%, #243B55 100%, transparent 100%),
+        radial-gradient(ellipse 3px 9px at 60% 100%, #1B2A41 100%, transparent 100%),
+        radial-gradient(ellipse 3px 12px at 70% 100%, #243B55 100%, transparent 100%),
+        radial-gradient(ellipse 3px 10px at 80% 100%, #1B2A41 100%, transparent 100%),
+        radial-gradient(ellipse 3px 11px at 90% 100%, #243B55 100%, transparent 100%),
+        radial-gradient(ellipse 3px 8px at 97% 100%, #1B2A41 100%, transparent 100%);
     opacity: 0.85;
 }
 
+/* Земля — остаток, 57% высоты */
 .race-ground {
     position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
-    height: 45%;
+    height: 57%;
     background: linear-gradient(to bottom,
-        #C8DCE8 0%,
-        #E8F0F5 20%,
-        #F2EFE6 50%,
-        #DDE5EA 80%,
-        #C8DCE8 100%);
+        #2A4A6A 0%,
+        #3A6B8F 15%,
+        #4A7A9E 40%,
+        #6B9BB8 70%,
+        #8AB8D8 100%);
     z-index: 4;
 }
 
-/* Дорожки */
+/* Дорожки — занимают 60% от земли */
 .race-lanes {
     position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
-    height: 45%;
+    height: 34%;
     z-index: 5;
     display: flex;
     flex-direction: column;
@@ -2310,22 +2291,44 @@ body {
     position: relative;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .race-lane-npc {
     background: linear-gradient(to bottom,
-        rgba(120, 190, 230, 0.15) 0%,
-        rgba(120, 190, 230, 0.35) 50%,
-        rgba(120, 190, 230, 0.15) 100%);
-    border-bottom: 1px dashed rgba(255, 255, 255, 0.5);
+        rgba(200, 230, 245, 0.4) 0%,
+        rgba(170, 215, 240, 0.6) 50%,
+        rgba(200, 230, 245, 0.4) 100%);
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.55);
 }
 
 .race-lane-me {
     background: linear-gradient(to bottom,
-        rgba(120, 190, 230, 0.15) 0%,
-        rgba(120, 190, 230, 0.35) 50%,
-        rgba(120, 190, 230, 0.15) 100%);
-    border-top: 1px dashed rgba(255, 255, 255, 0.5);
+        rgba(200, 230, 245, 0.4) 0%,
+        rgba(170, 215, 240, 0.6) 50%,
+        rgba(200, 230, 245, 0.4) 100%);
+    border-top: 1px dashed rgba(255, 255, 255, 0.55);
+}
+
+/* Разметка по центру каждой дорожки */
+.race-lane-dash {
+    width: 100%;
+    height: 2px;
+    background-image: linear-gradient(to right,
+        rgba(255, 255, 255, 0.75) 0%,
+        rgba(255, 255, 255, 0.75) 50%,
+        transparent 50%,
+        transparent 100%);
+    background-size: 20px 100%;
+    background-repeat: repeat-x;
+    animation: lane-dash-move 1s linear infinite;
+    opacity: 0.9;
+    pointer-events: none;
+}
+
+@keyframes lane-dash-move {
+    0%   { background-position-x: 0; }
+    100% { background-position-x: -20px; }
 }
 
 /* Ледяная гладь с блеском */
@@ -2349,11 +2352,11 @@ body {
     50%      { background-position: 200% 0; }
 }
 
-/* Стартовая линия */
+/* Стартовая линия — ПЕРЕД гонщиками (левее) */
 .race-start-line {
     position: absolute;
-    left: 4%;
-    top: 55%;
+    left: 2%;
+    top: 66%;
     bottom: 0;
     width: 6px;
     z-index: 6;
@@ -2366,21 +2369,27 @@ body {
     pointer-events: none;
 }
 
-/* Финишная линия — шахматный узор */
+/* Финишная линия — за правым краем, выезжает при гонке */
 .race-finish-line {
     position: absolute;
-    right: 8%;
-    top: 55%;
+    top: 66%;
     bottom: 0;
-    width: 10px;
+    left: 120%;
+    width: 12px;
     z-index: 6;
     background:
         repeating-conic-gradient(
             #F2EFE6 0% 25%,
             #0A0A0A 0% 50%
-        ) 0 0 / 10px 10px;
-    box-shadow: 0 0 12px rgba(242, 239, 230, 0.5);
+        ) 0 0 / 12px 12px;
+    box-shadow: 0 0 14px rgba(242, 239, 230, 0.7);
     pointer-events: none;
+    transition: left 0.3s linear;
+}
+
+.race-finish-line.hidden {
+    display: block !important;
+    left: 120%;
 }
 
 /* Участники */
@@ -2394,8 +2403,8 @@ body {
     transition: left 0.08s linear;
 }
 
-.race-runner-npc { top: 68%; }
-.race-runner-me  { top: 82%; }
+.race-runner-npc { top: 78%; }
+.race-runner-me  { top: 90%; }
 
 /* Сани: корпус, полозья, спинка */
 .sled {
@@ -2447,27 +2456,13 @@ body {
 .sled-runner-left { bottom: 8px; }
 .sled-runner-right { bottom: 3px; }
 
-/* Красные сани (НПС) */
 .sled-red .sled-body { background: linear-gradient(to bottom, #E85A5A 0%, #C43030 100%); }
 .sled-red .sled-back { background: linear-gradient(to bottom, #C43030 0%, #8B1F1F 100%); }
 .sled-red .sled-front { background: linear-gradient(to bottom, #E85A5A 0%, #C43030 100%); }
 
-/* Синие сани (игрок) */
 .sled-blue .sled-body { background: linear-gradient(to bottom, #4A7A9E 0%, #243B55 100%); }
 .sled-blue .sled-back { background: linear-gradient(to bottom, #243B55 0%, #152238 100%); }
 .sled-blue .sled-front { background: linear-gradient(to bottom, #4A7A9E 0%, #243B55 100%); }
-
-.sled-rider {
-    position: absolute;
-    left: 50%;
-    top: -6px;
-    transform: translateX(-50%);
-    font-size: 26px;
-    line-height: 1;
-    z-index: 2;
-    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6));
-    pointer-events: none;
-}
 
 /* Снег */
 .race-snow {
@@ -2496,19 +2491,69 @@ body {
         transform: translateY(0) translateX(0);
         opacity: 0;
     }
-    10% {
-        opacity: 1;
-    }
-    90% {
-        opacity: 1;
-    }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
     100% {
         transform: translateY(140px) translateX(20px);
         opacity: 0;
     }
 }
 
-/* Кнопка старта */
+/* ====== СВЕТОФОР ====== */
+.race-traffic {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+    background: rgba(10, 10, 10, 0.92);
+    border: 2px solid rgba(201, 162, 39, 0.5);
+    border-radius: 14px;
+    padding: 10px 16px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+    pointer-events: none;
+    animation: traffic-appear 0.2s ease-out;
+}
+
+.race-traffic.hidden { display: none !important; }
+
+@keyframes traffic-appear {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.85); }
+    to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.traffic-light {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #1A1A1A;
+    border: 2px solid #2A2A2A;
+    transition: all 0.15s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.traffic-light.red.active {
+    background: radial-gradient(circle at 35% 35%, #FF5050, #C00000);
+    border-color: #FF5050;
+    box-shadow: 0 0 20px rgba(255, 60, 60, 0.9), inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.traffic-light.yellow.active {
+    background: radial-gradient(circle at 35% 35%, #FFE050, #D0A000);
+    border-color: #FFE050;
+    box-shadow: 0 0 20px rgba(255, 220, 60, 0.9), inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.traffic-light.green.active {
+    background: radial-gradient(circle at 35% 35%, #60FF60, #00A000);
+    border-color: #60FF60;
+    box-shadow: 0 0 20px rgba(60, 255, 60, 0.9), inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* ====== Кнопка старта ====== */
 .race-start-btn {
     appearance: none;
     outline: none;
@@ -3017,11 +3062,9 @@ body {
 
     .racer-avatar { width: 40px; height: 40px; }
     .racer-emoji { font-size: 22px; }
-    .racer-sled { font-size: 12px; }
-    .racer-speed { font-size: 10px; }
+    .racer-speed { font-size: 11px; }
     .racer-vs { font-size: 11px; }
     .race-runner { width: 46px; height: 46px; }
-    .sled-rider { font-size: 22px; }
     .race-start-btn { font-size: 13px; padding: 10px 14px; }
     .race-title { font-size: 20px; }
 
@@ -3091,7 +3134,6 @@ body {
     .racer-avatar { width: 42px; height: 42px; }
     .racer-emoji { font-size: 22px; }
     .race-runner { width: 48px; height: 48px; }
-    .sled-rider { font-size: 22px; }
 
     .modal-sheet { max-height: 88vh; }
 
@@ -3147,10 +3189,8 @@ body {
     .racer-avatar { width: 36px; height: 36px; }
     .racer-emoji { font-size: 20px; }
     .racer-title { font-size: 8px; }
-    .racer-sled { font-size: 12px; }
-    .racer-speed { font-size: 9px; }
+    .racer-speed { font-size: 11px; }
     .race-runner { width: 42px; height: 42px; }
-    .sled-rider { font-size: 20px; top: -4px; }
     .race-result { font-size: 11px; padding: 6px 10px; }
     .race-start-btn { padding: 9px 14px; font-size: 12px; letter-spacing: 1.5px; }
     .race-title { font-size: 18px; letter-spacing: 1.2px; }
