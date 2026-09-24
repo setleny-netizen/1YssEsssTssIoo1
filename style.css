@@ -3214,3 +3214,43 @@ body {
 @media (min-width: 500px) {
     #content { padding: 12px 16px; }
 }
+
+/* ============ SVG-ICON SYSTEM ============ */
+.icon {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    color: currentColor;
+    vertical-align: middle;
+    pointer-events: none;
+}
+
+/* Размеры под контекст */
+.icon--nav   { width: 22px; height: 22px; }
+.icon--top   { width: 16px; height: 16px; }
+.icon--btn   { width: 26px; height: 26px; }
+.icon--grid  { width: 32px; height: 32px; }
+.icon--hero  { width: 48px; height: 48px; }
+.icon--slot  { width: 44px; height: 44px; }
+
+/* Аватар */
+.icon--avatar {
+    width: 100%;
+    height: 100%;
+    color: var(--text-primary);
+}
+
+/* Навигация (замена .nav-emoji) */
+.nav-item .nav-icon {
+    width: 22px;
+    height: 22px;
+    color: var(--text-muted);
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: block;
+}
+.nav-item.active .nav-icon {
+    color: var(--accent-orange-light);
+    transform: scale(1.1);
+}
+.nav-item:active .nav-icon { transform: scale(0.9); }
