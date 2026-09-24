@@ -13,7 +13,9 @@
             <div class="top-row">
                 <div class="player-info">
                     <div class="avatar">
-                        <div class="avatar-inner">🐻</div>
+                        <div class="avatar-inner">
+                            <svg class="icon icon--avatar" viewBox="0 0 40 40" aria-hidden="true"><use href="assets/icons.svg#i-avatar-yeti"></use></svg>
+                        </div>
                     </div>
                     <div class="player-name-level">
                         <div class="player-name" id="player-name">Игрок</div>
@@ -22,7 +24,7 @@
                 </div>
                 <div class="balance-badge-group">
                     <div class="balance-badge">
-                        <span class="wallet-icon">💵</span>
+                        <svg class="icon icon--top wallet-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-balance-coin"></use></svg>
                         <span class="balance-value" id="balance-value">0</span>
                     </div>
                 </div>
@@ -57,7 +59,10 @@
                 <div class="ice-info-row">
                     <div class="ice-info-cell">
                         <div class="ice-info-label">Производство</div>
-                        <div class="ice-info-value" id="ice-production">+5 🧊 / час</div>
+                        <div class="ice-info-value" id="ice-production">
+                            <svg class="icon icon--top" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--accent-blue-light);margin-right:2px"><use href="assets/icons.svg#i-ice-cube"></use></svg>
+                            +5 / час
+                        </div>
                     </div>
                     <div class="ice-info-cell">
                         <div class="ice-info-label">Следующий лёд</div>
@@ -67,7 +72,7 @@
 
                 <div class="ice-storage-card">
                     <div class="ice-storage-header">
-                        <span class="ice-storage-emoji">🧊</span>
+                        <svg class="icon icon--top ice-storage-emoji" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--accent-blue-light)"><use href="assets/icons.svg#i-ice-cube"></use></svg>
                         <span class="ice-storage-title">НАКОПЛЕНО</span>
                     </div>
                     <div class="ice-storage-count">
@@ -81,7 +86,7 @@
                 </div>
 
                 <button class="ice-collect-btn" id="ice-collect-btn" disabled>
-                    <span class="ice-collect-emoji">🧊</span>
+                    <svg class="icon icon--top ice-collect-emoji" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-ice-cube"></use></svg>
                     <span class="ice-collect-text">ЗАБРАТЬ</span>
                     <span class="ice-collect-amount" id="ice-collect-amount">0</span>
                 </button>
@@ -89,10 +94,10 @@
                 <button class="ice-upgrade-btn" id="ice-upgrade-btn">
                     <div class="ice-upgrade-left">
                         <div class="ice-upgrade-title">
-                            <span class="ice-upgrade-arrow">⬆️</span>
+                            <svg class="icon icon--top ice-upgrade-arrow" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-up-arrow"></use></svg>
                             <span>УЛУЧШИТЬ</span>
                         </div>
-                        <div class="ice-upgrade-desc" id="ice-upgrade-desc">Ледогенератор II · +10 🧊 / час · 1 000</div>
+                        <div class="ice-upgrade-desc" id="ice-upgrade-desc">Ледогенератор II · +10 / час · 1 000</div>
                     </div>
                     <div class="ice-upgrade-cost" id="ice-upgrade-cost">$ 2 500</div>
                 </button>
@@ -103,23 +108,23 @@
         <!-- BOTTOM NAV -->
         <nav id="bottom-nav">
             <button class="nav-item" data-screen="invest" aria-label="Инвестиции">
-                <span class="nav-emoji">📈</span>
+                <svg class="icon icon--nav nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-nav-invest"></use></svg>
                 <span class="nav-label">Инвест</span>
             </button>
             <button class="nav-item" data-screen="business" aria-label="Бизнес">
-                <span class="nav-emoji">💼</span>
+                <svg class="icon icon--nav nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-nav-business"></use></svg>
                 <span class="nav-label">Бизнес</span>
             </button>
             <button class="nav-item" data-screen="earn" aria-label="Заработок">
-                <span class="nav-emoji">💵</span>
+                <svg class="icon icon--nav nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-nav-earn"></use></svg>
                 <span class="nav-label">Заработок</span>
             </button>
             <button class="nav-item active" data-screen="berloga" aria-label="Берлога">
-                <span class="nav-emoji">🏔️</span>
+                <svg class="icon icon--nav nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-nav-berloga"></use></svg>
                 <span class="nav-label">Берлога</span>
             </button>
             <button class="nav-item" data-screen="profile" aria-label="Профиль">
-                <span class="nav-emoji">👤</span>
+                <svg class="icon icon--nav nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-nav-profile"></use></svg>
                 <span class="nav-label">Профиль</span>
             </button>
         </nav>
@@ -143,6 +148,12 @@
                 10: { name: 'ЛЕДОГЕНЕРАТОР X',    productionPerHour: 2500, capacity: 250000, upgradeCost: null,     nextLevel: null },
             };
 
+            // SVG-хелпер
+            function icon(id, size) {
+                size = size || 'icon--top';
+                return '<svg class="icon ' + size + '" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#' + id + '"></use></svg>';
+            }
+
             function cumulativeXp(level) {
                 let total = 0;
                 for (let i = 1; i < level; i++) total += i * 100;
@@ -154,24 +165,11 @@
                 while (cumulativeXp(level + 1) <= totalXp) level++;
                 const base = cumulativeXp(level);
                 const next = cumulativeXp(level + 1);
-                return {
-                    level,
-                    currentInLevel: totalXp - base,
-                    needForLevel: next - base,
-                };
+                return { level, currentInLevel: totalXp - base, needForLevel: next - base };
             }
 
-            const player = {
-                wallet: 0,
-                ice: 0,
-                totalXp: 0,
-            };
-
-            const gen = {
-                level: 1,
-                storedIce: 0,
-                lastTick: Date.now(),
-            };
+            const player = { wallet: 0, ice: 0, totalXp: 0 };
+            const gen = { level: 1, storedIce: 0, lastTick: Date.now() };
 
             const balanceValue = document.getElementById('balance-value');
             const xpFill = document.getElementById('xp-fill');
@@ -197,21 +195,17 @@
                 num = Math.floor(num);
                 return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
             }
-
             function formatMoney(num) {
                 const n = Math.floor(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
                 return '$ ' + n;
             }
-
             function formatTimer(seconds) {
                 if (seconds == null || seconds < 0) return '--:--';
                 seconds = Math.max(0, Math.floor(seconds));
                 const h = Math.floor(seconds / 3600);
                 const m = Math.floor((seconds % 3600) / 60);
                 const s = seconds % 60;
-                if (h > 0) {
-                    return h + 'ч ' + String(m).padStart(2, '0') + 'м';
-                }
+                if (h > 0) return h + 'ч ' + String(m).padStart(2, '0') + 'м';
                 return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
             }
 
@@ -260,13 +254,8 @@
                 } catch (e) {}
             }
 
-            function getConfig() {
-                return LEVELS[gen.level];
-            }
-
-            function secondsPerIce() {
-                return 3600 / getConfig().productionPerHour;
-            }
+            function getConfig() { return LEVELS[gen.level]; }
+            function secondsPerIce() { return 3600 / getConfig().productionPerHour; }
 
             function recalculate() {
                 const now = Date.now();
@@ -308,7 +297,11 @@
                 const cfg = getConfig();
 
                 levelTitle.textContent = cfg.name;
-                productionEl.textContent = '+' + formatNumber(cfg.productionPerHour) + ' 🧊 / час';
+
+                productionEl.innerHTML =
+                    icon('i-ice-cube', 'icon--top') +
+                    ' +' + formatNumber(cfg.productionPerHour) + ' / час';
+
                 capacityEl.textContent = formatNumber(cfg.capacity);
                 storedEl.textContent = formatNumber(gen.storedIce);
 
@@ -329,7 +322,7 @@
                 if (cfg.nextLevel) {
                     const next = LEVELS[cfg.nextLevel];
                     upgradeDesc.textContent =
-                        next.name + ' · +' + formatNumber(next.productionPerHour) + ' 🧊 / час · ' +
+                        next.name + ' · +' + formatNumber(next.productionPerHour) + ' / час · ' +
                         formatNumber(next.capacity);
                     upgradeCost.textContent = formatMoney(cfg.upgradeCost);
                     upgradeBtn.disabled = false;
@@ -359,7 +352,7 @@
                 player.ice += amount;
                 gen.lastTick = Date.now();
 
-                spawnFloatText('+' + formatNumber(amount) + ' 🧊', collectBtn);
+                spawnFloatText('+' + formatNumber(amount) + ' ', collectBtn);
 
                 savePlayer();
                 saveGen();
@@ -387,14 +380,13 @@
                 const rect = anchor.getBoundingClientRect();
                 const el = document.createElement('div');
                 el.className = 'ice-float';
-                el.textContent = text;
+                el.innerHTML = text + icon('i-ice-cube', 'icon--top');
                 el.style.left = (rect.left + rect.width / 2) + 'px';
                 el.style.top = (rect.top + 10) + 'px';
                 document.body.appendChild(el);
                 setTimeout(() => el.remove(), 1100);
             }
 
-            // ====== НАВИГАЦИЯ ======
             navItems.forEach(item => {
                 const go = function(e) {
                     e.preventDefault();
@@ -413,22 +405,10 @@
                     saveGen();
                     savePlayer();
 
-                    if (screen === 'earn') {
-                        window.location.href = 'index.html#earn';
-                        return;
-                    }
-                    if (screen === 'berloga') {
-                        window.location.href = 'index.html#berloga';
-                        return;
-                    }
-                    if (screen === 'invest') {
-                        window.location.href = 'index.html#invest';
-                        return;
-                    }
-                    if (screen === 'profile') {
-                        window.location.href = 'index.html#profile';
-                        return;
-                    }
+                    if (screen === 'earn')    { window.location.href = 'index.html#earn';    return; }
+                    if (screen === 'berloga') { window.location.href = 'index.html#berloga'; return; }
+                    if (screen === 'invest')  { window.location.href = 'index.html#invest';  return; }
+                    if (screen === 'profile') { window.location.href = 'index.html#profile'; return; }
                 };
                 item.addEventListener('click', go);
                 item.addEventListener('touchstart', function(e) {
@@ -492,23 +472,6 @@
                 saveGen();
                 savePlayer();
             });
-
-            function handleSafeArea() {
-                const bottomNav = document.getElementById('bottom-nav');
-                const safeBottom = getComputedStyle(document.documentElement)
-                    .getPropertyValue('env(safe-area-inset-bottom)');
-                if (safeBottom && safeBottom !== '0px') {
-                    bottomNav.style.paddingBottom = safeBottom;
-                }
-            }
-            if (window.visualViewport) {
-                window.visualViewport.addEventListener('resize', handleSafeArea);
-            }
-            handleSafeArea();
-
-            document.addEventListener('touchmove', function(e) {
-                e.preventDefault();
-            }, { passive: false });
         })();
     </script>
 </body>
