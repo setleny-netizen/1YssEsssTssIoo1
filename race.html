@@ -13,7 +13,9 @@
             <div class="top-row">
                 <div class="player-info">
                     <div class="avatar">
-                        <div class="avatar-inner">🐻</div>
+                        <div class="avatar-inner">
+                            <svg class="icon icon--avatar" viewBox="0 0 40 40" aria-hidden="true"><use href="assets/icons.svg#i-avatar-yeti"></use></svg>
+                        </div>
                     </div>
                     <div class="player-name-level">
                         <div class="player-name" id="player-name">Игрок</div>
@@ -22,7 +24,7 @@
                 </div>
                 <div class="balance-badge-group">
                     <div class="balance-badge">
-                        <span class="wallet-icon">💵</span>
+                        <svg class="icon icon--top wallet-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-balance-coin"></use></svg>
                         <span class="balance-value" id="balance-value">0</span>
                     </div>
                 </div>
@@ -44,7 +46,7 @@
                 <div class="race-topbar">
                     <div class="race-title">Быстрый заезд</div>
                     <div class="race-ice-badge">
-                        <span class="race-ice-emoji">🧊</span>
+                        <svg class="icon icon--top race-ice-emoji" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-ice-cube"></use></svg>
                         <span class="race-ice-value" id="race-ice-value">0</span>
                     </div>
                 </div>
@@ -53,7 +55,7 @@
                 <div class="race-racers">
                     <div class="racer-card racer-me">
                         <div class="racer-avatar racer-avatar-me">
-                            <span class="racer-emoji">🐻</span>
+                            <svg class="icon icon--avatar" viewBox="0 0 40 40" aria-hidden="true"><use href="assets/icons.svg#i-avatar-yeti"></use></svg>
                         </div>
                         <div class="racer-info">
                             <div class="racer-title">Я</div>
@@ -69,7 +71,7 @@
                             <div class="racer-speed"><span id="npc-speed">??</span> км/ч</div>
                         </div>
                         <div class="racer-avatar racer-avatar-npc">
-                            <span class="racer-emoji">🦊</span>
+                            <svg class="icon icon--avatar" viewBox="0 0 40 40" aria-hidden="true"><use href="assets/icons.svg#i-fox"></use></svg>
                         </div>
                     </div>
                 </div>
@@ -131,9 +133,12 @@
 
                 <!-- START BUTTON -->
                 <button class="race-start-btn" id="race-start-btn">
-                    <span class="race-start-emoji">🏁</span>
+                    <svg class="icon icon--top race-start-emoji" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-race-flag"></use></svg>
                     <span class="race-start-text" id="race-start-text">СТАРТ</span>
-                    <span class="race-start-cost" id="race-start-cost">· 1 🧊</span>
+                    <span class="race-start-cost" id="race-start-cost">
+                        <svg class="icon icon--top" viewBox="0 0 24 24" aria-hidden="true" style="margin-right:3px"><use href="assets/icons.svg#i-ice-cube"></use></svg>
+                        1
+                    </span>
                 </button>
 
                 <!-- RESULT -->
@@ -145,23 +150,23 @@
         <!-- BOTTOM NAV -->
         <nav id="bottom-nav">
             <button class="nav-item" data-screen="invest" aria-label="Инвестиции">
-                <span class="nav-emoji">📈</span>
+                <svg class="icon icon--nav nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-nav-invest"></use></svg>
                 <span class="nav-label">Инвест</span>
             </button>
             <button class="nav-item" data-screen="business" aria-label="Бизнес">
-                <span class="nav-emoji">💼</span>
+                <svg class="icon icon--nav nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-nav-business"></use></svg>
                 <span class="nav-label">Бизнес</span>
             </button>
             <button class="nav-item active" data-screen="earn" aria-label="Заработок">
-                <span class="nav-emoji">💵</span>
+                <svg class="icon icon--nav nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-nav-earn"></use></svg>
                 <span class="nav-label">Заработок</span>
             </button>
             <button class="nav-item" data-screen="berloga" aria-label="Берлога">
-                <span class="nav-emoji">🏔️</span>
+                <svg class="icon icon--nav nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-nav-berloga"></use></svg>
                 <span class="nav-label">Берлога</span>
             </button>
             <button class="nav-item" data-screen="profile" aria-label="Профиль">
-                <span class="nav-emoji">👤</span>
+                <svg class="icon icon--nav nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-nav-profile"></use></svg>
                 <span class="nav-label">Профиль</span>
             </button>
         </nav>
@@ -183,15 +188,18 @@
             const LIGHT_HOLD_MS = 1000;
             const LIGHT_FADEOUT_MS = 400;
 
-            const NPC_NAMES = ['Мороз', 'Пурга', 'Метель', 'Вьюга', 'Снеговик', 'Ледокол', 'Сугроб'];
-
-            // Гонщики стартуют правее стартовой линии
             const START_X = 14;
             const END_X = 88;
             const START_LINE_START = 4;
             const START_LINE_END = -30;
             const FINISH_LINE_START = 120;
             const FINISH_LINE_END = 88;
+
+            // SVG-хелпер
+            function icon(id, size) {
+                size = size || 'icon--top';
+                return '<svg class="icon ' + size + '" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#' + id + '"></use></svg>';
+            }
 
             function cumulativeXp(level) {
                 let total = 0;
@@ -211,12 +219,7 @@
                 };
             }
 
-            const state = {
-                wallet: 0,
-                ice: 0,
-                totalXp: 0,
-                racing: false,
-            };
+            const state = { wallet: 0, ice: 0, totalXp: 0, racing: false };
 
             const balanceValue = document.getElementById('balance-value');
             const xpFill = document.getElementById('xp-fill');
@@ -268,13 +271,11 @@
             }
             createSnow();
 
-            // ====== ФОРМАТ ======
             function formatNumber(num) {
                 num = Math.floor(num);
                 return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
             }
 
-            // ====== СОХРАНЕНИЕ ======
             function savePlayer() {
                 try {
                     const raw = localStorage.getItem(PLAYER_KEY);
@@ -319,7 +320,7 @@
                 const hasIce = state.ice >= RACE_COST_ICE;
                 startText.textContent = hasIce ? 'СТАРТ' : 'НУЖЕН ЛЁД';
                 startBtn.disabled = !hasIce;
-                startCost.textContent = '· ' + RACE_COST_ICE + ' 🧊';
+                startCost.innerHTML = icon('i-ice-cube', 'icon--top') + ' ' + RACE_COST_ICE;
             }
 
             function resetPositions() {
@@ -345,20 +346,16 @@
                 finishLine.style.transition = '';
             }
 
-            // Показать светофор и вернуть Promise
             function runTrafficLight() {
                 return new Promise(resolve => {
-                    // Показываем светофор
                     trafficEl.style.display = 'flex';
 
-                    // Все лампы выключены
                     trafficLights.forEach(l => {
                         l.style.background = '#1A1A1A';
                         l.style.borderColor = '#2A2A2A';
                         l.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.8)';
                     });
 
-                    // Зажигаем по одной
                     for (let i = 0; i < 5; i++) {
                         setTimeout(() => {
                             trafficLights[i].style.background = 'radial-gradient(circle at 35% 35%, #FF5050, #C00000)';
@@ -369,7 +366,6 @@
 
                     const totalOn = LIGHT_STEP_MS * 5 + LIGHT_HOLD_MS;
 
-                    // Все гаснут → старт
                     setTimeout(() => {
                         trafficLights.forEach(l => {
                             l.style.background = '#1A1A1A';
@@ -408,7 +404,7 @@
 
                 startBtn.disabled = true;
                 startText.textContent = 'ПОДГОТОВКА...';
-                startCost.textContent = '';
+                startCost.innerHTML = '';
 
                 const playerWins = Math.random() < WIN_CHANCE;
 
@@ -422,7 +418,6 @@
                 runTrafficLight().then(() => {
                     startText.textContent = 'В ГОНКЕ...';
 
-                    // Запускаем анимацию дороги
                     raceLanes.classList.add('racing');
 
                     npcSpeedEl.textContent = npcSpeed;
@@ -446,18 +441,15 @@
                         runnerMe.style.left = myLeft + '%';
                         runnerNpc.style.left = npcLeft + '%';
 
-                        // Стартовая линия уезжает влево
                         const startLineLeft = START_LINE_START - t * startLineRange;
                         startLine.style.left = startLineLeft + '%';
 
-                        // Финиш приближается справа
                         const finishLeft = FINISH_LINE_START - t * finishLineRange;
                         finishLine.style.left = finishLeft + '%';
 
                         if (t < 1) {
                             requestAnimationFrame(tick);
                         } else {
-                            // Останавливаем анимацию дороги
                             raceLanes.classList.remove('racing');
                             finishRace(playerWins);
                         }
@@ -472,15 +464,15 @@
                 if (playerWins) {
                     state.wallet += REWARD_WIN_WALLET;
                     state.totalXp += REWARD_WIN_XP;
-                    message = '🏆 ПОБЕДА! +' + REWARD_WIN_WALLET + ' 💵 · +' + REWARD_WIN_XP + ' XP';
+                    message = icon('i-balance-coin', 'icon--top') + ' ПОБЕДА! +' + REWARD_WIN_WALLET + ' · +' + REWARD_WIN_XP + ' XP';
                     resultEl.classList.add('win');
                 } else {
                     state.totalXp += REWARD_LOSE_XP;
-                    message = '❄️ Проигрыш... +' + REWARD_LOSE_XP + ' XP';
+                    message = icon('i-frost', 'icon--top') + ' Проигрыш... +' + REWARD_LOSE_XP + ' XP';
                     resultEl.classList.add('lose');
                 }
 
-                resultEl.textContent = message;
+                resultEl.innerHTML = message;
                 resultEl.classList.remove('hidden');
 
                 savePlayer();
@@ -491,7 +483,7 @@
                 const hasIce = state.ice >= RACE_COST_ICE;
                 startBtn.disabled = !hasIce;
                 startText.textContent = hasIce ? 'ЕЩЁ РАЗ' : 'НУЖЕН ЛЁД';
-                startCost.textContent = '· ' + RACE_COST_ICE + ' 🧊';
+                startCost.innerHTML = icon('i-ice-cube', 'icon--top') + ' ' + RACE_COST_ICE;
             }
 
             // ====== НАВИГАЦИЯ ======
@@ -502,26 +494,11 @@
 
                     const screen = this.dataset.screen;
 
-                    if (screen === 'business') {
-                        window.location.href = 'business.html';
-                        return;
-                    }
-                    if (screen === 'earn') {
-                        window.location.href = 'index.html#earn';
-                        return;
-                    }
-                    if (screen === 'berloga') {
-                        window.location.href = 'index.html#berloga';
-                        return;
-                    }
-                    if (screen === 'invest') {
-                        window.location.href = 'index.html#invest';
-                        return;
-                    }
-                    if (screen === 'profile') {
-                        window.location.href = 'index.html#profile';
-                        return;
-                    }
+                    if (screen === 'business') { window.location.href = 'business.html'; return; }
+                    if (screen === 'earn')     { window.location.href = 'index.html#earn';    return; }
+                    if (screen === 'berloga')  { window.location.href = 'index.html#berloga'; return; }
+                    if (screen === 'invest')   { window.location.href = 'index.html#invest';  return; }
+                    if (screen === 'profile')  { window.location.href = 'index.html#profile'; return; }
                 };
                 item.addEventListener('click', go);
                 item.addEventListener('touchstart', function(e) {
@@ -557,23 +534,6 @@
                 renderTop();
                 if (!state.racing) updateStartButton();
             });
-
-            function handleSafeArea() {
-                const bottomNav = document.getElementById('bottom-nav');
-                const safeBottom = getComputedStyle(document.documentElement)
-                    .getPropertyValue('env(safe-area-inset-bottom)');
-                if (safeBottom && safeBottom !== '0px') {
-                    bottomNav.style.paddingBottom = safeBottom;
-                }
-            }
-            if (window.visualViewport) {
-                window.visualViewport.addEventListener('resize', handleSafeArea);
-            }
-            handleSafeArea();
-
-            document.addEventListener('touchmove', function(e) {
-                e.preventDefault();
-            }, { passive: false });
         })();
     </script>
 </body>
