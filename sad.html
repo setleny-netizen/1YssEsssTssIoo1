@@ -13,7 +13,9 @@
             <div class="top-row">
                 <div class="player-info">
                     <div class="avatar">
-                        <div class="avatar-inner">🐻</div>
+                        <div class="avatar-inner">
+                            <svg class="icon icon--avatar" viewBox="0 0 40 40" aria-hidden="true"><use href="assets/icons.svg#i-avatar-yeti"></use></svg>
+                        </div>
                     </div>
                     <div class="player-name-level">
                         <div class="player-name" id="player-name">Игрок</div>
@@ -22,7 +24,7 @@
                 </div>
                 <div class="balance-badge-group">
                     <div class="balance-badge">
-                        <span class="wallet-icon">💵</span>
+                        <svg class="icon icon--top wallet-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-balance-coin"></use></svg>
                         <span class="balance-value" id="balance-value">0</span>
                     </div>
                 </div>
@@ -57,7 +59,10 @@
                 <div class="ice-info-row">
                     <div class="ice-info-cell">
                         <div class="ice-info-label">Собирается</div>
-                        <div class="ice-info-value" id="sad-production">+3 🍃 / час</div>
+                        <div class="ice-info-value" id="sad-production">
+                            <svg class="icon icon--top" viewBox="0 0 24 24" aria-hidden="true" style="color:#7DDFA0;margin-right:2px"><use href="assets/icons.svg#i-leaf"></use></svg>
+                            +3 / час
+                        </div>
                     </div>
                     <div class="ice-info-cell">
                         <div class="ice-info-label">Следующий лист</div>
@@ -67,7 +72,7 @@
 
                 <div class="ice-storage-card">
                     <div class="ice-storage-header">
-                        <span class="ice-storage-emoji">🍃</span>
+                        <svg class="icon icon--top ice-storage-emoji" viewBox="0 0 24 24" aria-hidden="true" style="color:#7DDFA0"><use href="assets/icons.svg#i-leaf"></use></svg>
                         <span class="ice-storage-title">СОБРАНО</span>
                     </div>
                     <div class="ice-storage-count">
@@ -81,7 +86,7 @@
                 </div>
 
                 <button class="ice-collect-btn" id="sad-collect-btn" disabled>
-                    <span class="ice-collect-emoji">🍃</span>
+                    <svg class="icon icon--top ice-collect-emoji" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-leaf"></use></svg>
                     <span class="ice-collect-text">ЗАБРАТЬ</span>
                     <span class="ice-collect-amount" id="sad-collect-amount">0</span>
                 </button>
@@ -89,10 +94,10 @@
                 <button class="ice-upgrade-btn" id="sad-upgrade-btn">
                     <div class="ice-upgrade-left">
                         <div class="ice-upgrade-title">
-                            <span class="ice-upgrade-arrow">⬆️</span>
+                            <svg class="icon icon--top ice-upgrade-arrow" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-up-arrow"></use></svg>
                             <span>УЛУЧШИТЬ</span>
                         </div>
-                        <div class="ice-upgrade-desc" id="sad-upgrade-desc">Сад II · +6 🍃 / час · 600</div>
+                        <div class="ice-upgrade-desc" id="sad-upgrade-desc">Сад II · +6 / час · 600</div>
                     </div>
                     <div class="ice-upgrade-cost" id="sad-upgrade-cost">$ 1 500</div>
                 </button>
@@ -103,23 +108,23 @@
         <!-- BOTTOM NAV -->
         <nav id="bottom-nav">
             <button class="nav-item" data-screen="invest" aria-label="Инвестиции">
-                <span class="nav-emoji">📈</span>
+                <svg class="icon icon--nav nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-nav-invest"></use></svg>
                 <span class="nav-label">Инвест</span>
             </button>
             <button class="nav-item" data-screen="business" aria-label="Бизнес">
-                <span class="nav-emoji">💼</span>
+                <svg class="icon icon--nav nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-nav-business"></use></svg>
                 <span class="nav-label">Бизнес</span>
             </button>
             <button class="nav-item" data-screen="earn" aria-label="Заработок">
-                <span class="nav-emoji">💵</span>
+                <svg class="icon icon--nav nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-nav-earn"></use></svg>
                 <span class="nav-label">Заработок</span>
             </button>
             <button class="nav-item active" data-screen="berloga" aria-label="Берлога">
-                <span class="nav-emoji">🏔️</span>
+                <svg class="icon icon--nav nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-nav-berloga"></use></svg>
                 <span class="nav-label">Берлога</span>
             </button>
             <button class="nav-item" data-screen="profile" aria-label="Профиль">
-                <span class="nav-emoji">👤</span>
+                <svg class="icon icon--nav nav-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-nav-profile"></use></svg>
                 <span class="nav-label">Профиль</span>
             </button>
         </nav>
@@ -131,7 +136,6 @@
             const SAD_KEY = 'lokhmaty_sad_v1';
             const INV_KEY = 'lokhmaty_inventory_v1';
 
-            // Уровни сада
             const LEVELS = {
                 1:  { name: 'САД I',    productionPerHour: 3,    capacity: 300,    upgradeCost: 1500,     nextLevel: 2 },
                 2:  { name: 'САД II',   productionPerHour: 6,    capacity: 600,    upgradeCost: 4500,     nextLevel: 3 },
@@ -163,18 +167,8 @@
                 };
             }
 
-            const player = {
-                wallet: 0,
-                ice: 0,
-                totalXp: 0,
-            };
-
-            const sad = {
-                level: 1,
-                storedLeaf: 0,
-                lastTick: Date.now(),
-            };
-
+            const player = { wallet: 0, ice: 0, totalXp: 0 };
+            const sad = { level: 1, storedLeaf: 0, lastTick: Date.now() };
             const inventory = { stone: 0, coal: 0, iron_ore: 0, gold_ore: 0, leaf: 0 };
 
             const balanceValue = document.getElementById('balance-value');
@@ -201,21 +195,17 @@
                 num = Math.floor(num);
                 return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
             }
-
             function formatMoney(num) {
                 const n = Math.floor(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
                 return '$ ' + n;
             }
-
             function formatTimer(seconds) {
                 if (seconds == null || seconds < 0) return '--:--';
                 seconds = Math.max(0, Math.floor(seconds));
                 const h = Math.floor(seconds / 3600);
                 const m = Math.floor((seconds % 3600) / 60);
                 const s = seconds % 60;
-                if (h > 0) {
-                    return h + 'ч ' + String(m).padStart(2, '0') + 'м';
-                }
+                if (h > 0) return h + 'ч ' + String(m).padStart(2, '0') + 'м';
                 return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
             }
 
@@ -282,13 +272,8 @@
                 } catch (e) {}
             }
 
-            function getConfig() {
-                return LEVELS[sad.level];
-            }
-
-            function secondsPerLeaf() {
-                return 3600 / getConfig().productionPerHour;
-            }
+            function getConfig() { return LEVELS[sad.level]; }
+            function secondsPerLeaf() { return 3600 / getConfig().productionPerHour; }
 
             function recalculate() {
                 const now = Date.now();
@@ -330,7 +315,12 @@
                 const cfg = getConfig();
 
                 levelTitle.textContent = cfg.name;
-                productionEl.textContent = '+' + formatNumber(cfg.productionPerHour) + ' 🍃 / час';
+
+                // Производство с иконкой
+                productionEl.innerHTML =
+                    '<svg class="icon icon--top" viewBox="0 0 24 24" aria-hidden="true" style="color:#7DDFA0;margin-right:2px"><use href="assets/icons.svg#i-leaf"></use></svg>' +
+                    '+' + formatNumber(cfg.productionPerHour) + ' / час';
+
                 capacityEl.textContent = formatNumber(cfg.capacity);
                 storedEl.textContent = formatNumber(sad.storedLeaf);
 
@@ -351,7 +341,7 @@
                 if (cfg.nextLevel) {
                     const next = LEVELS[cfg.nextLevel];
                     upgradeDesc.textContent =
-                        next.name + ' · +' + formatNumber(next.productionPerHour) + ' 🍃 / час · ' +
+                        next.name + ' · +' + formatNumber(next.productionPerHour) + ' / час · ' +
                         formatNumber(next.capacity);
                     upgradeCost.textContent = formatMoney(cfg.upgradeCost);
                     upgradeBtn.disabled = false;
@@ -381,7 +371,7 @@
                 inventory.leaf = (inventory.leaf || 0) + amount;
                 sad.lastTick = Date.now();
 
-                spawnFloatText('+' + formatNumber(amount) + ' 🍃', collectBtn);
+                spawnFloatText('+' + formatNumber(amount), collectBtn);
 
                 savePlayer();
                 saveSad();
@@ -410,7 +400,9 @@
                 const rect = anchor.getBoundingClientRect();
                 const el = document.createElement('div');
                 el.className = 'ice-float';
-                el.textContent = text;
+                el.innerHTML =
+                    text +
+                    '<svg class="icon icon--top" viewBox="0 0 24 24" aria-hidden="true" style="margin-left:4px;color:#7DDFA0;vertical-align:middle"><use href="assets/icons.svg#i-leaf"></use></svg>';
                 el.style.left = (rect.left + rect.width / 2) + 'px';
                 el.style.top = (rect.top + 10) + 'px';
                 document.body.appendChild(el);
@@ -433,22 +425,10 @@
                     recalculate();
                     saveSad(); savePlayer(); saveInventory();
 
-                    if (screen === 'earn') {
-                        window.location.href = 'index.html#earn';
-                        return;
-                    }
-                    if (screen === 'berloga') {
-                        window.location.href = 'index.html#berloga';
-                        return;
-                    }
-                    if (screen === 'invest') {
-                        window.location.href = 'index.html#invest';
-                        return;
-                    }
-                    if (screen === 'profile') {
-                        window.location.href = 'index.html#profile';
-                        return;
-                    }
+                    if (screen === 'earn')    { window.location.href = 'index.html#earn';    return; }
+                    if (screen === 'berloga') { window.location.href = 'index.html#berloga'; return; }
+                    if (screen === 'invest')  { window.location.href = 'index.html#invest';  return; }
+                    if (screen === 'profile') { window.location.href = 'index.html#profile'; return; }
                 };
                 item.addEventListener('click', go);
                 item.addEventListener('touchstart', function(e) {
@@ -512,23 +492,6 @@
                 recalculate();
                 saveSad(); savePlayer(); saveInventory();
             });
-
-            function handleSafeArea() {
-                const bottomNav = document.getElementById('bottom-nav');
-                const safeBottom = getComputedStyle(document.documentElement)
-                    .getPropertyValue('env(safe-area-inset-bottom)');
-                if (safeBottom && safeBottom !== '0px') {
-                    bottomNav.style.paddingBottom = safeBottom;
-                }
-            }
-            if (window.visualViewport) {
-                window.visualViewport.addEventListener('resize', handleSafeArea);
-            }
-            handleSafeArea();
-
-            document.addEventListener('touchmove', function(e) {
-                e.preventDefault();
-            }, { passive: false });
         })();
     </script>
 </body>
