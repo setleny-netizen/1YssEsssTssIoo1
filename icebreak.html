@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Колоть ледник — Лохматый клуб</title>
-    <link rel="stylesheet" href="style.css?v=20">
+    <link rel="stylesheet" href="style.css?v=21">
 </head>
 <body>
     <div id="app">
@@ -149,6 +149,7 @@
                         </svg>
                     </div>
 
+                    <!-- Кирка: статично в углу, без анимации удара -->
                     <div class="pickaxe" id="pickaxe">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-pickaxe-big"></use></svg>
                     </div>
@@ -242,7 +243,6 @@
 
             const scene = document.getElementById('icebreak-scene');
             const wrap = document.getElementById('icebergWrap');
-            const pickaxeEl = document.getElementById('pickaxe');
             const cubesLayer = document.getElementById('cubesLayer');
 
             const energyCountEl = document.getElementById('energy-count');
@@ -387,17 +387,7 @@
                 balanceValue.classList.add('pulse');
             }
 
-            // ====== ЭФФЕКТЫ ======
-            function spawnCrack(x, y) {
-                const crack = document.createElement('div');
-                crack.className = 'crack';
-                crack.style.left = x + 'px';
-                crack.style.top  = y + 'px';
-                document.body.appendChild(crack);
-                setTimeout(() => crack.remove(), 400);
-            }
-
-            // Кубик летит к бейджу баланса и начисляет лёд на animationend
+            // ====== КУБИК ЛЬДА ======
             function spawnCube(startX, startY, reward) {
                 const cube = document.createElement('div');
                 cube.className = 'cube';
@@ -427,6 +417,7 @@
                 }, { once: true });
             }
 
+            // ====== ТРЯСКА АЙСБЕРГА ======
             function shakeScene() {
                 wrap.classList.remove('hit');
                 void wrap.offsetWidth;
@@ -434,7 +425,6 @@
             }
 
             // ====== УДАР ======
-            let strikeResetTimer = null;
             let lastStrikeAt = 0;
             const STRIKE_COOLDOWN = 60;
 
@@ -448,30 +438,20 @@
                     return;
                 }
 
-                // 1. Кирка: анимация удара
-                if (strikeResetTimer) clearTimeout(strikeResetTimer);
-                pickaxeEl.classList.remove('strike');
-                void pickaxeEl.offsetWidth;
-                pickaxeEl.classList.add('strike');
-                strikeResetTimer = setTimeout(() => pickaxeEl.classList.remove('strike'), 260);
-
-                // 2. Сцена: тряска
+                // Сцена: тряска
                 shakeScene();
 
-                // 3. Точка удара — по центру айсберга (или по клику)
+                // Точка удара — центр айсберга
                 const rect = wrap.getBoundingClientRect();
                 const cx = rect.left + rect.width / 2;
                 const cy = rect.top + rect.height / 2;
 
-                // 4. Списываем энергию
+                // Списываем энергию
                 pickaxe.energy -= STRIKE_COST;
                 renderEnergy();
                 savePickaxe();
 
-                // 5. Крака
-                setTimeout(() => spawnCrack(cx, cy), 130);
-
-                // 6. Проверка шанса
+                // Проверка шанса
                 const win = Math.random() < SUCCESS_CHANCE;
                 if (win) {
                     const drop = PICKAXE_LEVELS[pickaxe.level].drop;
@@ -496,7 +476,6 @@
             }
 
             // ====== ОБРАБОТЧИКИ ======
-            // Клик по сцене (сам айсберг pointer-events: none)
             scene.addEventListener('pointerdown', function(e) {
                 e.preventDefault();
                 strike(e.clientX, e.clientY);
