@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Колоть ледник — Лохматый клуб</title>
-    <link rel="stylesheet" href="style.css?v=21">
+    <link rel="stylesheet" href="style.css?v=22">
 </head>
 <body>
     <div id="app">
@@ -65,7 +65,7 @@
                     </div>
                 </div>
 
-                <!-- SCENE: SVG-айсберг + кирка -->
+                <!-- SCENE: только SVG-айсберг -->
                 <div class="icebreak-scene" id="icebreak-scene">
 
                     <div class="iceberg-wrap" id="icebergWrap">
@@ -149,25 +149,19 @@
                         </svg>
                     </div>
 
-                    <!-- Кирка: статично в углу, без анимации удара -->
-                    <div class="pickaxe" id="pickaxe">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#i-pickaxe-big"></use></svg>
-                    </div>
-
                 </div>
 
                 <!-- HINT -->
                 <div class="icebreak-hint">Тапай по леднику чтобы добыть лёд</div>
 
-                <!-- PICKAXE INFO -->
+                <!-- INFO: без кирки, только уровень -->
                 <div class="pickaxe-info" id="pickaxe-info">
                     <div class="pickaxe-info-left">
                         <div class="pickaxe-info-title">
-                            <svg class="icon icon--top" viewBox="0 0 24 24" aria-hidden="true" style="margin-right:4px;color:var(--accent-orange-light)"><use href="assets/icons.svg#i-pickaxe"></use></svg>
-                            КИРКА · УР. <span id="pickaxe-level">1</span>
+                            УРОВЕНЬ ДОБЫЧИ: <span id="pickaxe-level">1</span>
                         </div>
                         <div class="pickaxe-info-sub">
-                            <span id="pickaxe-drop">+1</span> при удаче · 25%
+                            <span id="pickaxe-drop">+1</span> лёд за удар · шанс 25%
                         </div>
                     </div>
                     <button class="pickaxe-upgrade-btn" id="pickaxe-upgrade-btn">
